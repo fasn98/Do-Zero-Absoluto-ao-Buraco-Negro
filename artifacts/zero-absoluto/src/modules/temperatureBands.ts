@@ -16,6 +16,7 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'A temperatura dos buracos negros', description: 'Radiação Hawking, entropia de horizonte e evaporação.', path: '/a-temperatura-dos-buracos-negros', number: '05', tag: 'ASTROFÍSICA' },
   { title: 'O nascimento do Sol', description: 'Da nuvem molecular à estrela: uma história de gravidade e calor.', path: '/o-nascimento-do-sol', number: '06', tag: 'ASTROFÍSICA ESTELAR' },
   { title: 'A gravidade guarda informação', description: 'Limite holográfico, curva de Page e a pergunta em aberto: a gravidade é quântica?', path: '/a-gravidade-guarda-informacao', number: '07', tag: 'GRAVIDADE QUÂNTICA' },
+  { title: 'Ouvindo o universo se expandir', description: 'Ondas gravitacionais, a sirene padrão e a tensão de Hubble.', path: '/ouvindo-o-universo', number: '08', tag: 'ONDAS GRAVITACIONAIS' },
 ];
 
 /** Total de módulos, no formato dos contadores ("07"). */

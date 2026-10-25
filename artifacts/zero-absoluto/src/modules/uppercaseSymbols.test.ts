@@ -24,7 +24,8 @@ describe("símbolos fora de text-transform", () => {
     for (const file of sources(join(__dirname, ".."))) {
       const code = readFileSync(file, "utf8");
       const plainLabels = [
-        ...code.matchAll(/\blabel="([^"]*)"/g),
+        // aria-label não é exibido, então não passa por text-transform.
+        ...code.matchAll(/(?<![-\w])label="([^"]*)"/g),
         ...code.matchAll(/className="(?:versus-label|eyebrow|notes-label|stat-label)"[^>]*>([^<{]*)</g),
       ];
       for (const match of plainLabels) {

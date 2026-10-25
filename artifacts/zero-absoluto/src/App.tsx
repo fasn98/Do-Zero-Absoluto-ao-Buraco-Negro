@@ -16,6 +16,7 @@ import Muon from './modules/fusao-a-frio-e-por-muons/Page';
 import BlackHole from './modules/a-temperatura-dos-buracos-negros/Page';
 import SunBirth from './modules/o-nascimento-do-sol/Page';
 import Gravity from './modules/a-gravidade-guarda-informacao/Page';
+import Listening from './modules/ouvindo-o-universo/Page';
 
 const modules = MODULES;
 
@@ -127,7 +128,7 @@ function Home() {
     </section>
     <section aria-labelledby="modules-heading">
       <div className="section-heading">
-        <div><div className="eyebrow">SETE PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
+        <div><div className="eyebrow">OITO PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
         <p>Ideias estabelecidas da termodinâmica e da física quântica, explicadas sem atalhos.</p>
       </div>
       <div className="module-grid">{modules.map((item) => <Link href={item.path} className="module-card" key={item.path} data-testid={`link-module-${item.number}`}>
@@ -159,6 +160,7 @@ function App() {
       <Route path="/a-temperatura-dos-buracos-negros" component={BlackHole} />
       <Route path="/o-nascimento-do-sol" component={SunBirth} />
       <Route path="/a-gravidade-guarda-informacao" component={Gravity} />
+      <Route path="/ouvindo-o-universo" component={Listening} />
       <Route component={NotFound} />
     </Switch>
   </div>;

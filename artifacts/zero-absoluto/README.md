@@ -1,7 +1,7 @@
 # Do Zero Absoluto ao Buraco Negro
 
 Aplicação educativa em português do Brasil sobre termodinâmica e física
-quântica, com sete módulos interativos. Toda simulação usa apenas física
+quântica, com oito módulos interativos. Toda simulação usa apenas física
 estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
 referências, e cada afirmação é marcada como **fato estabelecido**,
 **consenso** ou **hipótese em pesquisa**.
@@ -39,6 +39,7 @@ PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
 - `src/physics/constants.js`: **única** fonte de constantes (CODATA 2022, IAU 2015, PDG, AME 2020), com unidade e fonte.
 - `src/physics/*.ts`: funções físicas puras, uma por módulo, cada uma com `*.test.ts`.
 - `src/physics/holography.ts`, `pageCurve.ts`, `gravityEntanglement.ts`: física do Módulo 7.
+- `src/physics/gravitationalWaves.ts`, `hubble.ts`: física do Módulo 8.
 - `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
 Os testes comparam com valores de referência com tolerância de 2%.
@@ -111,4 +112,12 @@ Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
 - Limite de Bekenstein: S/k ≤ 2πRE/(ħc), E = mc² (1 kg em 1 m → 1,79 × 10⁴³); no raio de Schwarzschild coincide com a entropia de Bekenstein-Hawking
 - Curva de Page (modelo idealizado): M = M₀(1 − t/t_evap)^(1/3), S_BH = S₀(M/M₀)²; Hawking: S₀ − S_BH; Page: mín(S₀ − S_BH, S_BH); tempo de Page t = (1 − 2^(−3/2)) t_evap ≈ 0,646 t_evap
 - Emaranhamento mediado pela gravidade: φ = G m² τ / (ħ d) (10⁻¹⁴ kg, 200 µm, 2,5 s → 0,791 rad); esferas de diamante (3.510 kg/m³) e comparação com o recorde de superposição (~25.000 u, Fein et al. 2019)
+
+### Módulo 8: Ouvindo o universo se expandir (`gravitationalWaves.ts`, `hubble.ts`)
+
+- Massa de chirp: 𝓜 = (m₁m₂)^(3/5) / (m₁ + m₂)^(1/5) (36 + 29 M☉ → 28,1 M☉ na fonte; × (1 + z) ≈ 30,6 M☉ no detector)
+- Tempo até a fusão: τ(f) = (5/256)(G𝓜/c³)^(−5/3)(πf)^(−8/3) (35 Hz, 𝓜 = 30 M☉ → 0,170 s); inverso f(τ); fase Φ(τ) = −2(τ/(5G𝓜/c³))^(5/8)
+- Forma de onda h ∝ f^(2/3) cos Φ, normalizada para o pico medido de GW150914 (~10⁻²¹), até f_ISCO = c³ / (6^(3/2) π G M) (M = 65 × 1,09 M☉ → 62 Hz)
+- Lei de Hubble: H₀ = v / d (GW170817: 3.017 km/s, 43,8 Mpc → 68,9 km/s/Mpc; publicado 70 +12 −8)
+- Discrepância entre medições: |a − b| / √(σa² + σb²), com o lado da barra voltado para a outra medição quando assimétrica (Planck × SH0ES ≈ 4,9σ; Planck × CCHP ≈ 1,6σ)
 

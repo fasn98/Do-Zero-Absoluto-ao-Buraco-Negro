@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 
 export type Series = { label: string; color: string; points: [number, number][]; dashed?: boolean; width?: number };
 export type Marker = { x: number; label: string; color?: string };
@@ -29,6 +29,7 @@ const LABEL_ROW = 16;
 export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, height = 300, title, children }: LinePlotProps) {
   // A largura do viewBox acompanha a largura real, para que os textos fiquem no tamanho em px.
   const ref = useRef<HTMLElement>(null);
+  const clipId = `plot-clip-${useId().replace(/:/g, '')}`;
   const [W, setW] = useState(640);
   useEffect(() => {
     const element = ref.current;
@@ -50,6 +51,7 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
   const clampY = (y: number) => Math.min(yMax, Math.max(yMin, y));
   return <figure className="plot" ref={ref}>
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title} preserveAspectRatio="xMidYMid meet">
+      <defs><clipPath id={clipId}><rect x={PAD.left} y={PAD.top - 2} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom + 4} /></clipPath></defs>
       {band && <rect x={sx(band[0])} y={PAD.top} width={Math.max(0, sx(band[1]) - sx(band[0]))} height={H - PAD.top - PAD.bottom} style={{ fill: 'hsl(var(--accent) / .1)' }} />}
       {yTicks.map((y) => <g key={`y${y}`}>
         <line x1={PAD.left} x2={W - PAD.right} y1={sy(y)} y2={sy(y)} style={{ stroke: 'hsl(var(--border))' }} strokeWidth={1} />
@@ -71,8 +73,8 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
           <text x={anchor === 'end' ? x + 4 : anchor === 'start' ? x - 4 : x} y={labelY} textAnchor={anchor} className="plot-marker" style={{ fill: m.color ?? 'hsl(var(--accent))' }}>{m.label}</text>
         </g>;
       })}
-      {series.map((s) => <polyline key={s.label} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
-        points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}
+      <g clipPath={`url(#${clipId})`}>{series.map((s) => <polyline key={s.label} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
+        points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}</g>
       {children}
     </svg>
     <figcaption className="plot-legend">{series.map((s) => <span key={s.label}>
