@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatFromLog10, formatSci } from "./format";
+import { formatDuration, formatFromLog10, formatLength, formatSci, formatTemperature } from "./format";
+import { evaporationTimeS, hawkingTemperatureK, schwarzschildRadiusM } from "../physics/blackHole";
+import { julianYear, solarMass } from "../physics/constants";
 
 describe("formatação de números extremos", () => {
   it("mantém a mantissa em expoentes grandes", () => {
@@ -13,5 +15,34 @@ describe("formatação de números extremos", () => {
   it("valores perto de 1 usam 3 algarismos significativos", () => {
     expect(formatFromLog10(Math.log10(0.02585))).toBe("0,0259");
     expect(formatFromLog10(0)).toBe("1,00");
+  });
+
+  it("temperaturas abaixo de 1 nK usam notação científica em kelvin", () => {
+    // Sagitário A* (4,3 × 10⁶ M☉): T_H ≈ 1,43 × 10⁻¹⁴ K
+    const sgrA = hawkingTemperatureK(4.3e6 * solarMass);
+    expect(Math.abs(sgrA / 1.43e-14 - 1)).toBeLessThan(0.02);
+    expect(formatTemperature(sgrA)).toBe("1,43 × 10⁻¹⁴ K");
+    // M87* (6,5 × 10⁹ M☉): T_H ≈ 9,5 × 10⁻¹⁸ K
+    const m87 = hawkingTemperatureK(6.5e9 * solarMass);
+    expect(Math.abs(m87 / 9.5e-18 - 1)).toBeLessThan(0.02);
+    expect(formatTemperature(m87)).toBe("9,49 × 10⁻¹⁸ K");
+  });
+  it("faixas de nK, μK e mK mantêm 3 algarismos significativos", () => {
+    expect(formatTemperature(1.7e-7)).toBe("170 nK");
+    expect(formatTemperature(2.4e-9)).toBe("2,4 nK");
+    expect(formatTemperature(1e-9)).toBe("1 nK");
+    expect(formatTemperature(6.17e-8)).toBe("61,7 nK");
+    expect(formatTemperature(3.5e-4)).toBe("350 μK");
+  });
+
+  it("comprimentos com 3 algarismos significativos e troca de unidade", () => {
+    expect(formatLength(schwarzschildRadiusM(solarMass))).toBe("2,95 km");
+    expect(formatLength(1.87e-7)).toBe("187 nm");
+    expect(formatLength(1.48e-16)).toBe("0,148 fm");
+    expect(formatLength(2.95e13)).toBe("2,95 × 10¹⁰ km");
+  });
+  it("tempo de evaporação de 1 massa solar: 2,10 × 10⁶⁷ anos", () => {
+    expect(formatDuration(evaporationTimeS(solarMass), julianYear)).toBe("2,10 × 10⁶⁷ anos");
+    expect(formatDuration(evaporationTimeS(1e11), julianYear)).toBe("2,67 bilhões de anos");
   });
 });

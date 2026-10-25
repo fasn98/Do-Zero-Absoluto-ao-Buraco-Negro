@@ -27,7 +27,7 @@ export function formatFromLog10(log10Value: number, digits = 2): string {
     return `10 elevado a ${sign}${text}`;
   }
   if (Number(mantissa.toFixed(digits)) >= 10) { mantissa /= 10; exponent += 1; }
-  return `${formatNumber(mantissa, digits)} × 10${superscript(exponent)}`;
+  return `${mantissa.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })} × 10${superscript(exponent)}`;
 }
 
 export function formatSci(value: number, digits = 2): string {
@@ -36,9 +36,13 @@ export function formatSci(value: number, digits = 2): string {
 }
 
 export function formatTemperature(value: number) {
-  if (value < 1e-6) return `${formatNumber(value * 1e9)} nK`;
-  if (value < 1e-3) return `${formatNumber(value * 1e6)} μK`;
-  if (value < 1) return `${formatNumber(value * 1e3)} mK`;
+  // Abaixo de 1 K: até 3 algarismos significativos; abaixo de 1 nK, notação científica
+  // em kelvin, para nunca arredondar um valor positivo para zero.
+  const sig = (v: number) => v.toLocaleString('pt-BR', { maximumSignificantDigits: 3 });
+  if (value > 0 && value < 0.9995e-9) return `${formatSci(value)} K`;
+  if (value < 0.9995e-6) return `${sig(value * 1e9)} nK`;
+  if (value < 0.9995e-3) return `${sig(value * 1e6)} μK`;
+  if (value < 0.9995) return `${sig(value * 1e3)} mK`;
   if (value < 1000) return `${formatNumber(value, 1)} K`;
   if (value < 1e6) return `${Math.round(value).toLocaleString('pt-BR')} K`;
   if (value < 1e9) return `${formatNumber(value / 1e6)} milhões K`;
@@ -50,11 +54,28 @@ export function formatTemperature(value: number) {
 export function formatDuration(seconds: number, secondsPerYear: number) {
   const years = seconds / secondsPerYear;
   if (seconds < 1e-3) return `${formatSci(seconds)} s`;
-  if (seconds < 60) return `${formatNumber(seconds)} s`;
-  if (seconds < 86400) return `${formatNumber(seconds / 3600)} h`;
-  if (years < 1) return `${formatNumber(seconds / 86400, 1)} dias`;
-  if (years < 1e6) return `${formatNumber(years, 0)} anos`;
-  if (years < 1e9) return `${formatNumber(years / 1e6)} milhões de anos`;
-  if (years < 1e12) return `${formatNumber(years / 1e9)} bilhões de anos`;
+  if (seconds < 60) return `${formatSig(seconds)} s`;
+  if (seconds < 86400) return `${formatSig(seconds / 3600)} h`;
+  if (years < 1) return `${formatSig(seconds / 86400)} dias`;
+  if (years < 1e6) return `${formatSig(years)} anos`;
+  if (years < 1e9) return `${formatSig(years / 1e6)} milhões de anos`;
+  if (years < 1e12) return `${formatSig(years / 1e9)} bilhões de anos`;
   return `${formatSci(years)} anos`;
+}
+
+const LENGTH_UNITS = [
+  { name: 'fm', factor: 1e-15 },
+  { name: 'pm', factor: 1e-12 },
+  { name: 'nm', factor: 1e-9 },
+  { name: 'μm', factor: 1e-6 },
+  { name: 'mm', factor: 1e-3 },
+  { name: 'm', factor: 1 },
+  { name: 'km', factor: 1e3 },
+];
+
+/** Comprimento com 3 algarismos significativos, na maior unidade em que o valor fica ≥ 1. */
+export function formatLength(meters: number) {
+  if (meters >= 0.9995e6 * 1e3) return `${formatSci(meters / 1e3)} km`;
+  const unit = [...LENGTH_UNITS].reverse().find((u) => meters / u.factor >= 0.9995) ?? LENGTH_UNITS[0];
+  return `${formatSig(meters / unit.factor)} ${unit.name}`;
 }

@@ -40,7 +40,10 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
   const visibleMarkers = markers.filter((m) => m.x >= xMin && m.x <= xMax);
   // Rótulos dos marcadores ficam numa faixa própria acima da área das curvas
   // (uma linha por marcador), então nunca se sobrepõem às curvas.
-  const PAD = { ...PAD_BASE, top: PAD_BASE.top + LABEL_ROW * visibleMarkers.length };
+  // Margem esquerda = título do eixo + rótulo de escala mais largo (~6,2 px por caractere a 10 px).
+  const tickWidth = Math.max(...yTicks.map((y) => formatY(y).length)) * 6.2;
+  const TITLE_SPACE = yLabel ? 22 : 0;
+  const PAD = { ...PAD_BASE, left: Math.max(PAD_BASE.left, TITLE_SPACE + tickWidth + 12), top: PAD_BASE.top + LABEL_ROW * visibleMarkers.length };
   const H = (W < 480 ? Math.round(height * 0.85) : height) + LABEL_ROW * visibleMarkers.length;
   const sx = (x: number) => PAD.left + ((x - xMin) / (xMax - xMin)) * (W - PAD.left - PAD.right);
   const sy = (y: number) => H - PAD.bottom - ((y - yMin) / (yMax - yMin)) * (H - PAD.top - PAD.bottom);
@@ -58,7 +61,7 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
       </g>)}
       <line x1={PAD.left} x2={W - PAD.right} y1={H - PAD.bottom} y2={H - PAD.bottom} style={{ stroke: 'hsl(var(--muted-foreground))' }} />
       <text x={(W + PAD.left) / 2} y={H - 6} textAnchor="middle" className="plot-axis">{xLabel}</text>
-      {yLabel && <text x={12} y={(H - PAD.bottom + PAD.top) / 2} textAnchor="middle" transform={`rotate(-90 12 ${(H - PAD.bottom + PAD.top) / 2})`} className="plot-axis">{yLabel}</text>}
+      {yLabel && <text x={11} y={(H - PAD.bottom + PAD.top) / 2} textAnchor="middle" transform={`rotate(-90 11 ${(H - PAD.bottom + PAD.top) / 2})`} className="plot-axis">{yLabel}</text>}
       {visibleMarkers.map((m, i) => {
         const x = sx(m.x);
         const labelY = PAD_BASE.top + LABEL_ROW * i;

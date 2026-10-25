@@ -14,7 +14,7 @@ import {
   zeroPointEnergyJ,
 } from '../../physics/quantumGas';
 import { boltzmannConstant } from '../../physics/constants';
-import { formatNumber, formatSci, formatTemperature } from '../../lib/format';
+import { formatLength, formatNumber, formatSci, formatTemperature } from '../../lib/format';
 
 const N = 56;
 // Densidade escolhida para que T_c do gás uniforme seja 170 nK, a temperatura do experimento de 1995.
@@ -32,12 +32,6 @@ const PRESETS = [
 ];
 
 type Particle = { x: number; y: number; ux: number; uy: number; rank: number };
-
-function formatLength(m: number) {
-  if (m >= 1e-6) return `${formatNumber(m * 1e6)} μm`;
-  if (m >= 1e-9) return `${formatNumber(m * 1e9)} nm`;
-  return `${formatNumber(m * 1e12)} pm`;
-}
 
 /** Velocidade na tela: comprimida (cresce com log T), porque a real varia por um fator de ~10⁵. */
 const displaySpeed = (T: number) => 18 + 22 * Math.max(0, Math.log10(T / 1e-8));

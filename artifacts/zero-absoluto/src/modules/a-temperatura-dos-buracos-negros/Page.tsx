@@ -11,7 +11,7 @@ import {
 } from '../../physics/blackHole';
 import { BLACK_HOLE_MASS_RANGE_KG } from '../temperatureBands';
 import { cmbTemperature, julianYear, solarMass, universeAge } from '../../physics/constants';
-import { formatDuration, formatFromLog10, formatNumber, formatSci, formatTemperature, superscript } from '../../lib/format';
+import { formatDuration, formatFromLog10, formatLength, formatSci, formatTemperature, superscript } from '../../lib/format';
 
 const [M_MIN, M_MAX] = BLACK_HOLE_MASS_RANGE_KG;
 const CMB_MASS = massForHawkingTemperatureKg(cmbTemperature);
@@ -28,14 +28,6 @@ function formatMass(kg: number) {
   const solar = kg / solarMass;
   if (solar >= 0.01) return `${formatSci(solar)} M☉`;
   return `${formatSci(kg)} kg`;
-}
-
-function formatLengthM(m: number) {
-  if (m < 1e-12) return `${formatSci(m * 1e15)} fm`;
-  if (m < 1e-6) return `${formatSci(m * 1e9)} nm`;
-  if (m < 1) return `${formatSci(m * 1e3)} mm`;
-  if (m < 1e4) return `${formatNumber(m, 1)} m`;
-  return `${formatSci(m / 1e3)} km`;
 }
 
 const curve: [number, number][] = Array.from({ length: 60 }, (_, i) => {
@@ -97,7 +89,7 @@ export default function BlackHole() {
       />
       <StatGrid>
         <Stat label="Temperatura de Hawking" value={formatTemperature(model.T)} note="ħc³ / (8πGMk)" testId="text-hawking-temperature" />
-        <Stat label="Raio do horizonte" value={formatLengthM(model.rs)} note="r_s = 2GM/c²" />
+        <Stat label="Raio do horizonte" value={formatLength(model.rs)} note="r_s = 2GM/c²" />
         <Stat label="Entropia S/k" value={formatSci(model.entropy)} note="kc³A / (4Għ)" testId="text-bh-entropy" />
         <Stat label="Tempo de evaporação" value={formatDuration(model.evaporationS, julianYear)} note="5120πG²M³ / (ħc⁴)" testId="text-evaporation" />
         <Stat label="Comparado à idade do Universo" value={`${formatFromLog10(Math.log10(model.evaporationYears / universeAge))} ×`} note="13,8 bilhões de anos" />
@@ -112,7 +104,7 @@ export default function BlackHole() {
 
     <div className="claims">
       <Claim level="consenso" title="Buracos negros têm temperatura">
-        <p>A radiação Hawking resulta de teoria quântica de campos num espaço-tempo curvo, com hipóteses bem testadas separadamente, e foi rederivada de várias formas independentes. Ela nunca foi observada num buraco negro real: para os astrofísicos, a temperatura é bilhões de vezes menor que a do fundo cósmico. Experimentos com sistemas análogos, como ondas sonoras num condensado de Bose-Einstein (Steinhauer, 2016 e 2019), observaram o efeito correspondente.</p>
+        <p>A radiação Hawking resulta de teoria quântica de campos num espaço-tempo curvo, com hipóteses bem testadas separadamente, e foi rederivada de várias formas independentes. Ela nunca foi observada num buraco negro real: a temperatura de um buraco negro de massa estelar é dezenas de milhões de vezes menor que a do fundo cósmico (2,725 K contra 61,7 nK para 1 massa solar), e muito menor ainda para os supermassivos. Experimentos com sistemas análogos, como ondas sonoras num condensado de Bose-Einstein (Steinhauer, 2016 e 2019), observaram o efeito correspondente.</p>
       </Claim>
       <Claim level="fato" title="Quanto maior, mais frio">
         <p>A temperatura é inversamente proporcional à massa. Um buraco negro com a temperatura do fundo cósmico teria {formatSci(CMB_MASS)} kg, menos que a massa da Lua, e um horizonte de ~0,1 mm. Ao evaporar, ele esquenta e acelera: a perda de massa é descontrolada no final.</p>
