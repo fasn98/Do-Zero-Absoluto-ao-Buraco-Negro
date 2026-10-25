@@ -4,13 +4,19 @@ const SUPERSCRIPT: Record<string, string> = {
 
 export const superscript = (value: number | string) => String(value).replace(/[0-9-]/g, (d) => SUPERSCRIPT[d] ?? d);
 
+/** Sinal de menos tipográfico (−) e sem "−0": um valor que arredonda para zero vira "0". */
+function cleanSign(text: string) {
+  if (/^-0([,.]0*)?$/.test(text)) return text.slice(1);
+  return text.replace(/^-/, '−');
+}
+
 export function formatNumber(value: number, digits = 2) {
-  return value.toLocaleString('pt-BR', { maximumFractionDigits: digits });
+  return cleanSign(value.toLocaleString('pt-BR', { maximumFractionDigits: digits }));
 }
 
 /** Número com algarismos significativos fixos (ex.: 0,0259; 1,35; 493). */
 export function formatSig(value: number, significant = 3) {
-  return value.toLocaleString('pt-BR', { minimumSignificantDigits: significant, maximumSignificantDigits: significant });
+  return cleanSign(value.toLocaleString('pt-BR', { minimumSignificantDigits: significant, maximumSignificantDigits: significant }));
 }
 
 /** Notação científica a partir de log₁₀(x): funciona mesmo para 10⁻⁵⁰⁰⁰. */

@@ -41,7 +41,7 @@ function Scene({ t }: { t: number }) {
   const starR = 6 + 10 * collapse;
   const jets = logT > 5 && logT < 7;
   const mainSequence = t >= 5e7;
-  const cloudR = 120 - 95 * collapse;
+  const cloudR = 100 - 78 * collapse; // cabe na cena: 100 < 110, metade da altura do viewBox
   const dots = Array.from({ length: 70 }, (_, i) => {
     const angle = i * 2.399963;
     const r = Math.sqrt((i + 0.5) / 70) * cloudR;

@@ -25,7 +25,7 @@ import {
 } from '../../physics/muonCatalysis';
 import { lnToLog10 } from '../../physics/logmath';
 import { deuteronMass, electronMass, muonLifetime, muonMass, solarCoreTemperature } from '../../physics/constants';
-import { formatFromLog10, formatNumber, formatTemperature } from '../../lib/format';
+import { formatFromLog10, formatLength, formatNumber, formatSig, formatTemperature } from '../../lib/format';
 
 const dd = REACTIONS.dd;
 const EG_DD = gamowEnergyJ(dd);
@@ -38,18 +38,18 @@ const COMPARISON = [
 function RoomTemperature() {
   return <SimCard title="Por que não em temperatura ambiente">
     <p>A mesma física do <Link href="/por-que-o-sol-brilha" className="inline-link">Módulo 3</Link>, aplicada à fusão D+D, que seria a reação em paládio carregado com deutério.</p>
-    <div className="ledger" style={{ gridTemplateColumns: '1fr auto auto' }}>
-      <span style={{ fontWeight: 600 }}>Ambiente</span><span style={{ fontWeight: 600 }}>tunelamento no pico</span><span style={{ fontWeight: 600 }}>taxa relativa ao Sol</span>
-      {COMPARISON.map((row) => {
+    <table className="data-table">
+      <thead><tr><th scope="col">Ambiente</th><th scope="col">Tunelamento no pico</th><th scope="col">Taxa relativa ao Sol</th></tr></thead>
+      <tbody>{COMPARISON.map((row) => {
         const log10P = lnToLog10(lnTunnelingProbability(gamowPeakEnergyJ(EG_DD, kTJ(row.T)), EG_DD));
         const log10R = lnToLog10(lnRelativeRate(dd, row.T));
-        return [
-          <span key={`${row.label}-l`}>{row.label} ({formatTemperature(row.T)})</span>,
-          <span key={`${row.label}-p`} data-testid={`text-dd-tunnel-${row.T}`}>{formatFromLog10(log10P)}</span>,
-          <span key={`${row.label}-r`}>{formatFromLog10(log10R)}</span>,
-        ];
-      })}
-    </div>
+        return <tr key={row.label}>
+          <th scope="row">{row.label}<small>{formatTemperature(row.T)}</small></th>
+          <td data-testid={`text-dd-tunnel-${row.T}`}>{formatFromLog10(log10P)}</td>
+          <td>{formatFromLog10(log10R)}</td>
+        </tr>;
+      })}</tbody>
+    </table>
     <p className="plot-note">Taxa relativa à fusão D+D na temperatura do núcleo do Sol, com fator nuclear S(E) constante.</p>
     <p>A 300 K, mesmo os núcleos mais rápidos chegam com energia de poucos elétron-volts, contra uma barreira de centenas de milhares. Mesmo ligados numa molécula D₂, a 74 pm de distância, a taxa calculada de fusão espontânea é da ordem de 10⁻⁶⁴ por segundo (Koonin e Nauenberg, 1989).</p>
   </SimCard>;
@@ -59,8 +59,12 @@ const SIZE_RATIO = muonicSizeRatio(deuteronMass);
 const BOHR_E = bohrRadiusM(reducedMassKg(electronMass, deuteronMass));
 const BOHR_MU = bohrRadiusM(reducedMassKg(muonMass, deuteronMass));
 
-function formatPm(m: number) {
-  return m >= 1e-12 ? `${formatNumber(m * 1e12, 1)} pm` : `${formatNumber(m * 1e15, 0)} fm`;
+/** Escolhe o maior tamanho de fonte (até `size`) em que o texto cabe em `maxWidth`. */
+function fitFont(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, size: number, style: string) {
+  for (let px = size; px >= 8; px -= 0.5) {
+    ctx.font = style.replace('{px}', String(px));
+    if (ctx.measureText(text).width <= maxWidth) return;
+  }
 }
 
 function Molecules() {
@@ -85,18 +89,21 @@ function Molecules() {
       const ox = cx + a * 1.6 * Math.sin(s);
       const oy = cy + a * 0.9 * Math.sin(2 * s) / 1.4;
       if (separation > 1) { ctx.fillStyle = cssColor(canvas, orbiter, 0.95); ctx.beginPath(); ctx.arc(ox, oy, 3.5, 0, Math.PI * 2); ctx.fill(); }
+      const maxText = panelW - 16;
       ctx.fillStyle = cssColor(canvas, '--foreground', 0.9);
-      ctx.font = '500 12px DM Sans, sans-serif';
       ctx.textAlign = 'center';
+      fitFont(ctx, label, maxText, 12, '500 {px}px DM Sans, sans-serif');
       ctx.fillText(label, cx, height - 30);
       ctx.fillStyle = cssColor(canvas, '--muted-foreground', 1);
-      ctx.font = '11px DM Mono, monospace';
+      fitFont(ctx, sub, maxText, 11, '{px}px DM Mono, monospace');
       ctx.fillText(sub, cx, height - 14);
     };
     const base = Math.min(panelW * 0.32, 90);
-    drawMolecule(panelW / 2, height * 0.42, base, 'Molécula comum (elétron)', `núcleos a ~${formatPm(2 * BOHR_E)}`, '--chart-5');
+    // Em telas estreitas, rótulos curtos; fitFont garante que cabem no painel.
+    const narrow = panelW < 260;
+    drawMolecule(panelW / 2, height * 0.42, base, narrow ? 'Comum (elétron)' : 'Molécula comum (elétron)', `núcleos a ~${formatLength(2 * BOHR_E)}`, '--chart-5');
     const muSep = scale === 'zoom' ? base : base / SIZE_RATIO;
-    drawMolecule(panelW * 1.5, height * 0.42, muSep, scale === 'zoom' ? `Molécula múonica, ampliada ${formatNumber(SIZE_RATIO, 0)}×` : 'Molécula múonica, escala real', `núcleos a ~${formatPm(2 * BOHR_MU)}`, '--accent');
+    drawMolecule(panelW * 1.5, height * 0.42, muSep, scale === 'zoom' ? `${narrow ? 'Múonica' : 'Molécula múonica'}, ampliada ${formatNumber(SIZE_RATIO, 0)}×` : `${narrow ? 'Múonica' : 'Molécula múonica'}, escala real`, `núcleos a ~${formatLength(2 * BOHR_MU)}`, '--accent');
     if (scale === 'real') {
       ctx.strokeStyle = cssColor(canvas, '--accent', 0.8);
       ctx.beginPath(); ctx.arc(panelW * 1.5, height * 0.42, 12, 0, Math.PI * 2); ctx.stroke();
@@ -122,20 +129,18 @@ function EnergyBalance() {
   const [lowStick, highStick] = STICKING_FRACTION_RANGE;
   return <SimCard title="Por que não gera energia">
     <LogSlider label="Fusões catalisadas por múon" value={fusions} min={10} max={2000} onChange={(v) => setFusions(Math.round(v))} display={formatNumber(fusions, 0)} testId="input-muon-fusions" ends={['10', '2.000']} />
-    <svg viewBox="0 0 320 70" style={{ width: '100%', marginTop: 14, display: 'block' }} role="img" aria-label="Energia liberada comparada ao custo do múon">
-      <text x="0" y="14" className="plot-tick">Liberada: {formatNumber(gev(released), 2)} GeV</text>
-      <rect x="0" y="20" width={(gev(released) / maxGeV) * 320} height="12" rx="3" style={{ fill: 'hsl(var(--primary))' }} />
-      <text x="0" y="50" className="plot-tick">Custo de produzir o múon: ~{formatNumber(gev(MUON_COST_ESTIMATE_J), 0)} GeV</text>
-      <rect x="0" y="56" width={(gev(MUON_COST_ESTIMATE_J) / maxGeV) * 320} height="12" rx="3" style={{ fill: 'hsl(var(--accent))' }} />
-    </svg>
+    <div className="energy-bars" role="img" aria-label="Energia liberada comparada ao custo do múon">
+      <div><span>Liberada: {formatSig(gev(released))} GeV</span><i style={{ width: `${(gev(released) / maxGeV) * 100}%`, background: 'hsl(var(--primary))' }} /></div>
+      <div><span>Custo de produzir o múon: ~{formatNumber(gev(MUON_COST_ESTIMATE_J), 0)} GeV</span><i style={{ width: `${(gev(MUON_COST_ESTIMATE_J) / maxGeV) * 100}%`, background: 'hsl(var(--accent))' }} /></div>
+    </div>
     <div className={released >= MUON_COST_ESTIMATE_J ? 'callout' : 'callout warn'} data-testid="text-muon-balance">
       {released >= MUON_COST_ESTIMATE_J
-        ? `Com ${formatNumber(fusions, 0)} fusões o múon pagaria a própria produção, mas nenhum experimento chegou perto disso, e converter calor e eletricidade com perdas exige ainda mais.`
+        ? `Com ${formatNumber(fusions, 0)} fusões o múon pagaria a própria produção, mas nenhum experimento chegou perto disso, e converter calor em eletricidade, com perdas, exige ainda mais.`
         : `Com ${formatNumber(fusions, 0)} fusões, a energia liberada é ${formatNumber((released / MUON_COST_ESTIMATE_J) * 100, 0)}% do custo do múon. Seriam precisas ~${formatNumber(breakEven, 0)} fusões só para empatar.`}
     </div>
     <StatGrid>
-      <Stat label="Energia por fusão D+T" value={`${formatNumber(jToMeV(energyPerMuonJ(1)), 2)} MeV`} note="das massas CODATA" />
-      <Stat label="Vida média do múon" value={`${formatNumber(muonLifetime * 1e6, 2)} μs`} note="depois ele decai" />
+      <Stat label="Energia por fusão D+T" value={`${formatSig(jToMeV(energyPerMuonJ(1)))} MeV`} note="das massas CODATA" />
+      <Stat label="Vida média do múon" value={`${formatSig(muonLifetime * 1e6)} μs`} note="depois ele decai" />
       <Stat label="Limite pela aderência" value={`~${formatNumber(fusionsBeforeSticking(highStick), 0)} a ${formatNumber(fusionsBeforeSticking(lowStick), 0)}`} note={`1/ω_s, ω_s ≈ ${formatNumber(lowStick * 100, 1)}% a ${formatNumber(highStick * 100, 1)}%`} />
     </StatGrid>
     <p>Dois limites independentes: em cada fusão há uma chance ω_s de o múon ficar grudado no núcleo de hélio produzido, saindo do jogo; e ele só vive ~2,2 μs. Na prática, o recorde é da ordem de 100 a 150 fusões por múon.</p>

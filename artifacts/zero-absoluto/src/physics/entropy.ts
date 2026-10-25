@@ -55,3 +55,16 @@ export function twoChamberEntropyOverK(state: TwoChamberState): number {
     (state.nRight > 0 ? state.nRight * Math.log(state.tRight) : 0);
   return thermal + lnBinomial(total, state.nLeft);
 }
+
+export type DemonLedger = { erasureCostOverK: number; balanceOverK: number };
+
+/**
+ * Balanço de entropia do demônio, em unidades de k. Todo bit observado
+ * (ainda na memória ou já apagado) custa no mínimo k ln 2 ao ser apagado;
+ * a segunda lei exige ΔS_gás + custo ≥ 0, em média.
+ */
+export function demonLedger(deltaGasOverK: number, bitsInMemory: number, bitsErased: number): DemonLedger {
+  const erasureCostOverK = erasureEntropyOverK(bitsInMemory + bitsErased);
+  return { erasureCostOverK, balanceOverK: deltaGasOverK + erasureCostOverK };
+}
+

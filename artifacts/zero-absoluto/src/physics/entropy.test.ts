@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   boltzmannEntropyJK,
+  demonLedger,
   erasureEntropyOverK,
   landauerLimitJ,
   lnMicrostates,
@@ -42,5 +43,15 @@ describe("entropia e informação (Módulo 2)", () => {
     const sorted = twoChamberEntropyOverK({ nLeft: 50, nRight: 50, tLeft: 1.2, tRight: 0.8 });
     // 50 ln 1,2 + 50 ln 0,8 ≈ −2,04
     within2(sorted - start, -2.04);
+  });
+
+  it("balanço do demônio conta bits na memória e já apagados", () => {
+    // 21 bits observados, todos apagados, gás com ΔS = −3,1 k: custo 21 ln 2 ≈ 14,6 k
+    const apagados = demonLedger(-3.1, 0, 21);
+    within2(apagados.erasureCostOverK, 14.56);
+    within2(apagados.balanceOverK, 11.46);
+    // apagar não muda o custo total: mover bits da memória para "apagados"
+    expect(demonLedger(-3.1, 21, 0).balanceOverK).toBeCloseTo(apagados.balanceOverK, 12);
+    expect(demonLedger(-3.1, 5, 16).balanceOverK).toBeCloseTo(apagados.balanceOverK, 12);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDuration, formatFromLog10, formatLength, formatSci, formatTemperature } from "./format";
+import { formatNumber, formatSig, formatDuration, formatFromLog10, formatLength, formatSci, formatTemperature } from "./format";
 import { evaporationTimeS, hawkingTemperatureK, schwarzschildRadiusM } from "../physics/blackHole";
 import { julianYear, solarMass } from "../physics/constants";
 
@@ -44,5 +44,11 @@ describe("formatação de números extremos", () => {
   it("tempo de evaporação de 1 massa solar: 2,10 × 10⁶⁷ anos", () => {
     expect(formatDuration(evaporationTimeS(solarMass), julianYear)).toBe("2,10 × 10⁶⁷ anos");
     expect(formatDuration(evaporationTimeS(1e11), julianYear)).toBe("2,67 bilhões de anos");
+  });
+
+  it("sinal de menos tipográfico e sem zero negativo", () => {
+    expect(formatNumber(-3.14, 1)).toBe("−3,1");
+    expect(formatNumber(-0.04, 1)).toBe("0");
+    expect(formatSig(-0.0259)).toBe("−0,0259");
   });
 });

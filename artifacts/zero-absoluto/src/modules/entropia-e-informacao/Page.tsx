@@ -3,7 +3,7 @@ import ModulePage from '../ModulePage';
 import { Claim, LogSlider, SimCard, Stat, StatGrid, Sym, cssColor, useCanvasLoop } from '../shared';
 import {
   boltzmannEntropyJK,
-  erasureEntropyOverK,
+  demonLedger,
   landauerLimitJ,
   lnMicrostates,
   log10ProbabilityAllInOneHalf,
@@ -13,7 +13,7 @@ import {
 import { sampleVelocity2D } from '../../physics/quantumGas';
 import { lnToLog10 } from '../../physics/logmath';
 import { avogadroConstant, boltzmannConstant, elementaryCharge } from '../../physics/constants';
-import { formatFromLog10, formatNumber, formatSci, formatTemperature } from '../../lib/format';
+import { formatFromLog10, formatNumber, formatSci, formatSig, formatTemperature } from '../../lib/format';
 
 type Particle = { x: number; y: number; vx: number; vy: number };
 
@@ -88,7 +88,7 @@ function FreeExpansion() {
     <canvas ref={canvasRef} className="sim-canvas" style={{ height: 220 }} aria-label="Gás de 40 partículas numa caixa com divisória" />
     <StatGrid>
       <Stat label="À esquerda / à direita" value={`${nLeft} / ${EXPANSION_N - nLeft}`} />
-      <Stat label="Microestados W" value={formatFromLog10(lnToLog10(lnW))} note={`C(${EXPANSION_N}, ${nLeft}): de quantas formas escolher quem está à esquerda`} testId="text-microstates" />
+      <Stat label="Microestados W" value={lnW < Math.log(1e6) ? Math.round(Math.exp(lnW)).toLocaleString('pt-BR') : formatFromLog10(lnToLog10(lnW))} note={`C(${EXPANSION_N}, ${nLeft}): de quantas formas escolher quem está à esquerda`} testId="text-microstates" />
       <Stat label={<>Entropia <Sym>S = k ln W</Sym></>} value={`${formatNumber(lnW, 1)} k`} note={`${formatSci(boltzmannEntropyJK(lnW))} J/K`} testId="text-entropy" />
     </StatGrid>
     <svg viewBox="0 0 100 42" preserveAspectRatio="none" style={{ width: '100%', height: 70, marginTop: 14, display: 'block' }} role="img" aria-label="Entropia ao longo do tempo">
@@ -172,12 +172,16 @@ function MaxwellDemon() {
     start.current = twoChamberEntropyOverK(measure(gas.current));
     bitsRef.current = 0; setBits(0); setErased(0); setState(measure(gas.current));
   };
-  const erase = () => { setErased((e) => e + bitsRef.current); bitsRef.current = 0; setBits(0); };
+  const erase = () => {
+    // Lê o contador antes de zerá-lo: o atualizador do setState pode rodar depois.
+    const count = bitsRef.current;
+    bitsRef.current = 0;
+    setBits(0);
+    setErased((e) => e + count);
+  };
 
   const deltaGas = twoChamberEntropyOverK(state) - start.current;
-  const totalBits = bits + erased;
-  const erasureCost = erasureEntropyOverK(totalBits);
-  const balance = deltaGas + erasureCost;
+  const { erasureCostOverK: erasureCost, balanceOverK: balance } = demonLedger(deltaGas, bits, erased);
 
   return <SimCard title="O demônio de Maxwell">
     <p>Um ser imaginário controla uma portinhola entre duas câmaras. Ele deixa passar para a direita só as partículas rápidas (laranja) e para a esquerda só as lentas (azul). A direita esquenta, a esquerda esfria, e a entropia do gás cai, sem gastar trabalho. Para isso, porém, o demônio precisa observar cada partícula e guardar o resultado: um bit por observação.</p>
@@ -188,16 +192,16 @@ function MaxwellDemon() {
     </div>
     <canvas ref={canvasRef} className="sim-canvas" style={{ height: 220 }} aria-label="Duas câmaras com uma portinhola controlada pelo demônio" />
     <StatGrid>
-      <Stat label="Esquerda" value={`${formatNumber(state.tLeft, 2)} T₀`} note={`${state.nLeft} partículas`} />
-      <Stat label="Direita" value={`${formatNumber(state.tRight, 2)} T₀`} note={`${state.nRight} partículas`} />
+      <Stat label="Esquerda" value={`${formatSig(state.tLeft)} T₀`} note={`${state.nLeft} partículas`} />
+      <Stat label="Direita" value={`${formatSig(state.tRight)} T₀`} note={`${state.nRight} partículas`} />
       <Stat label="Bits na memória" value={bits} note={`${erased} já apagados`} testId="text-demon-bits" />
     </StatGrid>
     <div className="ledger" aria-label="Balanço de entropia, em unidades de k">
       <span>Variação de entropia do gás, ΔS_gás</span><span>{formatNumber(deltaGas, 1)} k</span>
       <span>Entropia mínima para apagar todos os bits observados, n k ln 2</span><span>+{formatNumber(erasureCost, 1)} k</span>
-      <span className="total">Saldo (a segunda lei exige ≥ 0)</span><span className="total" data-testid="text-demon-balance">{formatNumber(balance, 1)} k</span>
+      <span className="total">Saldo (a segunda lei exige ≥ 0, em média)</span><span className="total" data-testid="text-demon-balance">{formatNumber(balance, 1)} k</span>
     </div>
-    <p className="plot-note">Energia mínima já dissipada ao apagar {erased} bits a {ROOM_T} K: {formatSci(erased * landauerLimitJ(ROOM_T))} J. Em 2D, T/T₀ = ⟨v²⟩/2 em cada câmara; ΔS_gás = Σ N ln(T/T₀) + variação de ln C(N, N_esq). A memória do demônio é finita: para continuar trabalhando, cedo ou tarde ele precisa apagá-la.</p>
+    <p className="plot-note">Energia mínima já dissipada ao apagar {erased} bits a {ROOM_T} K: {formatSci(erased * landauerLimitJ(ROOM_T))} J. Em 2D, T/T₀ = ⟨v²⟩/2 em cada câmara; ΔS_gás = Σ N ln(T/T₀) + variação de ln C(N, N_esq). A memória do demônio é finita: para continuar trabalhando, cedo ou tarde ele precisa apagá-la. Com só 60 partículas, o saldo pode ficar levemente negativo por flutuação, da ordem de k, mesmo sem demônio; a segunda lei vale em média e se torna exata para números de partículas da ordem de 10²³.</p>
   </SimCard>;
 }
 
