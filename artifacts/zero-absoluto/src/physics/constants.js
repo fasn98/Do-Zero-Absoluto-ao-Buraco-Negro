@@ -39,6 +39,10 @@ export const alphaParticleMass = 6.644_657_345e-27; // kg (CODATA 2022)
 export const rubidium87RelativeMass = 86.909_180_531; // u (AME 2020)
 export const helium4RelativeMass = 4.002_603_254_13; // u (AME 2020)
 
+// --- Materiais e experimentos ---
+export const diamondDensity = 3510; // kg·m⁻³ (diamante, CRC Handbook of Chemistry and Physics)
+export const superpositionRecordRelativeMass = 2.5e4; // u (maior massa em superposição, ~2.000 átomos; Fein et al., Nature Physics 15, 1242 (2019))
+
 // --- Partículas instáveis (PDG 2024) ---
 export const muonLifetime = 2.196_981_1e-6; // s (vida média do múon em repouso, PDG 2024)
 
@@ -46,6 +50,9 @@ export const muonLifetime = 2.196_981_1e-6; // s (vida média do múon em repous
 export const zeta3Over2 = 2.612_375_348_685_488; // ζ(3/2), adimensional (função zeta de Riemann)
 
 // --- Astronomia ---
+export const protonChargeRadius = 8.4075e-16; // m (raio rms de carga do próton, CODATA 2022)
+export const earthRadius = 6.371e6; // m (raio médio da Terra, IUGG)
+export const observableUniverseRadius = 4.4e26; // m (raio comóvel, ~46,5 bilhões de anos-luz; cosmologia Planck 2018)
 export const solarMass = 1.988_47e30; // kg (massa solar nominal derivada de GM☉ IAU 2015)
 export const solarRadius = 6.957e8; // m (raio solar nominal IAU 2015)
 export const solarLuminosity = 3.828e26; // W (luminosidade solar nominal IAU 2015)
@@ -76,8 +83,13 @@ export const physicalConstants = {
   alphaParticleMass,
   rubidium87RelativeMass,
   helium4RelativeMass,
+  diamondDensity,
+  superpositionRecordRelativeMass,
   muonLifetime,
   zeta3Over2,
+  protonChargeRadius,
+  earthRadius,
+  observableUniverseRadius,
   solarMass,
   solarRadius,
   solarLuminosity,

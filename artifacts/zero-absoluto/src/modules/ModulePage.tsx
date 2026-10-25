@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'wouter';
 import { ArrowLeft, BookOpen, FlaskConical } from 'lucide-react';
+import { MODULE_TOTAL } from './temperatureBands';
 
 export type Reference = { text: string; url?: string };
 
@@ -34,6 +35,6 @@ export default function ModulePage({ title, description, number, tag, children, 
       </li>)}</ol>
     </section>
     <Link href="/" className="back-link" data-testid={`link-back-home-${number}`}><ArrowLeft size={14} /> Voltar à jornada</Link>
-    <footer className="footer" style={{ paddingLeft: 0, paddingRight: 0, marginTop: 58 }}><span>DO ZERO ABSOLUTO AO BURACO NEGRO</span><span>{number} / 06</span></footer>
+    <footer className="footer" style={{ paddingLeft: 0, paddingRight: 0, marginTop: 58 }}><span>DO ZERO ABSOLUTO AO BURACO NEGRO</span><span>{number} / {MODULE_TOTAL}</span></footer>
   </main>;
 }

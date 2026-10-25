@@ -82,6 +82,18 @@ export function LogSlider({ value, min, max, onChange, label, display, testId, e
   </div>;
 }
 
+/** Controle deslizante linear (para grandezas que incluem o zero, como frações de tempo). */
+export function LinearSlider({ value, min, max, step, onChange, label, display, testId, ends }: { value: number; min: number; max: number; step: number; onChange: (value: number) => void; label: string; display: ReactNode; testId?: string; ends?: [string, string] }) {
+  const progress = ((value - min) / (max - min)) * 100;
+  return <div className="log-slider">
+    <div className="log-slider-head"><span>{label}</span><output>{display}</output></div>
+    <input type="range" min={min} max={max} step={step} value={value} className="temperature-slider" aria-label={label}
+      style={{ '--slider-progress': `${progress}%` } as CSSProperties}
+      onChange={(event) => onChange(Number(event.target.value))} data-testid={testId} />
+    {ends && <div className="scale-ends"><span>{ends[0]}</span><span>{ends[1]}</span></div>}
+  </div>;
+}
+
 export function Presets({ items, onSelect, isActive }: { items: { label: string; value: number }[]; onSelect: (value: number) => void; isActive: (value: number) => boolean }) {
   return <div className="presets" role="group" aria-label="Atalhos">
     {items.map((item) => <button type="button" key={item.label} className={isActive(item.value) ? 'preset active' : 'preset'} onClick={() => onSelect(item.value)} data-testid={`button-preset-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>{item.label}</button>)}

@@ -20,6 +20,8 @@ describe("régua de temperatura", () => {
   it("acima de 10¹² K não há módulo, só contexto", () => {
     expect(numbers(1e20)).toEqual([]);
     expect(contextForTemperature(1.4e32)[0].level).toBe("hipotese");
+    expect(numbers(1.4e32)).toEqual(["07"]);
+    expect(numbers(1e20)).not.toContain("07");
     expect(contextForTemperature(2e12)[0].level).toBe("fato");
   });
 });

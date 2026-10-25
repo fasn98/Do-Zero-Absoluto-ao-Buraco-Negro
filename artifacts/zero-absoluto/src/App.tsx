@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Route, Switch, Link, useLocation } from 'wouter';
 import { ArrowRight, Moon, Sun } from 'lucide-react';
-import { MODULES, contextForTemperature, modulesForTemperature } from './modules/temperatureBands';
+import { MODULES, MODULE_TOTAL, contextForTemperature, modulesForTemperature } from './modules/temperatureBands';
 import { EvidenceTag } from './modules/shared';
 import { formatTemperature } from './lib/format';
 import { cmbTemperature, planckTemperature, solarCoreTemperature, solarSurfaceTemperature } from './physics/constants';
@@ -15,6 +15,7 @@ import Gamow from './modules/por-que-o-sol-brilha/Page';
 import Muon from './modules/fusao-a-frio-e-por-muons/Page';
 import BlackHole from './modules/a-temperatura-dos-buracos-negros/Page';
 import SunBirth from './modules/o-nascimento-do-sol/Page';
+import Gravity from './modules/a-gravidade-guarda-informacao/Page';
 
 const modules = MODULES;
 
@@ -126,12 +127,12 @@ function Home() {
     </section>
     <section aria-labelledby="modules-heading">
       <div className="section-heading">
-        <div><div className="eyebrow">SEIS PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
+        <div><div className="eyebrow">SETE PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
         <p>Ideias estabelecidas da termodinâmica e da física quântica, explicadas sem atalhos.</p>
       </div>
       <div className="module-grid">{modules.map((item) => <Link href={item.path} className="module-card" key={item.path} data-testid={`link-module-${item.number}`}>
         <div>
-          <div className="module-top"><span className="module-index">{item.number} / 06</span><span>{item.tag}</span></div>
+          <div className="module-top"><span className="module-index">{item.number} / {MODULE_TOTAL}</span><span>{item.tag}</span></div>
           <h3>{item.title}</h3><p>{item.description}</p>
         </div>
         <div className="module-bottom"><span>EXPLORAR MÓDULO</span><ArrowRight size={16} /></div>
@@ -157,6 +158,7 @@ function App() {
       <Route path="/fusao-a-frio-e-por-muons" component={Muon} />
       <Route path="/a-temperatura-dos-buracos-negros" component={BlackHole} />
       <Route path="/o-nascimento-do-sol" component={SunBirth} />
+      <Route path="/a-gravidade-guarda-informacao" component={Gravity} />
       <Route component={NotFound} />
     </Switch>
   </div>;

@@ -1,7 +1,7 @@
 # Do Zero Absoluto ao Buraco Negro
 
 Aplicação educativa em português do Brasil sobre termodinâmica e física
-quântica, com seis simulações interativas. Toda simulação usa apenas física
+quântica, com sete módulos interativos. Toda simulação usa apenas física
 estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
 referências, e cada afirmação é marcada como **fato estabelecido**,
 **consenso** ou **hipótese em pesquisa**.
@@ -38,6 +38,7 @@ PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
 - `src/lib/format.ts`: formatação pt-BR, incluindo números a partir de log₁₀ (ex.: 10⁻¹⁹³).
 - `src/physics/constants.js`: **única** fonte de constantes (CODATA 2022, IAU 2015, PDG, AME 2020), com unidade e fonte.
 - `src/physics/*.ts`: funções físicas puras, uma por módulo, cada uma com `*.test.ts`.
+- `src/physics/holography.ts`, `pageCurve.ts`, `gravityEntanglement.ts`: física do Módulo 7.
 - `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
 Os testes comparam com valores de referência com tolerância de 2%.
@@ -101,3 +102,13 @@ Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
 - Queda livre: t_ff = √(3π / (32 G ρ))
 - Sol jovem fraco, Gough (1981): L(t) = L☉ / (1 + 0,4 (1 − t / 4,57 × 10⁹ anos)) (t = 0 → ≈ 0,71 L☉)
 - As fases da linha do tempo (0 a 100 milhões de anos) são texto com nível de evidência; a cena é esquemática e não simula a luminosidade antes da sequência principal.
+
+### Módulo 7: A gravidade guarda informação (`holography.ts`, `pageCurve.ts`, `gravityEntanglement.ts`)
+
+- Comprimento de Planck: l_P = √(ħG/c³) ≈ 1,616 × 10⁻³⁵ m
+- Limite holográfico de uma esfera: S_máx/k = A / (4 l_P²), A = 4πR² (R = 1 m → 1,20 × 10⁷⁰; em bits, ÷ ln 2)
+- Contagem ilustrativa por volume: (4/3)πR³ / l_P³ bits, acima do limite holográfico a partir de R ≈ 1,08 l_P
+- Limite de Bekenstein: S/k ≤ 2πRE/(ħc), E = mc² (1 kg em 1 m → 1,79 × 10⁴³); no raio de Schwarzschild coincide com a entropia de Bekenstein-Hawking
+- Curva de Page (modelo idealizado): M = M₀(1 − t/t_evap)^(1/3), S_BH = S₀(M/M₀)²; Hawking: S₀ − S_BH; Page: mín(S₀ − S_BH, S_BH); tempo de Page t = (1 − 2^(−3/2)) t_evap ≈ 0,646 t_evap
+- Emaranhamento mediado pela gravidade: φ = G m² τ / (ħ d) (10⁻¹⁴ kg, 200 µm, 2,5 s → 0,791 rad); esferas de diamante (3.510 kg/m³) e comparação com o recorde de superposição (~25.000 u, Fein et al. 2019)
+

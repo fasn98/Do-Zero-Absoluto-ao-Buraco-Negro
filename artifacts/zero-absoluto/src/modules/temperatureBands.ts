@@ -15,7 +15,11 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'Fusão a frio e fusão por múons', description: 'Entre uma promessa que não se confirmou e um mecanismo quântico real.', path: '/fusao-a-frio-e-por-muons', number: '04', tag: 'FUSÃO' },
   { title: 'A temperatura dos buracos negros', description: 'Radiação Hawking, entropia de horizonte e evaporação.', path: '/a-temperatura-dos-buracos-negros', number: '05', tag: 'ASTROFÍSICA' },
   { title: 'O nascimento do Sol', description: 'Da nuvem molecular à estrela: uma história de gravidade e calor.', path: '/o-nascimento-do-sol', number: '06', tag: 'ASTROFÍSICA ESTELAR' },
+  { title: 'A gravidade guarda informação', description: 'Limite holográfico, curva de Page e a pergunta em aberto: a gravidade é quântica?', path: '/a-gravidade-guarda-informacao', number: '07', tag: 'GRAVIDADE QUÂNTICA' },
 ];
+
+/** Total de módulos, no formato dos contadores ("07"). */
+export const MODULE_TOTAL = String(MODULES.length).padStart(2, '0');
 
 const byNumber = (number: string) => MODULES.find((m) => m.number === number)!;
 
@@ -51,6 +55,9 @@ export function modulesForTemperature(temperatureK: number): BandMatch[] {
     const inSolar = mass / solarMass;
     const massText = inSolar >= 1e-3 ? `${formatSci(inSolar)} massas solares` : `${formatSci(mass)} kg`;
     matches.push({ module: byNumber('05'), reason: `Um buraco negro de ${massText} tem exatamente esta temperatura de Hawking.` });
+  }
+  if (T >= 1e28) {
+    matches.push({ module: byNumber('07'), reason: 'Perto da temperatura de Planck, relatividade geral e mecânica quântica precisam funcionar juntas, e ainda não sabemos como.' });
   }
   return matches.sort((a, b) => a.module.number.localeCompare(b.module.number));
 }
