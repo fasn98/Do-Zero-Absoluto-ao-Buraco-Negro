@@ -80,13 +80,13 @@ describe("gás de Bose perto do zero absoluto (Módulo 1)", () => {
     expect(psd).toBeGreaterThan(1e-15);
   });
 
-  it("50 nK cabe na barra até 10² (n·λ³ ≈ 16,4); 10 nK, o fim do controle, passa dela (≈ 183)", () => {
+  it("a barra até 10³ cobre o controle inteiro: 300 K ≈ 3,5 × 10⁻¹⁴ e 10 nK ≈ 183", () => {
     const n = criticalDensityM3(RUBIDIUM_87_MASS_KG, 1.7e-7);
-    const psd = phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1e-8);
     // 2,612 × (170/10)^(3/2) ≈ 183
-    within2(psd, 183);
-    expect(psd).toBeGreaterThan(100);
+    const psd10nK = phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1e-8);
+    within2(psd10nK, 183);
+    expect(psd10nK).toBeLessThan(1e3);
+    expect(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 300)).toBeGreaterThan(1e-15);
     within2(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 5e-8), 16.4);
-    expect(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 5e-8)).toBeLessThan(100);
   });
 });
