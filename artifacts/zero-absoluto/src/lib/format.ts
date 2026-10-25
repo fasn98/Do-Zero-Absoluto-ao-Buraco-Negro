@@ -59,7 +59,9 @@ export function formatTemperature(value: number) {
 /** Tempo em segundos para texto legível. */
 export function formatDuration(seconds: number, secondsPerYear: number) {
   const years = seconds / secondsPerYear;
-  if (seconds < 1e-3) return `${formatSci(seconds)} s`;
+  if (seconds < 0.9995e-6) return `${formatSci(seconds)} s`;
+  if (seconds < 0.9995e-3) return `${formatSig(seconds * 1e6)} µs`;
+  if (seconds < 0.9995) return `${formatSig(seconds * 1e3)} ms`;
   if (seconds < 60) return `${formatSig(seconds)} s`;
   if (seconds < 86400) return `${formatSig(seconds / 3600)} h`;
   if (years < 1) return `${formatSig(seconds / 86400)} dias`;

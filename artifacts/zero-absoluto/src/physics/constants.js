@@ -24,6 +24,7 @@ export const fineStructureConstant = 7.297_352_564_3e-3; // adimensional (CODATA
 export const elementaryCharge = 1.602_176_634e-19; // C (exato, CODATA 2022)
 export const atomicMassConstant = 1.660_539_068_92e-27; // kg (CODATA 2022)
 export const avogadroConstant = 6.022_140_76e23; // mol⁻¹ (exato, CODATA 2022)
+export const wienDisplacementConstant = 2.897_771_955e-3; // m·K (exato, CODATA 2022)
 export const planckTemperature = 1.416_784e32; // K (CODATA 2022)
 
 // --- Massas de partículas (CODATA 2022) ---
@@ -73,6 +74,7 @@ export const physicalConstants = {
   elementaryCharge,
   atomicMassConstant,
   avogadroConstant,
+  wienDisplacementConstant,
   planckTemperature,
   protonMass,
   neutronMass,

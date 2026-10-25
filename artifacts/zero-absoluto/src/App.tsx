@@ -18,6 +18,7 @@ import SunBirth from './modules/o-nascimento-do-sol/Page';
 import Gravity from './modules/a-gravidade-guarda-informacao/Page';
 import Listening from './modules/ouvindo-o-universo/Page';
 import Forces from './modules/as-forcas-convergem/Page';
+import QuantumToClassical from './modules/quantico-para-classico/Page';
 
 const modules = MODULES;
 
@@ -129,7 +130,7 @@ function Home() {
     </section>
     <section aria-labelledby="modules-heading">
       <div className="section-heading">
-        <div><div className="eyebrow">NOVE PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
+        <div><div className="eyebrow">DEZ PORTAS DE ENTRADA</div><h2 id="modules-heading">Escolha seu próximo passo</h2></div>
         <p>Ideias estabelecidas da termodinâmica e da física quântica, explicadas sem atalhos.</p>
       </div>
       <div className="module-grid">{modules.map((item) => <Link href={item.path} className="module-card" key={item.path} data-testid={`link-module-${item.number}`}>
@@ -163,6 +164,7 @@ function App() {
       <Route path="/a-gravidade-guarda-informacao" component={Gravity} />
       <Route path="/ouvindo-o-universo" component={Listening} />
       <Route path="/as-forcas-convergem" component={Forces} />
+      <Route path="/quantico-para-classico" component={QuantumToClassical} />
       <Route component={NotFound} />
     </Switch>
   </div>;

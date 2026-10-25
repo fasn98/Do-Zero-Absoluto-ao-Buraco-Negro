@@ -24,8 +24,8 @@ describe("símbolos fora de text-transform", () => {
     for (const file of sources(join(__dirname, ".."))) {
       const code = readFileSync(file, "utf8");
       const plainLabels = [
-        // aria-label não é exibido, então não passa por text-transform.
-        ...code.matchAll(/(?<![-\w])label="([^"]*)"/g),
+        // Só os rótulos de <Stat> ficam em caixa alta; controles e aria-label não.
+        ...code.matchAll(/<Stat\b[^>]*?\slabel="([^"]*)"/g),
         ...code.matchAll(/className="(?:versus-label|eyebrow|notes-label|stat-label)"[^>]*>([^<{]*)</g),
       ];
       for (const match of plainLabels) {

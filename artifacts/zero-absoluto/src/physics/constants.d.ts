@@ -7,6 +7,7 @@ export declare const fineStructureConstant: number;
 export declare const elementaryCharge: number;
 export declare const atomicMassConstant: number;
 export declare const avogadroConstant: number;
+export declare const wienDisplacementConstant: number;
 export declare const planckTemperature: number;
 export declare const protonMass: number;
 export declare const neutronMass: number;
@@ -43,6 +44,7 @@ export declare const physicalConstants: Readonly<{
   elementaryCharge: number;
   atomicMassConstant: number;
   avogadroConstant: number;
+  wienDisplacementConstant: number;
   planckTemperature: number;
   protonMass: number;
   neutronMass: number;

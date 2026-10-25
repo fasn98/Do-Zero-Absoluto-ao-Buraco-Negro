@@ -51,4 +51,9 @@ describe("formatação de números extremos", () => {
     expect(formatNumber(-0.04, 1)).toBe("0");
     expect(formatSig(-0.0259)).toBe("−0,0259");
   });
+  it("durações curtas em ms e µs", () => {
+    expect(formatDuration(0.0116, 31557600)).toBe("11,6 ms");
+    expect(formatDuration(2.5e-5, 31557600)).toBe("25,0 µs");
+    expect(formatDuration(8.1e-21, 31557600)).toBe("8,10 × 10⁻²¹ s");
+  });
 });

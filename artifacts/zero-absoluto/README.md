@@ -1,7 +1,7 @@
 # Do Zero Absoluto ao Buraco Negro
 
 Aplicação educativa em português do Brasil sobre termodinâmica e física
-quântica, com nove módulos interativos. Toda simulação usa apenas física
+quântica, com dez módulos interativos. Toda simulação usa apenas física
 estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
 referências, e cada afirmação é marcada como **fato estabelecido**,
 **consenso** ou **hipótese em pesquisa**.
@@ -41,6 +41,7 @@ PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
 - `src/physics/holography.ts`, `pageCurve.ts`, `gravityEntanglement.ts`: física do Módulo 7.
 - `src/physics/gravitationalWaves.ts`, `hubble.ts`: física do Módulo 8.
 - `src/physics/unification.ts`: física do Módulo 9.
+- `src/physics/decoherence.ts`, `diosiPenrose.ts`: física do Módulo 10.
 - `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
 Os testes comparam com valores de referência com tolerância de 2%.
@@ -129,4 +130,11 @@ Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
 - Um laço: α_i⁻¹(μ) = α_i⁻¹(M_Z) − (b_i/2π) ln(μ/M_Z); Modelo Padrão b = (41/10, −19/6, −7); MSSM b = (33/5, 1, −3) acima de M_SUSY
 - Modelo Padrão: cruzamentos em 1,03 × 10¹³, 2,4 × 10¹⁴ e 9,6 × 10¹⁶ GeV; MSSM (M_SUSY = 1 TeV): entre ~1 e 2,5 × 10¹⁶ GeV, α⁻¹ ≈ 25,6–26,0
 - Gravidade: E_Planck = √(ħc⁵/G) ≈ 1,22 × 10¹⁹ GeV; α_G = (E/E_Planck)² (2 × 10¹⁶ GeV → 2,7 × 10⁻⁶)
+
+### Módulo 10: Onde o quântico vira clássico (`decoherence.ts`, `diosiPenrose.ts`)
+
+- Decoerência por espalhamento, regime de comprimento de onda longo: τ_D = 1/(Λ Δx²), com Λ (cm⁻² s⁻¹) da tabela de Joos e Zeh (1985), reproduzida em Joos, arXiv:quant-ph/9908008
+- Regime: vale se Δx for menor que o comprimento de onda típico do ambiente (pico de Wien b/T para fótons; de Broglie térmico h/√(2πmkT) do ar a 300 K para o gás); acima disso a decoerência satura e nenhum número é mostrado
+- Recordes de superposição: elétron, nêutron, C₆₀ (720 u), ~25.000 u (Fein et al. 2019); do recorde ao alvo de 10⁻¹⁴ kg: ≈ 8,4 ordens de grandeza
+- Diósi-Penrose, esfera homogênea: E_G = G m² (6/(5R) − 1/d) para d ≥ 2R; (G m²/R)(2λ² − (3/2)λ³ + (1/5)λ⁵), λ = d/(2R), para d < 2R; τ ≈ ħ/E_G (10⁻¹⁴ kg de diamante a 250 µm → 11,6 ms)
 

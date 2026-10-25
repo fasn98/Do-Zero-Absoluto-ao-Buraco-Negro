@@ -27,6 +27,8 @@ describe("régua de temperatura", () => {
     expect(numbers(1.2e29)).toEqual(expect.arrayContaining(["07", "09"]));
     expect(numbers(1e27)).not.toContain("09");
     expect(numbers(1.4e32)).not.toContain("09");
+    // O Módulo 10 não tem faixa própria na régua
+    for (const T of [1e-9, 1, 300, 1e7, 1e12, 1e20, 1.2e29, 1.4e32]) expect(numbers(T)).not.toContain("10");
     expect(numbers(1e20)).not.toContain("07");
     expect(contextForTemperature(2e12)[0].level).toBe("fato");
   });

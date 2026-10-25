@@ -18,6 +18,7 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'A gravidade guarda informação', description: 'Limite holográfico, curva de Page e a pergunta em aberto: a gravidade é quântica?', path: '/a-gravidade-guarda-informacao', number: '07', tag: 'GRAVIDADE QUÂNTICA' },
   { title: 'Ouvindo o universo se expandir', description: 'Ondas gravitacionais, a sirene padrão e a tensão de Hubble.', path: '/ouvindo-o-universo', number: '08', tag: 'ONDAS GRAVITACIONAIS' },
   { title: 'As forças convergem?', description: 'As intensidades das forças mudam com a energia. Elas se encontram num ponto?', path: '/as-forcas-convergem', number: '09', tag: 'UNIFICAÇÃO' },
+  { title: 'Onde o quântico vira clássico', description: 'Decoerência, recordes de superposição e o problema da medição.', path: '/quantico-para-classico', number: '10', tag: 'FUNDAMENTOS QUÂNTICOS' },
 ];
 
 /** Temperatura com kT igual a uma energia em GeV (1 GeV ≈ 1,16 × 10¹³ K). */
