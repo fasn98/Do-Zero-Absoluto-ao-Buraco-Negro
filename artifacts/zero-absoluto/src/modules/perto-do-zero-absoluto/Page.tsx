@@ -1,9 +1,10 @@
 import { useMemo, useRef, useState } from 'react';
 import ModulePage from '../ModulePage';
-import { Claim, LogSlider, Presets, SimCard, Stat, StatGrid, cssColor, useCanvasLoop } from '../shared';
+import { Claim, LogSlider, Presets, SimCard, Stat, StatGrid, Sym, cssColor, useCanvasLoop } from '../shared';
 import {
   CRITICAL_PHASE_SPACE_DENSITY,
   RUBIDIUM_87_MASS_KG,
+  becRegime,
   condensateFraction,
   criticalDensityM3,
   criticalTemperatureK,
@@ -53,6 +54,7 @@ export default function NearZero() {
       lambda,
       psd: phaseSpaceDensity(DENSITY, RUBIDIUM_87_MASS_KG, temperature),
       fraction: condensateFraction(temperature, TC),
+      regime: becRegime(phaseSpaceDensity(DENSITY, RUBIDIUM_87_MASS_KG, temperature)),
       vrms: Math.sqrt(3) * velocityComponentSigma(RUBIDIUM_87_MASS_KG, temperature),
     };
   }, [temperature]);
@@ -65,7 +67,7 @@ export default function NearZero() {
     const speed = displaySpeed(temperature);
     const canvas = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
-    if (model.fraction > 0) {
+    if (model.regime === 'condensate') {
       ctx.fillStyle = cssColor(canvas, '--accent', 0.12 + 0.3 * model.fraction);
       ctx.fillRect(0, 0, width, height);
     }
@@ -94,8 +96,9 @@ export default function NearZero() {
     }
   });
 
-  const psdPosition = Math.min(1, Math.max(0, (Math.log10(model.psd) + 12) / 13));
-  const criticalPosition = (Math.log10(CRITICAL_PHASE_SPACE_DENSITY) + 12) / 13;
+  // Barra de 10⁻¹⁵ a 10¹ em escala logarítmica (300 K dá ~3,5 × 10⁻¹⁴).
+  const psdPosition = Math.min(1, Math.max(0, (Math.log10(model.psd) + 15) / 16));
+  const criticalPosition = (Math.log10(CRITICAL_PHASE_SPACE_DENSITY) + 15) / 16;
   const zeroPoint = zeroPointEnergyJ(TRAP_OMEGA);
 
   return <ModulePage
@@ -128,18 +131,18 @@ export default function NearZero() {
         <div className="log-slider-head"><span>Densidade no espaço de fase n·λ³</span><output data-testid="text-psd">{formatSci(model.psd)}</output></div>
         <svg viewBox="0 0 100 10" preserveAspectRatio="none" style={{ width: '100%', height: 12, display: 'block' }} aria-hidden="true">
           <rect x="0" y="3" width="100" height="4" rx="2" style={{ fill: 'hsl(var(--border))' }} />
-          <rect x="0" y="3" width={psdPosition * 100} height="4" rx="2" style={{ fill: model.fraction > 0 ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
+          <rect x="0" y="3" width={psdPosition * 100} height="4" rx="2" style={{ fill: model.regime !== 'gas' ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
           <rect x={criticalPosition * 100 - 0.3} y="0" width="0.6" height="10" style={{ fill: 'hsl(var(--foreground))' }} />
         </svg>
-        <div className="scale-ends"><span>10⁻¹²</span><span>2,612 (transição)</span></div>
+        <div className="scale-ends"><span>10⁻¹⁵</span><span>2,612 (transição)</span></div>
       </div>
 
-      {model.fraction > 0
-        ? <div className="callout warn" data-testid="text-bec-status">Condensado de Bose-Einstein: n·λ³ passou de 2,612. Cerca de {formatNumber(model.fraction * 100, 0)}% dos átomos estão no mesmo estado quântico, de momento zero.</div>
-        : <div className="callout" data-testid="text-bec-status">Gás comum: as ondas dos átomos ainda não se sobrepõem o bastante (n·λ³ &lt; 2,612). A transição ocorre a {formatTemperature(TC)}.</div>}
+      {model.regime === 'condensate' && <div className="callout warn" data-testid="text-bec-status">Condensado de Bose-Einstein: n·λ³ passou de 2,612. Cerca de {formatNumber(model.fraction * 100, 0)}% dos átomos estão no mesmo estado quântico, de momento zero.</div>}
+      {model.regime === 'threshold' && <div className="callout warn" data-testid="text-bec-status">No limiar da condensação: n·λ³ ≈ {formatNumber(model.psd, 2)}, praticamente o valor crítico 2,612. Esta é exatamente a temperatura em que o experimento de 1995 observou a condensação do rubídio-87, ~170 nK; neste modelo, a densidade foi escolhida para que a transição caia nela. As ondas dos átomos vizinhos já se sobrepõem, e esfriar só um pouco mais coloca uma fração macroscópica dos átomos no mesmo estado.</div>}
+      {model.regime === 'gas' && <div className="callout" data-testid="text-bec-status">Gás comum: as ondas dos átomos ainda não se sobrepõem o bastante (n·λ³ &lt; 2,5). A transição ocorre a {formatTemperature(TC)}.</div>}
 
       <StatGrid>
-        <Stat label="Comprimento de onda λ" value={formatLength(model.lambda)} note="h / √(2π m k T)" />
+        <Stat label={<>Comprimento de onda <Sym>λ</Sym></>} value={formatLength(model.lambda)} note="h / √(2π m k T)" />
         <Stat label="Distância entre átomos" value={formatLength(SPACING_M)} note="n^(−1/3)" />
         <Stat label="Velocidade rms real" value={`${formatSci(model.vrms)} m/s`} note="√(3kT/m)" />
         <Stat label="Temperatura crítica" value={formatTemperature(TC)} note="n·λ³ = ζ(3/2)" />
@@ -148,11 +151,11 @@ export default function NearZero() {
       </StatGrid>
     </SimCard>
 
-    <SimCard title="A partícula não para nem em T = 0">
+    <SimCard title={"A partícula não para nem em T\u00a0=\u00a00"}>
       <p>Um átomo preso numa armadilha harmônica de frequência ω nunca fica completamente parado. Pelo princípio da incerteza, o estado de menor energia ainda tem energia de ponto zero E₀ = ½ħω. Para uma armadilha típica de 100 Hz:</p>
       <StatGrid>
         <Stat label="Frequência" value="ω = 2π × 100 Hz" />
-        <Stat label="E₀ = ½ħω" value={`${formatSci(zeroPoint)} J`} testId="text-zero-point" />
+        <Stat label={<Sym>E₀ = ½ħω</Sym>} value={`${formatSci(zeroPoint)} J`} testId="text-zero-point" />
         <Stat label="Equivalente térmico" value={formatTemperature(zeroPoint / boltzmannConstant)} note="E₀ / k" />
       </StatGrid>
       <p>Esse movimento residual não é calor: não pode ser extraído para fazer trabalho. O zero absoluto é o estado de menor energia, não de movimento nulo. A terceira lei da termodinâmica também garante que ele não pode ser alcançado com um número finito de etapas.</p>

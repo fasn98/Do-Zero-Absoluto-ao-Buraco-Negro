@@ -27,7 +27,12 @@ export function SimCard({ title, children, label }: { title: string; children: R
   </section>;
 }
 
-export function Stat({ label, value, note, testId }: { label: string; value: ReactNode; note?: ReactNode; testId?: string }) {
+/** Símbolo matemático ou letra grega: nunca passa por text-transform (λ não vira Λ, kT não vira KT). */
+export function Sym({ children }: { children: ReactNode }) {
+  return <span className="sym">{children}</span>;
+}
+
+export function Stat({ label, value, note, testId }: { label: ReactNode; value: ReactNode; note?: ReactNode; testId?: string }) {
   return <div className="stat">
     <span className="stat-label">{label}</span>
     <output className="stat-value" data-testid={testId}>{value}</output>

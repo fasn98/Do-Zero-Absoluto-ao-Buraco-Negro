@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import ModulePage from '../ModulePage';
-import { Claim, LogSlider, SimCard, Stat, StatGrid, cssColor, useCanvasLoop } from '../shared';
+import { Claim, LogSlider, SimCard, Stat, StatGrid, Sym, cssColor, useCanvasLoop } from '../shared';
 import {
   boltzmannEntropyJK,
   erasureEntropyOverK,
@@ -89,7 +89,7 @@ function FreeExpansion() {
     <StatGrid>
       <Stat label="À esquerda / à direita" value={`${nLeft} / ${EXPANSION_N - nLeft}`} />
       <Stat label="Microestados W" value={formatFromLog10(lnToLog10(lnW))} note={`C(${EXPANSION_N}, ${nLeft}): de quantas formas escolher quem está à esquerda`} testId="text-microstates" />
-      <Stat label="Entropia S = k ln W" value={`${formatNumber(lnW, 1)} k`} note={`${formatSci(boltzmannEntropyJK(lnW))} J/K`} testId="text-entropy" />
+      <Stat label={<>Entropia <Sym>S = k ln W</Sym></>} value={`${formatNumber(lnW, 1)} k`} note={`${formatSci(boltzmannEntropyJK(lnW))} J/K`} testId="text-entropy" />
     </StatGrid>
     <svg viewBox="0 0 100 42" preserveAspectRatio="none" style={{ width: '100%', height: 70, marginTop: 14, display: 'block' }} role="img" aria-label="Entropia ao longo do tempo">
       <line x1="0" x2="100" y1="4" y2="4" style={{ stroke: 'hsl(var(--accent))', strokeDasharray: '2 2' }} strokeWidth={0.4} />
@@ -206,7 +206,7 @@ function Landauer() {
   return <SimCard title="O preço de apagar um bit">
     <LogSlider label="Temperatura do ambiente" value={temperature} min={1e-3} max={1e4} onChange={setTemperature} display={formatTemperature(temperature)} testId="input-landauer-temperature" ends={['1 mK', '10.000 K']} />
     <StatGrid>
-      <Stat label="Mínimo por bit, kT ln 2" value={`${formatSci(landauerLimitJ(temperature))} J`} testId="text-landauer" />
+      <Stat label={<>Mínimo por bit, <Sym>kT ln 2</Sym></>} value={`${formatSci(landauerLimitJ(temperature))} J`} testId="text-landauer" />
       <Stat label="Em elétron-volts" value={`${formatSci(landauerLimitJ(temperature) / elementaryCharge)} eV`} />
       <Stat label="Apagar 1 gigabyte" value={`${formatSci(landauerLimitJ(temperature) * 8e9)} J`} note="8 × 10⁹ bits" />
     </StatGrid>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import ModulePage from '../ModulePage';
-import { Claim, LogSlider, Presets, Segmented, SimCard, Stat, StatGrid } from '../shared';
+import { Claim, LogSlider, Presets, Segmented, SimCard, Stat, StatGrid, Sym } from '../shared';
 import { LinePlot, niceTicks } from '../Plot';
 import {
   REACTIONS,
@@ -117,10 +117,10 @@ export default function Gamow() {
       <p className="plot-note">Escalas: cada curva está dividida pelo seu próprio máximo no intervalo mostrado, para que as três caibam no mesmo gráfico. Por isso o produto aparece com altura 1; na escala das outras duas ele seria {formatFromLog10(amplification, 1)} vezes menor. A faixa sombreada mostra a largura Δ do pico. A barreira de Coulomb, em {formatEnergy(model.barrier)}, fica {formatNumber(model.barrier / model.maxE, 0)} vezes à direita da borda do gráfico.</p>
 
       <StatGrid>
-        <Stat label="kT" value={formatEnergy(model.kT)} note="energia térmica típica" testId="text-kt" />
-        <Stat label="Energia de Gamow E_G" value={formatEnergy(model.EG)} note="2 m_r c² (π α Z₁Z₂)²" />
-        <Stat label="Pico de Gamow E₀" value={formatEnergy(model.E0)} note={`${formatSig(model.E0 / model.kT)} × kT`} testId="text-e0" />
-        <Stat label="Largura Δ" value={formatEnergy(model.delta)} note="(4/√3) √(E₀ kT)" />
+        <Stat label={<Sym>kT</Sym>} value={formatEnergy(model.kT)} note="energia térmica típica" testId="text-kt" />
+        <Stat label={<>Energia de Gamow <Sym>E_G</Sym></>} value={formatEnergy(model.EG)} note="2 m_r c² (π α Z₁Z₂)²" />
+        <Stat label={<>Pico de Gamow <Sym>E₀</Sym></>} value={formatEnergy(model.E0)} note={`${formatSig(model.E0 / model.kT)} × kT`} testId="text-e0" />
+        <Stat label={<>Largura <Sym>Δ</Sym></>} value={formatEnergy(model.delta)} note="(4/√3) √(E₀ kT)" />
         <Stat label="Barreira de Coulomb" value={formatEnergy(model.barrier)} note="1,44 MeV·fm × Z₁Z₂ / r" />
         <Stat label="Taxa relativa ao núcleo do Sol" value={formatFromLog10(model.log10Rate)} note="mesma reação, S(E) constante" testId="text-relative-rate" />
       </StatGrid>

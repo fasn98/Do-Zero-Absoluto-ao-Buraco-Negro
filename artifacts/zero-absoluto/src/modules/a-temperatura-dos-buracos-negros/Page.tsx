@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import ModulePage from '../ModulePage';
-import { Claim, LogSlider, Presets, SimCard, Stat, StatGrid } from '../shared';
+import { Claim, LogSlider, Presets, SimCard, Stat, StatGrid, Sym } from '../shared';
 import { LinePlot } from '../Plot';
 import {
   bekensteinHawkingEntropyOverK,
@@ -90,7 +90,7 @@ export default function BlackHole() {
       <StatGrid>
         <Stat label="Temperatura de Hawking" value={formatTemperature(model.T)} note="ħc³ / (8πGMk)" testId="text-hawking-temperature" />
         <Stat label="Raio do horizonte" value={formatLength(model.rs)} note="r_s = 2GM/c²" />
-        <Stat label="Entropia S/k" value={formatSci(model.entropy)} note="kc³A / (4Għ)" testId="text-bh-entropy" />
+        <Stat label={<>Entropia <Sym>S/k</Sym></>} value={formatSci(model.entropy)} note="kc³A / (4Għ)" testId="text-bh-entropy" />
         <Stat label="Tempo de evaporação" value={formatDuration(model.evaporationS, julianYear)} note="5120πG²M³ / (ħc⁴)" testId="text-evaporation" />
         <Stat label="Comparado à idade do Universo" value={`${formatFromLog10(Math.log10(model.evaporationYears / universeAge))} ×`} note="13,8 bilhões de anos" />
         <Stat label="Hoje" value={model.colderThanCmb ? 'Absorve mais' : 'Emite mais'} note={model.colderThanCmb ? 'mais frio que o fundo cósmico de 2,7 K' : 'mais quente que o fundo cósmico de 2,7 K'} />

@@ -72,3 +72,19 @@ export function sampleVelocity2D(massKg: number, temperatureK: number, random: (
   const radius = Math.sqrt(-2 * Math.log(u1));
   return [sigma * radius * Math.cos(2 * Math.PI * u2), sigma * radius * Math.sin(2 * Math.PI * u2)];
 }
+
+export type BecRegime = "gas" | "threshold" | "condensate";
+
+/** Abaixo deste n·λ³ o gás é tratado como comum; entre ele e ζ(3/2), está no limiar. */
+export const THRESHOLD_PHASE_SPACE_DENSITY = 2.5;
+
+/**
+ * Regime do gás ideal de Bose pela densidade no espaço de fase. A tolerância
+ * relativa de 10⁻⁹ faz T = T_c exato (n·λ³ = ζ(3/2) a menos de arredondamento)
+ * contar como limiar, não como condensado.
+ */
+export function becRegime(psd: number): BecRegime {
+  if (psd < THRESHOLD_PHASE_SPACE_DENSITY) return "gas";
+  if (psd <= CRITICAL_PHASE_SPACE_DENSITY * (1 + 1e-9)) return "threshold";
+  return "condensate";
+}

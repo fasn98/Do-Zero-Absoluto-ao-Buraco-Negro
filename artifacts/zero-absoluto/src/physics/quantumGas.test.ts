@@ -3,6 +3,7 @@ import {
   CRITICAL_PHASE_SPACE_DENSITY,
   HELIUM_4_MASS_KG,
   RUBIDIUM_87_MASS_KG,
+  becRegime,
   condensateFraction,
   criticalDensityM3,
   criticalTemperatureK,
@@ -61,5 +62,21 @@ describe("gás de Bose perto do zero absoluto (Módulo 1)", () => {
     const samples = Array.from({ length: 20000 }, () => sampleVelocity2D(RUBIDIUM_87_MASS_KG, 1e-6, random));
     const variance = samples.reduce((sum, [vx]) => sum + vx * vx, 0) / samples.length;
     within2(Math.sqrt(variance), velocityComponentSigma(RUBIDIUM_87_MASS_KG, 1e-6));
+  });
+
+  it("regimes: gás comum, limiar (2,5 ≤ n·λ³ ≤ 2,612) e condensado", () => {
+    const n = criticalDensityM3(RUBIDIUM_87_MASS_KG, 1.7e-7);
+    expect(becRegime(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1.7e-7))).toBe("threshold");
+    expect(becRegime(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 300))).toBe("gas");
+    expect(becRegime(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1e-6))).toBe("gas");
+    expect(becRegime(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1.74e-7))).toBe("threshold");
+    expect(becRegime(phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 1.6e-7))).toBe("condensate");
+  });
+
+  it("densidade no espaço de fase a 300 K ≈ 3,5 × 10⁻¹⁴ (dentro da barra a partir de 10⁻¹⁵)", () => {
+    const n = criticalDensityM3(RUBIDIUM_87_MASS_KG, 1.7e-7);
+    const psd = phaseSpaceDensity(n, RUBIDIUM_87_MASS_KG, 300);
+    within2(psd, 3.5e-14);
+    expect(psd).toBeGreaterThan(1e-15);
   });
 });

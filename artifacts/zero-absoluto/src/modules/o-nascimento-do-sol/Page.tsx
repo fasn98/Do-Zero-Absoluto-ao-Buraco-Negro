@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
 import ModulePage from '../ModulePage';
-import { Claim, EvidenceTag, LogSlider, Presets, SimCard, Stat, StatGrid, type EvidenceLevel } from '../shared';
+import { Claim, EvidenceTag, LogSlider, Presets, SimCard, Stat, StatGrid, Sym, type EvidenceLevel } from '../shared';
 import { LinePlot } from '../Plot';
 import { goughLuminosityRatio, kelvinHelmholtzTimeS } from '../../physics/stellar';
 import { julianYear, solarAge, solarLuminosity, solarMass, solarRadius } from '../../physics/constants';
@@ -118,7 +118,7 @@ export default function SunBirth() {
     <SimCard title="Brilhar sem fusão">
       <p>Encolhendo, uma estrela libera energia gravitacional. Quanto tempo o Sol brilharia só assim? A escala de Kelvin-Helmholtz responde:</p>
       <StatGrid>
-        <Stat label="t_KH = G M² / (R L)" value={`${formatSci(tKH)} anos`} note="com M, R e L atuais" testId="text-kh-time" />
+        <Stat label={<Sym>t_KH = G M² / (R L)</Sym>} value={`${formatSci(tKH)} anos`} note="com M, R e L atuais" testId="text-kh-time" />
         <Stat label="Idade do Sol" value={`${formatNumber(solarAge / 1e9, 2)} bilhões de anos`} note="datação de meteoritos" />
         <Stat label="Razão" value={`${formatNumber(solarAge / tKH, 0)} ×`} note="a contração não basta" />
       </StatGrid>
