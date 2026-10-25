@@ -75,7 +75,11 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
         points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}
       {children}
     </svg>
-    <figcaption className="plot-legend">{series.map((s) => <span key={s.label}><i style={{ background: s.color, opacity: s.dashed ? 0.6 : 1 }} />{s.label}</span>)}</figcaption>
+    <figcaption className="plot-legend">{series.map((s) => <span key={s.label}>
+      {/* Amostra com o mesmo traço do gráfico: cor, espessura e tracejado. */}
+      <svg width="22" height="8" aria-hidden="true"><line x1="1" x2="21" y1="4" y2="4" strokeWidth={s.width ?? 2} strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }} /></svg>
+      {s.label}
+    </span>)}</figcaption>
   </figure>;
 }
 

@@ -165,7 +165,7 @@ function PageCurve() {
       <Stat label="Radiação, curva de Hawking" value={formatSig(hawkingRadiationEntropyFraction(t))} note="só cresce" testId="text-hawking-curve" />
       <Stat label="Radiação, curva de Page" value={formatSig(pageRadiationEntropyFraction(t))} note="sobe e volta a zero" testId="text-page-curve" />
     </StatGrid>
-    <p className="plot-note">Modelo idealizado: M(t) = M₀ (1 − t/t_evap)^(1/3) e S_BH = S₀ (M/M₀)². O tempo de Page é quando o buraco perdeu metade da entropia: t = (1 − 2^(−3/2)) t_evap ≈ {formatSig(PAGE_TIME_FRACTION)} t_evap.</p>
+    <p className="plot-note">Antes do tempo de Page, as curvas de Hawking e de Page coincidem; a de Hawking só aparece separada, tracejada, depois dele. Modelo idealizado: M(t) = M₀ (1 − t/t_evap)^(1/3) e S_BH = S₀ (M/M₀)². O tempo de Page é quando o buraco perdeu metade da entropia: t = (1 − 2^(−3/2)) t_evap ≈ {formatSig(PAGE_TIME_FRACTION)} t_evap.</p>
     <p>Em 1975, Hawking mostrou que buracos negros irradiam; em 1976, argumentou que a informação se perde: a entropia da radiação só cresceria. Em 1993, Page mostrou como a curva seria se a informação fosse preservada: depois do tempo de Page ela teria de descer, até zero no fim. Em 2019, cálculos com "ilhas" e buracos de minhoca de réplica (Penington; Almheiri, Engelhardt, Marolf e Maxfield) reproduziram a curva de Page dentro da gravidade semiclássica.</p>
   </SimCard>;
 }
@@ -246,6 +246,7 @@ export default function Gravity() {
       { text: 'D. N. Page, "Information in black hole radiation", Physical Review Letters 71, 3743 (1993).', url: 'https://doi.org/10.1103/PhysRevLett.71.3743' },
       { text: 'T. Jacobson, "Thermodynamics of Spacetime: The Einstein Equation of State", Physical Review Letters 75, 1260 (1995).', url: 'https://doi.org/10.1103/PhysRevLett.75.1260' },
       { text: 'S. Bose et al., "Spin Entanglement Witness for Quantum Gravity", Physical Review Letters 119, 240401 (2017).', url: 'https://doi.org/10.1103/PhysRevLett.119.240401' },
+      { text: 'H. Geng, A. Karch, C. Perez-Pardavila, S. Raju, L. Randall e M. Riojas, "Seeing Page Curves and Islands with Blinders On", arXiv:2602.06543 (2026).', url: 'https://doi.org/10.48550/arXiv.2602.06543' },
     ]}
   >
     <InformationLimit />
@@ -267,7 +268,8 @@ export default function Gravity() {
         <p>Hoje a maioria dos físicos espera que a evaporação preserve a informação, como qualquer processo quântico, e que a entropia da radiação siga a curva de Page. A correspondência AdS/CFT e os cálculos de 2019 reforçaram essa expectativa.</p>
       </Claim>
       <Claim level="hipotese" title="Como a informação sai">
-        <p>O mecanismo ainda é debatido. As ilhas reproduzem a curva de Page, mas o que elas significam fisicamente, e se o cálculo se aplica a buracos negros reais fora de modelos simplificados, segue em discussão; há trabalhos recentes, de 2026, contestando a interpretação das ilhas.</p>
+        <p>O mecanismo ainda é debatido. As ilhas reproduzem a curva de Page, mas o que elas significam fisicamente, e se o cálculo se aplica a buracos negros reais fora de modelos simplificados, segue em discussão.</p>
+        <p>Em 2026, Geng, Karch, Perez-Pardavila, Raju, Randall e Riojas argumentaram que, numa teoria de gravidade padrão, a informação já estaria codificada em observáveis medidas longe do buraco negro. Nessa leitura, a curva de Page e as ilhas descreveriam uma redistribuição de informação entre o que é medido e o que não é, e não uma recuperação. O artigo responde a argumentos em sentido contrário publicados em 2025; a questão segue em aberto.</p>
       </Claim>
     </div>
 
