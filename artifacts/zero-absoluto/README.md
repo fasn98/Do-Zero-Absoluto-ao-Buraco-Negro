@@ -1,7 +1,7 @@
 # Do Zero Absoluto ao Buraco Negro
 
 Aplicação educativa em português do Brasil sobre termodinâmica e física
-quântica, com oito módulos interativos. Toda simulação usa apenas física
+quântica, com nove módulos interativos. Toda simulação usa apenas física
 estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
 referências, e cada afirmação é marcada como **fato estabelecido**,
 **consenso** ou **hipótese em pesquisa**.
@@ -40,6 +40,7 @@ PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
 - `src/physics/*.ts`: funções físicas puras, uma por módulo, cada uma com `*.test.ts`.
 - `src/physics/holography.ts`, `pageCurve.ts`, `gravityEntanglement.ts`: física do Módulo 7.
 - `src/physics/gravitationalWaves.ts`, `hubble.ts`: física do Módulo 8.
+- `src/physics/unification.ts`: física do Módulo 9.
 - `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
 Os testes comparam com valores de referência com tolerância de 2%.
@@ -120,4 +121,12 @@ Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
 - Forma de onda h ∝ f^(2/3) cos Φ, normalizada para o pico medido de GW150914 (~10⁻²¹), até f_ISCO = c³ / (6^(3/2) π G M) (M = 65 × 1,09 M☉ → 62 Hz)
 - Lei de Hubble: H₀ = v / d (GW170817: 3.017 km/s, 43,8 Mpc → 68,9 km/s/Mpc; publicado 70 +12 −8)
 - Discrepância entre medições: |a − b| / √(σa² + σb²), com o lado da barra voltado para a outra medição quando assimétrica (Planck × SH0ES ≈ 4,9σ; Planck × CCHP ≈ 1,6σ)
+
+### Módulo 9: As forças convergem? (`unification.ts`)
+
+- Insumos em M_Z = 91,1879 GeV (MS-barra): α_em⁻¹ = 127,930 (PDG 2024), sen²θ_W = 0,23122 e α_s = 0,1180 (PDG 2026)
+- Normalização de grande unificação: α₁⁻¹ = (3/5) cos²θ_W α_em⁻¹ ≈ 59,0; α₂⁻¹ = sen²θ_W α_em⁻¹ ≈ 29,6; α₃⁻¹ = 1/α_s ≈ 8,47
+- Um laço: α_i⁻¹(μ) = α_i⁻¹(M_Z) − (b_i/2π) ln(μ/M_Z); Modelo Padrão b = (41/10, −19/6, −7); MSSM b = (33/5, 1, −3) acima de M_SUSY
+- Modelo Padrão: cruzamentos em 1,03 × 10¹³, 2,4 × 10¹⁴ e 9,6 × 10¹⁶ GeV; MSSM (M_SUSY = 1 TeV): entre ~1 e 2,5 × 10¹⁶ GeV, α⁻¹ ≈ 25,6–26,0
+- Gravidade: E_Planck = √(ħc⁵/G) ≈ 1,22 × 10¹⁹ GeV; α_G = (E/E_Planck)² (2 × 10¹⁶ GeV → 2,7 × 10⁻⁶)
 

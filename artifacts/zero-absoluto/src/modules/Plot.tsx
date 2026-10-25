@@ -73,7 +73,7 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
           <text x={anchor === 'end' ? x + 4 : anchor === 'start' ? x - 4 : x} y={labelY} textAnchor={anchor} className="plot-marker" style={{ fill: m.color ?? 'hsl(var(--accent))' }}>{m.label}</text>
         </g>;
       })}
-      <g clipPath={`url(#${clipId})`}>{series.map((s) => <polyline key={s.label} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
+      <g clipPath={`url(#${clipId})`}>{series.map((s, index) => <polyline key={index} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
         points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}</g>
       {children}
     </svg>

@@ -1,7 +1,7 @@
 import { hawkingTemperatureK, massForHawkingTemperatureKg } from '../physics/blackHole';
 import { landauerLimitJ } from '../physics/entropy';
 import { REACTIONS, gamowEnergyJ, gamowPeakEnergyJ, kTJ, lnTunnelingProbability } from '../physics/gamow';
-import { solarMass } from '../physics/constants';
+import { boltzmannConstant, elementaryCharge, solarMass } from '../physics/constants';
 import { lnToLog10 } from '../physics/logmath';
 import { formatFromLog10, formatSci } from '../lib/format';
 import type { EvidenceLevel } from './shared';
@@ -17,7 +17,11 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'O nascimento do Sol', description: 'Da nuvem molecular à estrela: uma história de gravidade e calor.', path: '/o-nascimento-do-sol', number: '06', tag: 'ASTROFÍSICA ESTELAR' },
   { title: 'A gravidade guarda informação', description: 'Limite holográfico, curva de Page e a pergunta em aberto: a gravidade é quântica?', path: '/a-gravidade-guarda-informacao', number: '07', tag: 'GRAVIDADE QUÂNTICA' },
   { title: 'Ouvindo o universo se expandir', description: 'Ondas gravitacionais, a sirene padrão e a tensão de Hubble.', path: '/ouvindo-o-universo', number: '08', tag: 'ONDAS GRAVITACIONAIS' },
+  { title: 'As forças convergem?', description: 'As intensidades das forças mudam com a energia. Elas se encontram num ponto?', path: '/as-forcas-convergem', number: '09', tag: 'UNIFICAÇÃO' },
 ];
+
+/** Temperatura com kT igual a uma energia em GeV (1 GeV ≈ 1,16 × 10¹³ K). */
+const gevToKelvin = (gev: number) => (gev * 1e9 * elementaryCharge) / boltzmannConstant;
 
 /** Total de módulos, no formato dos contadores ("07"). */
 export const MODULE_TOTAL = String(MODULES.length).padStart(2, '0');
@@ -56,6 +60,9 @@ export function modulesForTemperature(temperatureK: number): BandMatch[] {
     const inSolar = mass / solarMass;
     const massText = inSolar >= 1e-3 ? `${formatSci(inSolar)} massas solares` : `${formatSci(mass)} kg`;
     matches.push({ module: byNumber('05'), reason: `Um buraco negro de ${massText} tem exatamente esta temperatura de Hawking.` });
+  }
+  if (T >= gevToKelvin(1e15) && T <= gevToKelvin(1e17)) {
+    matches.push({ module: byNumber('09'), reason: 'Escala de grande unificação (kT ~ 10¹⁶ GeV, ~10²⁹ K), onde as forças do Modelo Padrão poderiam ter a mesma intensidade. Hipótese em pesquisa.' });
   }
   if (T >= 1e28) {
     matches.push({ module: byNumber('07'), reason: 'Perto da temperatura de Planck, relatividade geral e mecânica quântica precisam funcionar juntas, e ainda não sabemos como.' });
