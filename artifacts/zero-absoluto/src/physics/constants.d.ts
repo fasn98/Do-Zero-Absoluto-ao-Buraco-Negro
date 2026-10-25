@@ -1,0 +1,22 @@
+export declare const speedOfLight: number;
+export declare const planckConstant: number;
+export declare const reducedPlanckConstant: number;
+export declare const boltzmannConstant: number;
+export declare const gravitationalConstant: number;
+export declare const fineStructureConstant: number;
+export declare const protonMass: number;
+export declare const electronMass: number;
+export declare const muonMass: number;
+export declare const solarMass: number;
+export declare const physicalConstants: Readonly<{
+  speedOfLight: number;
+  planckConstant: number;
+  reducedPlanckConstant: number;
+  boltzmannConstant: number;
+  gravitationalConstant: number;
+  fineStructureConstant: number;
+  protonMass: number;
+  electronMass: number;
+  muonMass: number;
+  solarMass: number;
+}>;

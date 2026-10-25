@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Do Zero Absoluto ao Buraco Negro"
+description = "App educativo em português sobre termodinâmica e física quântica, com escala interativa de temperatura e módulos independentes preparados para simuladores baseados em física estabelecida."
+version = "1.0.0"
+id = "artifacts/zero-absoluto"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19201
+
+[services.development]
+run = "pnpm --filter @workspace/zero-absoluto run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/zero-absoluto", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/zero-absoluto/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19201"
+BASE_PATH = "/"
