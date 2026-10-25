@@ -11,6 +11,7 @@ import {
   jToMeV,
   kTJ,
   lnClassicalProbability,
+  lnFusingFraction,
   lnReactionIntegral,
   lnRelativeRate,
 } from "./gamow";
@@ -75,6 +76,20 @@ describe("pico de Gamow (Módulo 3)", () => {
     const lnApprox =
       Math.log((Math.sqrt(Math.PI) / 2) * jToKeV(delta) * (1 + 5 / (12 * tau))) - tau - 1.5 * Math.log(jToKeV(kT));
     within2(Math.exp(lnReactionIntegral(pp, T) - lnApprox), 1);
+  });
+
+  it("fração que funde no núcleo do Sol (p+p) concorda com a aproximação gaussiana de Clayton", () => {
+    // (1/kT) ∫ ≈ (√π/2) (Δ/kT) exp(−τ) (1 + 5/(12τ)), τ = 3E₀/kT (Clayton 1968, eq. 4-64)
+    const T = 15.7e6;
+    const kT = kTJ(T);
+    const E0 = gamowPeakEnergyJ(gamowEnergyJ(pp), kT);
+    const delta = gamowWidthJ(E0, kT);
+    const tau = (3 * E0) / kT;
+    const approx = (Math.sqrt(Math.PI) / 2) * (delta / kT) * Math.exp(-tau) * (1 + 5 / (12 * tau));
+    within2(Math.exp(lnFusingFraction(pp, T)), approx);
+    // ≈ 6 × 10⁻⁶: muito maior que a fração clássica, ≈ 10⁻¹⁹³
+    within2(Math.exp(lnFusingFraction(pp, T)), 6.2e-6);
+    expect(lnFusingFraction(pp, T)).toBeGreaterThan(lnClassicalProbability(pp, T));
   });
 
   it("taxa relativa: 1 no núcleo do Sol, cresce com T e não sofre underflow a 300 K", () => {

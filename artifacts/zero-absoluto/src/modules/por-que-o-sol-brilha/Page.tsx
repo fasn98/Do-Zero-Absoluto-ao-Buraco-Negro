@@ -13,12 +13,13 @@ import {
   JOULES_PER_EV,
   kTJ,
   lnClassicalProbability,
+  lnFusingFraction,
   lnRelativeRate,
   lnTunnelingProbability,
 } from '../../physics/gamow';
 import { lnToLog10 } from '../../physics/logmath';
 import { solarCoreTemperature } from '../../physics/constants';
-import { formatFromLog10, formatNumber, formatTemperature } from '../../lib/format';
+import { formatFromLog10, formatNumber, formatSig, formatTemperature } from '../../lib/format';
 
 type ReactionId = 'pp' | 'dt';
 
@@ -38,9 +39,11 @@ function energyUnit(maxJ: number) {
   return { name: 'MeV', factor: JOULES_PER_EV * 1e6 };
 }
 
+/** Energia com 3 algarismos significativos, na unidade em que o valor fica abaixo de 1000. */
 export function formatEnergy(energyJ: number) {
-  const unit = energyUnit(energyJ * 1.5);
-  return `${formatNumber(energyJ / unit.factor, energyJ / unit.factor < 10 ? 2 : 1)} ${unit.name}`;
+  const eV = energyJ / JOULES_PER_EV;
+  const unit = eV < 999.5 ? { name: 'eV', factor: 1 } : eV < 999.5e3 ? { name: 'keV', factor: 1e3 } : { name: 'MeV', factor: 1e6 };
+  return `${formatSig(eV / unit.factor)} ${unit.name}`;
 }
 
 export default function Gamow() {
@@ -60,6 +63,7 @@ export default function Gamow() {
       kT, EG, E0, delta, barrier, maxE, curve, lnProductAmplification,
       log10Classical: lnToLog10(lnClassicalProbability(reaction, temperature)),
       log10TunnelAtPeak: lnToLog10(lnTunnelingProbability(E0, EG)),
+      log10Fusing: lnToLog10(lnFusingFraction(reaction, temperature)),
       log10Rate: lnToLog10(lnRelativeRate(reaction, temperature)),
     };
   }, [reaction, temperature]);
@@ -79,6 +83,7 @@ export default function Gamow() {
       <>A barreira usa raio nuclear empírico 1,2 A^(1/3) fm e potencial de Coulomb puro até o contato. Não há blindagem eletrônica do plasma, que aumenta a taxa solar em poucos por cento.</>,
       <>Um único valor de temperatura: o núcleo real tem gradientes de temperatura e densidade, e a taxa total depende da densidade ao quadrado e da composição.</>,
       <>Só o primeiro passo da cadeia próton-próton é mostrado. As etapas seguintes (deutério, hélio-3, hélio-4) e o ciclo CNO, dominante em estrelas mais massivas que ~1,3 massa solar, ficam de fora.</>,
+      <>O fator de tunelamento exp(−√(E_G/E)) é a aproximação de Gamow, válida para energias bem abaixo da barreira. Perto de 10¹⁰ K, quando kT se aproxima da barreira, ele deixa de ser preciso e as duas frações da comparação também.</>,
       <>O plasma do ITER usa D+T; o atalho mostra a temperatura, não significa que o ITER faça fusão p+p.</>,
     ]}
     references={[
@@ -106,15 +111,15 @@ export default function Gamow() {
         series={[
           { label: 'Maxwell-Boltzmann, exp(−E/kT)', color: 'hsl(var(--chart-5))', points: model.curve.map((p) => [toUnit(p.energyJ), p.boltzmann]) },
           { label: 'Tunelamento, exp(−√(E_G/E))', color: 'hsl(var(--chart-4))', points: model.curve.map((p) => [toUnit(p.energyJ), p.tunneling]), dashed: true },
-          { label: `Produto (ampliado ${formatFromLog10(amplification, 1)} vezes)`, color: 'hsl(var(--accent))', points: model.curve.map((p) => [toUnit(p.energyJ), p.product]), width: 3 },
+          { label: 'Produto (pico de Gamow)', color: 'hsl(var(--accent))', points: model.curve.map((p) => [toUnit(p.energyJ), p.product]), width: 3 },
         ]}
       />
-      <p className="plot-note">Cada curva está dividida pelo seu próprio máximo. A faixa sombreada mostra a largura Δ do pico. A barreira de Coulomb, em {formatEnergy(model.barrier)}, fica {formatNumber(model.barrier / model.maxE, 0)} vezes à direita da borda do gráfico.</p>
+      <p className="plot-note">Escalas: cada curva está dividida pelo seu próprio máximo no intervalo mostrado, para que as três caibam no mesmo gráfico. Por isso o produto aparece com altura 1; na escala das outras duas ele seria {formatFromLog10(amplification, 1)} vezes menor. A faixa sombreada mostra a largura Δ do pico. A barreira de Coulomb, em {formatEnergy(model.barrier)}, fica {formatNumber(model.barrier / model.maxE, 0)} vezes à direita da borda do gráfico.</p>
 
       <StatGrid>
         <Stat label="kT" value={formatEnergy(model.kT)} note="energia térmica típica" testId="text-kt" />
         <Stat label="Energia de Gamow E_G" value={formatEnergy(model.EG)} note="2 m_r c² (π α Z₁Z₂)²" />
-        <Stat label="Pico de Gamow E₀" value={formatEnergy(model.E0)} note={`${formatNumber(model.E0 / model.kT, 1)} × kT`} testId="text-e0" />
+        <Stat label="Pico de Gamow E₀" value={formatEnergy(model.E0)} note={`${formatSig(model.E0 / model.kT)} × kT`} testId="text-e0" />
         <Stat label="Largura Δ" value={formatEnergy(model.delta)} note="(4/√3) √(E₀ kT)" />
         <Stat label="Barreira de Coulomb" value={formatEnergy(model.barrier)} note="1,44 MeV·fm × Z₁Z₂ / r" />
         <Stat label="Taxa relativa ao núcleo do Sol" value={formatFromLog10(model.log10Rate)} note="mesma reação, S(E) constante" testId="text-relative-rate" />
@@ -124,12 +129,13 @@ export default function Gamow() {
         <div>
           <span className="versus-label">Previsão clássica</span>
           <strong data-testid="text-classical">{formatFromLog10(model.log10Classical)}</strong>
-          <span>exp(−barreira/kT): fração de colisões com energia para passar <i>por cima</i> da barreira.</span>
+          <span>exp(−barreira/kT) = (1/kT) ∫ exp(−E/kT) dE acima da barreira: fração de colisões com energia para passar <i>por cima</i> dela.</span>
         </div>
         <div>
-          <span className="versus-label">Previsão quântica</span>
-          <strong data-testid="text-quantum">{formatFromLog10(model.log10TunnelAtPeak)}</strong>
-          <span>exp(−√(E_G/E₀)): chance de atravessar a barreira <i>por dentro</i> no pico de Gamow, onde ainda há partículas suficientes.</span>
+          <span className="versus-label">Fração que funde (com tunelamento)</span>
+          <strong data-testid="text-quantum">{formatFromLog10(model.log10Fusing)}</strong>
+          <span>(1/kT) ∫ exp(−E/kT − √(E_G/E)) dE: fração efetiva das colisões que atravessam a barreira, somando todas as energias. Mesma normalização da previsão clássica; quase tudo vem da janela do pico de Gamow.</span>
+          <span className="versus-secondary">Probabilidade de tunelamento para uma colisão com energia E₀: exp(−√(E_G/E₀)) = {formatFromLog10(model.log10TunnelAtPeak)}</span>
         </div>
       </div>
     </SimCard>

@@ -22,7 +22,8 @@ type LinePlotProps = {
   children?: ReactNode;
 };
 
-const PAD = { left: 44, right: 14, top: 14, bottom: 42 };
+const PAD_BASE = { left: 44, right: 14, top: 14, bottom: 42 };
+const LABEL_ROW = 16;
 
 /** Gráfico de linhas em SVG puro, com cores das variáveis do tema. */
 export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, height = 300, title, children }: LinePlotProps) {
@@ -36,7 +37,11 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
-  const H = W < 480 ? Math.round(height * 0.85) : height;
+  const visibleMarkers = markers.filter((m) => m.x >= xMin && m.x <= xMax);
+  // Rótulos dos marcadores ficam numa faixa própria acima da área das curvas
+  // (uma linha por marcador), então nunca se sobrepõem às curvas.
+  const PAD = { ...PAD_BASE, top: PAD_BASE.top + LABEL_ROW * visibleMarkers.length };
+  const H = (W < 480 ? Math.round(height * 0.85) : height) + LABEL_ROW * visibleMarkers.length;
   const sx = (x: number) => PAD.left + ((x - xMin) / (xMax - xMin)) * (W - PAD.left - PAD.right);
   const sy = (y: number) => H - PAD.bottom - ((y - yMin) / (yMax - yMin)) * (H - PAD.top - PAD.bottom);
   const clampY = (y: number) => Math.min(yMax, Math.max(yMin, y));
@@ -54,10 +59,15 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
       <line x1={PAD.left} x2={W - PAD.right} y1={H - PAD.bottom} y2={H - PAD.bottom} style={{ stroke: 'hsl(var(--muted-foreground))' }} />
       <text x={(W + PAD.left) / 2} y={H - 6} textAnchor="middle" className="plot-axis">{xLabel}</text>
       {yLabel && <text x={12} y={(H - PAD.bottom + PAD.top) / 2} textAnchor="middle" transform={`rotate(-90 12 ${(H - PAD.bottom + PAD.top) / 2})`} className="plot-axis">{yLabel}</text>}
-      {markers.filter((m) => m.x >= xMin && m.x <= xMax).map((m) => <g key={m.label}>
-        <line x1={sx(m.x)} x2={sx(m.x)} y1={PAD.top} y2={H - PAD.bottom} style={{ stroke: m.color ?? 'hsl(var(--accent))' }} strokeDasharray="4 4" />
-        <text x={Math.min(sx(m.x) + 5, W - PAD.right - 4)} y={PAD.top + 12} textAnchor={sx(m.x) > W - 120 ? 'end' : 'start'} className="plot-marker" style={{ fill: m.color ?? 'hsl(var(--accent))' }}>{m.label}</text>
-      </g>)}
+      {visibleMarkers.map((m, i) => {
+        const x = sx(m.x);
+        const labelY = PAD_BASE.top + LABEL_ROW * i;
+        const anchor = x > W - PAD.right - 70 ? 'end' : x < PAD.left + 70 ? 'start' : 'middle';
+        return <g key={m.label}>
+          <line x1={x} x2={x} y1={labelY + 4} y2={H - PAD.bottom} style={{ stroke: m.color ?? 'hsl(var(--accent))' }} strokeDasharray="4 4" />
+          <text x={anchor === 'end' ? x + 4 : anchor === 'start' ? x - 4 : x} y={labelY} textAnchor={anchor} className="plot-marker" style={{ fill: m.color ?? 'hsl(var(--accent))' }}>{m.label}</text>
+        </g>;
+      })}
       {series.map((s) => <polyline key={s.label} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
         points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}
       {children}

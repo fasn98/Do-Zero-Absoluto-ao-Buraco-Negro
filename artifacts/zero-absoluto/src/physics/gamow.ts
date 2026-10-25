@@ -97,27 +97,45 @@ export const lnBoltzmannFactor = (energy: number, kT: number) => -energy / kT;
 export const lnTunnelingProbability = (energy: number, gamowEnergy: number) =>
   -Math.sqrt(gamowEnergy / energy);
 
-/** ln da previsão clássica: fração ~ exp(−barreira/kT) capaz de passar por cima. */
+/**
+ * ln da previsão clássica: fração de colisões com energia acima da barreira,
+ * (1/kT) ∫_barreira^∞ exp(−E/kT) dE = exp(−barreira/kT).
+ */
 export function lnClassicalProbability(reaction: Reaction, temperatureK: number): number {
   return -coulombBarrierJ(reaction) / kTJ(temperatureK);
 }
 
-/**
- * ln[(kT)^(−3/2) ∫ exp(−E/kT − √(E_G/E)) dE], com energias em keV para a
- * parte dimensional. Integração em malha logarítmica e log-sum-exp.
- */
-export function lnReactionIntegral(reaction: Reaction, temperatureK: number): number {
+/** ln ∫ exp(−E/kT − √(E_G/E)) dE, com E em joules (malha logarítmica e log-sum-exp). */
+export function lnGamowIntegralJ(reaction: Reaction, temperatureK: number): number {
   const kT = kTJ(temperatureK);
   const EG = gamowEnergyJ(reaction);
   const E0 = gamowPeakEnergyJ(EG, kT);
   const low = Math.min(E0, kT) * 1e-4;
   const high = Math.max(E0, kT) * 1e2;
-  const lnI = logIntegrateLogGrid(
+  return logIntegrateLogGrid(
     (E) => lnBoltzmannFactor(E, kT) + lnTunnelingProbability(E, EG),
     low,
     high,
   );
-  return lnI + Math.log(jToKeV(1)) - 1.5 * Math.log(jToKeV(kT));
+}
+
+/**
+ * ln[(kT)^(−3/2) ∫ exp(−E/kT − √(E_G/E)) dE], com energias em keV para a
+ * parte dimensional.
+ */
+export function lnReactionIntegral(reaction: Reaction, temperatureK: number): number {
+  const kT = kTJ(temperatureK);
+  return lnGamowIntegralJ(reaction, temperatureK) + Math.log(jToKeV(1)) - 1.5 * Math.log(jToKeV(kT));
+}
+
+/**
+ * ln da fração efetiva de colisões que fundem, com tunelamento:
+ *   (1/kT) ∫ exp(−E/kT − √(E_G/E)) dE.
+ * Mesma normalização da fração clássica exp(−barreira/kT) = (1/kT) ∫_barreira^∞ exp(−E/kT) dE,
+ * por isso as duas são diretamente comparáveis.
+ */
+export function lnFusingFraction(reaction: Reaction, temperatureK: number): number {
+  return lnGamowIntegralJ(reaction, temperatureK) - Math.log(kTJ(temperatureK));
 }
 
 /** ln da taxa relativa: mesma reação, normalizada pelo núcleo do Sol (S(E) constante). */

@@ -8,13 +8,24 @@ export function formatNumber(value: number, digits = 2) {
   return value.toLocaleString('pt-BR', { maximumFractionDigits: digits });
 }
 
+/** Número com algarismos significativos fixos (ex.: 0,0259; 1,35; 493). */
+export function formatSig(value: number, significant = 3) {
+  return value.toLocaleString('pt-BR', { minimumSignificantDigits: significant, maximumSignificantDigits: significant });
+}
+
 /** Notação científica a partir de log₁₀(x): funciona mesmo para 10⁻⁵⁰⁰⁰. */
 export function formatFromLog10(log10Value: number, digits = 2): string {
   if (!Number.isFinite(log10Value)) return log10Value > 0 ? '∞' : '0';
-  if (log10Value > -3 && log10Value < 4) return formatNumber(10 ** log10Value, digits + 1);
+  if (log10Value > -3 && log10Value < 4) return formatSig(10 ** log10Value, digits + 1);
   let exponent = Math.floor(log10Value);
   let mantissa = 10 ** (log10Value - exponent);
-  if (Math.abs(exponent) > 1e5) return `10^(${formatSci(log10Value, 3)})`;
+  // Expoentes gigantes: a mantissa não tem significado; escrevemos o expoente por extenso.
+  if (Math.abs(exponent) > 1e5) {
+    const sign = log10Value < 0 ? '−' : '';
+    const magnitude = Math.abs(log10Value);
+    const text = magnitude < 1e12 ? Math.round(magnitude).toLocaleString('pt-BR') : formatSci(magnitude, 2);
+    return `10 elevado a ${sign}${text}`;
+  }
   if (Number(mantissa.toFixed(digits)) >= 10) { mantissa /= 10; exponent += 1; }
   return `${formatNumber(mantissa, digits)} × 10${superscript(exponent)}`;
 }

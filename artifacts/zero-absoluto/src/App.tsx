@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Route, Switch, Link, useLocation } from 'wouter';
 import { ArrowRight, Moon, Sun } from 'lucide-react';
 import { MODULES, contextForTemperature, modulesForTemperature } from './modules/temperatureBands';
@@ -45,10 +45,33 @@ function Header({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
         {dark ? <Sun size={16} /> : <Moon size={16} />}
       </button>
     </div>
-  </header><nav className="mobile-nav" aria-label="Navegação dos módulos">
-    <Link href="/" data-testid="link-mobile-inicio">Início</Link>
+  </header><MobileNav location={location} /></>;
+}
+
+/** Menu horizontal do celular: degradê na borda onde há mais itens e rolagem até o item ativo. */
+function MobileNav({ location }: { location: string }) {
+  const ref = useRef<HTMLElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: false });
+  const update = () => {
+    const nav = ref.current;
+    if (!nav) return;
+    setEdges({ left: nav.scrollLeft > 2, right: nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2 });
+  };
+  useEffect(() => {
+    const nav = ref.current;
+    const active = nav?.querySelector<HTMLElement>('a.active');
+    if (nav && active) nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [location]);
+  const fade = `${edges.left ? 'fade-left' : ''} ${edges.right ? 'fade-right' : ''}`;
+  return <div className={`mobile-nav-wrap ${fade}`}>
+    <nav ref={ref} className="mobile-nav" aria-label="Navegação dos módulos" onScroll={update}>
+    <Link href="/" className={location === '/' ? 'active' : ''} data-testid="link-mobile-inicio">Início</Link>
     {modules.map((item) => <Link key={item.path} href={item.path} className={location === item.path ? 'active' : ''} data-testid={`link-mobile-${item.number}`}>{item.number} · {item.title}</Link>)}
-  </nav></>;
+    </nav>
+  </div>;
 }
 
 function Home() {
