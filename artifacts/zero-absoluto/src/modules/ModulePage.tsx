@@ -1,29 +1,39 @@
+import type { ReactNode } from 'react';
 import { Link } from 'wouter';
-import { ArrowLeft, Atom, BookOpen, CircleDashed } from 'lucide-react';
+import { ArrowLeft, BookOpen, FlaskConical } from 'lucide-react';
 
-type ModulePageProps = { title: string; description: string; number: string; tag: string; limitation: string };
+export type Reference = { text: string; url?: string };
 
-export default function ModulePage({ title, description, number, tag, limitation }: ModulePageProps) {
+type ModulePageProps = {
+  title: string;
+  description: string;
+  number: string;
+  tag: string;
+  children: ReactNode;
+  limitations: ReactNode[];
+  references: Reference[];
+};
+
+export default function ModulePage({ title, description, number, tag, children, limitations, references }: ModulePageProps) {
   return <main className="module-layout">
     <div className="breadcrumb"><Link href="/" data-testid={`link-module-home-${number}`}>Início</Link><span>/</span><span>{title}</span></div>
     <section className="module-hero">
       <div className="eyebrow">MÓDULO {number} <span style={{ color: 'hsl(var(--border))' }}> / </span> {tag}</div>
       <h1 data-testid={`text-module-title-${number}`}>{title}</h1>
       <p>{description}</p>
-      <div className="module-meta"><span><BookOpen size={13} /> LEITURA CONCEITUAL</span><span><CircleDashed size={13} /> SIMULAÇÃO EM BREVE</span></div>
+      <div className="module-meta"><span><BookOpen size={13} /> LEITURA CONCEITUAL</span><span><FlaskConical size={13} /> SIMULAÇÃO INTERATIVA</span></div>
     </section>
-    <section className="simulation-card" aria-label="Espaço reservado para simulação">
-      <div className="sim-symbol"><Atom size={24} strokeWidth={1.3} /></div>
-      <h2>O laboratório está sendo preparado</h2>
-      <p>Este espaço será dedicado a explorar visualmente as ideias deste módulo. Por enquanto, fique com as perguntas — elas também fazem parte da física.</p>
-      <span className="coming-label">SIMULAÇÃO EM DESENVOLVIMENTO</span>
-    </section>
-    <Link href="/" className="back-link" data-testid={`link-back-home-${number}`}><ArrowLeft size={14} /> Voltar à jornada</Link>
+    {children}
     <section className="module-notes">
       <div className="notes-label">ESCOPO & LIMITES</div>
       <h2>O que este modelo deixa de fora</h2>
-      <p>{limitation}</p>
+      <ul className="limits-list">{limitations.map((item, index) => <li key={index}>{item}</li>)}</ul>
+      <div className="notes-label" style={{ marginTop: 32 }}>REFERÊNCIAS</div>
+      <ol className="reference-list">{references.map((ref) => <li key={ref.text}>
+        {ref.url ? <a href={ref.url} target="_blank" rel="noreferrer">{ref.text}</a> : ref.text}
+      </li>)}</ol>
     </section>
+    <Link href="/" className="back-link" data-testid={`link-back-home-${number}`}><ArrowLeft size={14} /> Voltar à jornada</Link>
     <footer className="footer" style={{ paddingLeft: 0, paddingRight: 0, marginTop: 58 }}><span>DO ZERO ABSOLUTO AO BURACO NEGRO</span><span>{number} / 06</span></footer>
   </main>;
 }

@@ -1,4 +1,180 @@
+import { useRef, useState } from 'react';
+import { Link } from 'wouter';
 import ModulePage from '../ModulePage';
+import { Claim, LogSlider, Segmented, SimCard, Stat, StatGrid, cssColor, useCanvasLoop } from '../shared';
+import {
+  REACTIONS,
+  gamowEnergyJ,
+  gamowPeakEnergyJ,
+  jToMeV,
+  kTJ,
+  lnRelativeRate,
+  lnTunnelingProbability,
+  reducedMassKg,
+} from '../../physics/gamow';
+import {
+  MUON_COST_ESTIMATE_J,
+  MUON_ELECTRON_MASS_RATIO,
+  RECORD_FUSIONS_PER_MUON,
+  STICKING_FRACTION_RANGE,
+  bohrRadiusM,
+  breakEvenFusions,
+  energyPerMuonJ,
+  fusionsBeforeSticking,
+  muonicSizeRatio,
+} from '../../physics/muonCatalysis';
+import { lnToLog10 } from '../../physics/logmath';
+import { deuteronMass, electronMass, muonLifetime, muonMass, solarCoreTemperature } from '../../physics/constants';
+import { formatFromLog10, formatNumber, formatTemperature } from '../../lib/format';
+
+const dd = REACTIONS.dd;
+const EG_DD = gamowEnergyJ(dd);
+const COMPARISON = [
+  { label: 'Temperatura ambiente', T: 300 },
+  { label: 'Núcleo do Sol', T: solarCoreTemperature },
+  { label: 'Plasma do ITER', T: 1.5e8 },
+];
+
+function RoomTemperature() {
+  return <SimCard title="Por que não em temperatura ambiente">
+    <p>A mesma física do <Link href="/por-que-o-sol-brilha" className="inline-link">Módulo 3</Link>, aplicada à fusão D+D, que seria a reação em paládio carregado com deutério.</p>
+    <div className="ledger" style={{ gridTemplateColumns: '1fr auto auto' }}>
+      <span style={{ fontWeight: 600 }}>Ambiente</span><span style={{ fontWeight: 600 }}>tunelamento no pico</span><span style={{ fontWeight: 600 }}>taxa relativa ao Sol</span>
+      {COMPARISON.map((row) => {
+        const log10P = lnToLog10(lnTunnelingProbability(gamowPeakEnergyJ(EG_DD, kTJ(row.T)), EG_DD));
+        const log10R = lnToLog10(lnRelativeRate(dd, row.T));
+        return [
+          <span key={`${row.label}-l`}>{row.label} ({formatTemperature(row.T)})</span>,
+          <span key={`${row.label}-p`} data-testid={`text-dd-tunnel-${row.T}`}>{formatFromLog10(log10P)}</span>,
+          <span key={`${row.label}-r`}>{formatFromLog10(log10R)}</span>,
+        ];
+      })}
+    </div>
+    <p className="plot-note">Taxa relativa à fusão D+D na temperatura do núcleo do Sol, com fator nuclear S(E) constante.</p>
+    <p>A 300 K, mesmo os núcleos mais rápidos chegam com energia de poucos elétron-volts, contra uma barreira de centenas de milhares. Mesmo ligados numa molécula D₂, a 74 pm de distância, a taxa calculada de fusão espontânea é da ordem de 10⁻⁶⁴ por segundo (Koonin e Nauenberg, 1989).</p>
+  </SimCard>;
+}
+
+const SIZE_RATIO = muonicSizeRatio(deuteronMass);
+const BOHR_E = bohrRadiusM(reducedMassKg(electronMass, deuteronMass));
+const BOHR_MU = bohrRadiusM(reducedMassKg(muonMass, deuteronMass));
+
+function formatPm(m: number) {
+  return m >= 1e-12 ? `${formatNumber(m * 1e12, 1)} pm` : `${formatNumber(m * 1e15, 0)} fm`;
+}
+
+function Molecules() {
+  const [scale, setScale] = useState<'zoom' | 'real'>('zoom');
+  const phase = useRef(0);
+  const canvasRef = useCanvasLoop((ctx, width, height, dt) => {
+    phase.current += dt;
+    const canvas = ctx.canvas;
+    ctx.clearRect(0, 0, width, height);
+    const panelW = width / 2;
+    const drawMolecule = (cx: number, cy: number, separation: number, label: string, sub: string, orbiter: string) => {
+      const a = separation / 2;
+      // Nuvem do elétron/múon envolvendo os dois núcleos.
+      if (separation > 1) {
+        ctx.fillStyle = cssColor(canvas, orbiter, 0.12);
+        ctx.beginPath(); ctx.ellipse(cx, cy, a * 1.9, a * 1.25, 0, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = cssColor(canvas, '--foreground', 0.9);
+      for (const sign of [-1, 1]) { ctx.beginPath(); ctx.arc(cx + sign * a, cy, separation > 1 ? 5 : 1, 0, Math.PI * 2); ctx.fill(); }
+      // Trajetória em oito ao redor dos núcleos, apenas ilustrativa.
+      const s = phase.current * 2.2;
+      const ox = cx + a * 1.6 * Math.sin(s);
+      const oy = cy + a * 0.9 * Math.sin(2 * s) / 1.4;
+      if (separation > 1) { ctx.fillStyle = cssColor(canvas, orbiter, 0.95); ctx.beginPath(); ctx.arc(ox, oy, 3.5, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = cssColor(canvas, '--foreground', 0.9);
+      ctx.font = '500 12px DM Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, cx, height - 30);
+      ctx.fillStyle = cssColor(canvas, '--muted-foreground', 1);
+      ctx.font = '11px DM Mono, monospace';
+      ctx.fillText(sub, cx, height - 14);
+    };
+    const base = Math.min(panelW * 0.32, 90);
+    drawMolecule(panelW / 2, height * 0.42, base, 'Molécula comum (elétron)', `núcleos a ~${formatPm(2 * BOHR_E)}`, '--chart-5');
+    const muSep = scale === 'zoom' ? base : base / SIZE_RATIO;
+    drawMolecule(panelW * 1.5, height * 0.42, muSep, scale === 'zoom' ? `Molécula múonica, ampliada ${formatNumber(SIZE_RATIO, 0)}×` : 'Molécula múonica, escala real', `núcleos a ~${formatPm(2 * BOHR_MU)}`, '--accent');
+    if (scale === 'real') {
+      ctx.strokeStyle = cssColor(canvas, '--accent', 0.8);
+      ctx.beginPath(); ctx.arc(panelW * 1.5, height * 0.42, 12, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.strokeStyle = cssColor(canvas, '--border', 1);
+    ctx.beginPath(); ctx.moveTo(panelW, 16); ctx.lineTo(panelW, height - 50); ctx.stroke();
+  });
+
+  return <SimCard title="Fusão catalisada por múons: um mecanismo real">
+    <p>O múon é um primo pesado do elétron: mesma carga, {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)} vezes a massa. Se ele toma o lugar do elétron numa molécula de deutério e trítio, a molécula encolhe na mesma proporção, porque o raio de Bohr é inversamente proporcional à massa. Com os núcleos tão próximos, o tunelamento fica rápido e a fusão acontece em cerca de um trilionésimo de segundo, mesmo num alvo de hidrogênio frio.</p>
+    <div style={{ margin: '12px 0' }}><Segmented label="Escala" value={scale} onChange={setScale} options={[{ value: 'zoom', label: 'Ampliar a molécula múonica' }, { value: 'real', label: 'Mesma escala' }]} /></div>
+    <canvas ref={canvasRef} className="sim-canvas" style={{ height: 230 }} aria-label="Comparação entre molécula comum e molécula múonica" />
+    <p className="plot-note">Distâncias aproximadas pelo dobro do raio de Bohr de cada átomo. Na mesma escala, a molécula múonica fica menor que um pixel (marcada pelo círculo). Com massa reduzida, a razão para o deutério é {formatNumber(SIZE_RATIO, 0)}; a razão de massas pura é {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)}.</p>
+  </SimCard>;
+}
+
+function EnergyBalance() {
+  const [fusions, setFusions] = useState(RECORD_FUSIONS_PER_MUON);
+  const released = energyPerMuonJ(fusions);
+  const gev = (j: number) => jToMeV(j) / 1e3;
+  const maxGeV = Math.max(gev(MUON_COST_ESTIMATE_J), gev(released)) * 1.1;
+  const breakEven = breakEvenFusions();
+  const [lowStick, highStick] = STICKING_FRACTION_RANGE;
+  return <SimCard title="Por que não gera energia">
+    <LogSlider label="Fusões catalisadas por múon" value={fusions} min={10} max={2000} onChange={(v) => setFusions(Math.round(v))} display={formatNumber(fusions, 0)} testId="input-muon-fusions" ends={['10', '2.000']} />
+    <svg viewBox="0 0 320 70" style={{ width: '100%', marginTop: 14, display: 'block' }} role="img" aria-label="Energia liberada comparada ao custo do múon">
+      <text x="0" y="14" className="plot-tick">Liberada: {formatNumber(gev(released), 2)} GeV</text>
+      <rect x="0" y="20" width={(gev(released) / maxGeV) * 320} height="12" rx="3" style={{ fill: 'hsl(var(--primary))' }} />
+      <text x="0" y="50" className="plot-tick">Custo de produzir o múon: ~{formatNumber(gev(MUON_COST_ESTIMATE_J), 0)} GeV</text>
+      <rect x="0" y="56" width={(gev(MUON_COST_ESTIMATE_J) / maxGeV) * 320} height="12" rx="3" style={{ fill: 'hsl(var(--accent))' }} />
+    </svg>
+    <div className={released >= MUON_COST_ESTIMATE_J ? 'callout' : 'callout warn'} data-testid="text-muon-balance">
+      {released >= MUON_COST_ESTIMATE_J
+        ? `Com ${formatNumber(fusions, 0)} fusões o múon pagaria a própria produção, mas nenhum experimento chegou perto disso, e converter calor e eletricidade com perdas exige ainda mais.`
+        : `Com ${formatNumber(fusions, 0)} fusões, a energia liberada é ${formatNumber((released / MUON_COST_ESTIMATE_J) * 100, 0)}% do custo do múon. Seriam precisas ~${formatNumber(breakEven, 0)} fusões só para empatar.`}
+    </div>
+    <StatGrid>
+      <Stat label="Energia por fusão D+T" value={`${formatNumber(jToMeV(energyPerMuonJ(1)), 2)} MeV`} note="das massas CODATA" />
+      <Stat label="Vida média do múon" value={`${formatNumber(muonLifetime * 1e6, 2)} μs`} note="depois ele decai" />
+      <Stat label="Limite pela aderência" value={`~${formatNumber(fusionsBeforeSticking(highStick), 0)} a ${formatNumber(fusionsBeforeSticking(lowStick), 0)}`} note={`1/ω_s, ω_s ≈ ${formatNumber(lowStick * 100, 1)}% a ${formatNumber(highStick * 100, 1)}%`} />
+    </StatGrid>
+    <p>Dois limites independentes: em cada fusão há uma chance ω_s de o múon ficar grudado no núcleo de hélio produzido, saindo do jogo; e ele só vive ~2,2 μs. Na prática, o recorde é da ordem de 100 a 150 fusões por múon.</p>
+  </SimCard>;
+}
+
 export default function Muon() {
-  return <ModulePage title="Fusão a frio e fusão por múons" description="A fusão catalisada por múons é um fenômeno conhecido: múons podem aproximar núcleos e facilitar a fusão em temperaturas relativamente baixas. Ela é diferente das alegações de fusão a frio que não foram reproduzidas de forma confiável." number="04" tag="FUSÃO" limitation="Não calculamos rendimentos energéticos, perdas de múons nem condições experimentais. Fusão catalisada por múons é observada, mas ainda não é uma fonte prática de energia; alegações de fusão a frio seguem sem evidência reproduzível convincente." />;
+  return <ModulePage
+    title="Fusão a frio e fusão por múons"
+    description="Duas histórias de fusão sem calor extremo. Uma é a fusão a frio, anunciada em 1989 e nunca confirmada. A outra é a fusão catalisada por múons, real, medida e compreendida, mas que consome mais energia do que produz."
+    number="04"
+    tag="FUSÃO"
+    limitations={[
+      <>A tabela de temperatura ambiente usa o mesmo modelo simplificado do Módulo 3: núcleos nus num gás, fator S(E) constante, sem efeitos do metal. Blindagem eletrônica em metais aumenta a taxa em laboratório em energias de keV, mas nem de longe o bastante para compensar 10⁻²⁰⁰.</>,
+      <>O tamanho das moléculas é estimado pelo raio de Bohr. A molécula real dtμ tem estrutura mais complexa, e sua formação ressonante, que torna o ciclo rápido, não é simulada.</>,
+      <>O custo de ~5 GeV por múon é uma estimativa da literatura para aceleradores; a aderência ω_s depende da densidade e da temperatura do alvo. O balanço ignora a eficiência de converter calor em eletricidade, o que torna o quadro ainda pior.</>,
+    ]}
+    references={[
+      { text: 'C. P. Berlinguette et al., "Revisiting the cold case of cold fusion", Nature 570, 45 (2019).', url: 'https://doi.org/10.1038/s41586-019-1256-6' },
+      { text: 'S. E. Jones, "Muon-catalysed fusion revisited", Nature 321, 127 (1986).', url: 'https://doi.org/10.1038/321127a0' },
+      { text: 'S. E. Koonin e M. Nauenberg, "Calculated fusion rates in isotopic hydrogen molecules", Nature 339, 690 (1989).', url: 'https://doi.org/10.1038/339690a0' },
+    ]}
+  >
+    <RoomTemperature />
+    <div className="claims">
+      <Claim level="consenso" title="Fusão a frio: não confirmada">
+        <p>Em março de 1989, Martin Fleischmann e Stanley Pons anunciaram calor em excesso numa célula eletrolítica com eletrodo de paládio e água pesada, que atribuíram à fusão nuclear. Dezenas de laboratórios tentaram reproduzir; os resultados positivos não se repetiram de forma confiável, e faltavam os nêutrons e o trítio que a fusão D+D necessariamente produz. Revisões do Departamento de Energia dos EUA, em 1989 e 2004, não encontraram evidência convincente.</p>
+        <p>Entre 2015 e 2019, uma equipe financiada pelo Google, liderada por Curtis Berlinguette, refez os experimentos com instrumentação moderna e não encontrou evidência de fusão. O mesmo artigo defendeu que materiais carregados de hidrogênio continuam valendo estudo por outros motivos.</p>
+      </Claim>
+    </div>
+    <Molecules />
+    <EnergyBalance />
+    <div className="claims">
+      <Claim level="fato" title="Fusão por múons existe">
+        <p>Prevista por Frank e Sakharov nos anos 1940 e observada por Luis Alvarez em 1956 numa câmara de bolhas de hidrogênio, ela foi medida em detalhe nos anos 1980 em Los Alamos (LAMPF), no PSI (Suíça) e em Dubna. É física nuclear e atômica padrão.</p>
+      </Claim>
+      <Claim level="consenso" title="Por que não é uma fonte de energia">
+        <p>Para ser útil, cada múon teria de catalisar várias centenas de fusões, e o recorde fica perto de 150. A aderência ao hélio é o principal gargalo; reduzir o custo de produção dos múons é a outra via estudada. Não há demonstração de ganho líquido de energia.</p>
+      </Claim>
+    </div>
+  </ModulePage>;
 }

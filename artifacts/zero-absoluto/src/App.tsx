@@ -1,6 +1,10 @@
 import { useState, type CSSProperties } from 'react';
 import { Route, Switch, Link, useLocation } from 'wouter';
 import { ArrowRight, Moon, Sun } from 'lucide-react';
+import { MODULES, contextForTemperature, modulesForTemperature } from './modules/temperatureBands';
+import { EvidenceTag } from './modules/shared';
+import { formatTemperature } from './lib/format';
+import { cmbTemperature, planckTemperature, solarCoreTemperature, solarSurfaceTemperature } from './physics/constants';
 import {
   logPositionToTemperature,
   temperatureToLogPosition,
@@ -12,22 +16,17 @@ import Muon from './modules/fusao-a-frio-e-por-muons/Page';
 import BlackHole from './modules/a-temperatura-dos-buracos-negros/Page';
 import SunBirth from './modules/o-nascimento-do-sol/Page';
 
-const modules = [
-  { title: 'Perto do zero absoluto', description: 'O que acontece com a matéria quando o movimento térmico quase desaparece?', path: '/perto-do-zero-absoluto', number: '01', tag: 'MATÉRIA & QUANTUM' },
-  { title: 'Entropia e informação', description: 'A seta do tempo, a ordem e o que significa conhecer um sistema.', path: '/entropia-e-informacao', number: '02', tag: 'TERMODINÂMICA' },
-  { title: 'Por que o Sol brilha — pico de Gamow', description: 'O pico de Gamow e a chance extraordinária de dois prótons se fundirem.', path: '/por-que-o-sol-brilha', number: '03', tag: 'FÍSICA NUCLEAR' },
-  { title: 'Fusão a frio e fusão por múons', description: 'Entre uma promessa controversa e um mecanismo quântico conhecido.', path: '/fusao-a-frio-e-por-muons', number: '04', tag: 'FUSÃO' },
-  { title: 'A temperatura dos buracos negros', description: 'Como a teoria quântica de campos em espaço-tempo curvo prevê a radiação Hawking.', path: '/a-temperatura-dos-buracos-negros', number: '05', tag: 'ASTROFÍSICA' },
-  { title: 'O nascimento do Sol', description: 'Da nuvem molecular à estrela: uma história de gravidade e calor.', path: '/o-nascimento-do-sol', number: '06', tag: 'COSMOLOGIA' },
-];
+const modules = MODULES;
 
 const milestones = [
-  { value: 1.7e-7, display: '170 nK', name: 'Condensado de Bose-Einstein' },
-  { value: 2.7, display: '2,7 K', name: 'Radiação cósmica de fundo' },
+  { value: 1.7e-7, display: '~170 nK', name: 'Condensado de Bose-Einstein' },
+  { value: cmbTemperature, display: '2,725 K', name: 'Radiação cósmica de fundo' },
+  { value: 4.2, display: '4,2 K', name: 'Hélio líquido' },
   { value: 300, display: '300 K', name: 'Temperatura ambiente' },
-  { value: 5772, display: '5.772 K', name: 'Superfície do Sol' },
-  { value: 15.7e6, display: '15,7 milhões K', name: 'Núcleo do Sol' },
-  { value: 150e6, display: '150 milhões K', name: 'Reator ITER' },
+  { value: solarSurfaceTemperature, display: '5.772 K', name: 'Superfície do Sol' },
+  { value: solarCoreTemperature, display: '15,7 milhões K', name: 'Núcleo do Sol' },
+  { value: 1.5e8, display: '~150 milhões K', name: 'Plasma do ITER' },
+  { value: planckTemperature, display: '1,417 × 10³² K', name: 'Temperatura de Planck' },
 ];
 
 function Header({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
@@ -52,23 +51,11 @@ function Header({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
   </nav></>;
 }
 
-function formatTemperature(value: number) {
-  if (value < 1e-6) return `${(value * 1e9).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} nK`;
-  if (value < 1) return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })} K`;
-  if (value < 1000) return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} K`;
-  if (value < 1e6) return `${Math.round(value).toLocaleString('pt-BR')} K`;
-  if (value < 1e9) return `${(value / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} milhões K`;
-  const exponent = Math.floor(Math.log10(value));
-  const mantissa = value / 10 ** exponent;
-  const superscript = String(exponent).replace(/[0-9-]/g, (digit) =>
-    ({ '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' })[digit] ?? digit,
-  );
-  return `${mantissa.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} × 10${superscript} K`;
-}
-
 function Home() {
-  const [slider, setSlider] = useState(0);
-  const value = logPositionToTemperature(slider / 1000);
+  const [slider, setSlider] = useState(() => temperatureToLogPosition(300) * 1000);
+  const value = logPositionToTemperature(Math.min(1, Math.max(0, slider / 1000)));
+  const matches = modulesForTemperature(value);
+  const contexts = contextForTemperature(value);
   return <main className="page-wrap">
     <section className="home-hero">
       <div className="hero-copy">
@@ -92,13 +79,23 @@ function Home() {
       </div>
       <div className="slider-track-wrap">
         <input className="temperature-slider" type="range" min="0" max="1000" step="1" value={slider} onChange={(event) => setSlider(Number(event.target.value))} aria-label="Temperatura em escala logarítmica" style={{ '--slider-progress': `${slider / 10}%` } as CSSProperties} data-testid="input-temperature-slider" />
-        <div className="scale-ends"><span>1 nK</span><span>1,4 × 10³² K</span></div>
+        <div className="scale-ends"><span>1 nK</span><span>Planck · 1,417 × 10³² K</span></div>
+      </div>
+      <div className="band-list" aria-live="polite">
+        {matches.map((match) => <Link key={match.module.number} href={match.module.path} className="band-item" data-testid={`link-band-${match.module.number}`}>
+          <div><b>MÓDULO {match.module.number}</b><strong>{match.module.title}</strong><p>{match.reason}</p></div>
+          <ArrowRight size={16} />
+        </Link>)}
+        {contexts.map((context) => <div key={context.text} className="band-item band-empty">
+          <div><EvidenceTag level={context.level} /><p style={{ marginTop: 8 }}>{context.text}</p></div>
+        </div>)}
+        {matches.length === 0 && contexts.length === 0 && <div className="band-item band-empty"><p>Nenhum módulo descreve esta faixa diretamente.</p></div>}
       </div>
       <div className="milestones">
         <div className="milestones-title"><span>REFERÊNCIAS CONHECIDAS</span><span>selecione para explorar</span></div>
         <div className="milestone-list">{milestones.map((milestone) => {
           const pos = temperatureToLogPosition(milestone.value) * 1000;
-          return <button type="button" className={`milestone ${Math.abs(slider-pos)<2 ? 'selected' : ''}`} key={milestone.name} onClick={() => setSlider(pos)} data-testid={`button-milestone-${milestone.name.toLowerCase().replaceAll(' ','-')}`}>
+          return <button type="button" className={`milestone ${Math.abs(slider - pos) < 2 ? 'selected' : ''}`} key={milestone.name} onClick={() => setSlider(pos)} data-testid={`button-milestone-${milestone.name.toLowerCase().replaceAll(' ','-')}`}>
             <b>{milestone.display}</b><span>{milestone.name}</span>
           </button>;
         })}</div>
@@ -126,7 +123,7 @@ function NotFound() {
 }
 
 function App() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
   return <div className={dark ? 'shell dark' : 'shell'}>
     <Header dark={dark} onToggle={() => setDark((current) => !current)} />
     <Switch>

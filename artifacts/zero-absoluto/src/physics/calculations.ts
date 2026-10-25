@@ -1,20 +1,21 @@
 import {
   boltzmannConstant,
   gravitationalConstant,
+  planckTemperature,
   reducedPlanckConstant,
   speedOfLight,
 } from "./constants";
 
 export const MIN_TEMPERATURE_K = 1e-9;
-export const MAX_TEMPERATURE_K = 1.4e32;
+export const MAX_TEMPERATURE_K = planckTemperature;
 
-function assertFiniteNumber(value: number, name: string): void {
+export function assertFiniteNumber(value: number, name: string): void {
   if (!Number.isFinite(value)) {
     throw new RangeError(`${name} deve ser um número finito.`);
   }
 }
 
-function assertPositive(value: number, name: string): void {
+export function assertPositive(value: number, name: string): void {
   assertFiniteNumber(value, name);
   if (value <= 0) {
     throw new RangeError(`${name} deve ser maior que zero.`);

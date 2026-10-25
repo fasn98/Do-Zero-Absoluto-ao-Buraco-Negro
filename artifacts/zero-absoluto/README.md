@@ -1,9 +1,10 @@
 # Do Zero Absoluto ao Buraco Negro
 
-Aplicação educativa em português do Brasil para explorar conceitos de
-termodinâmica e física quântica. Esta primeira versão organiza o conteúdo,
-oferece uma escala logarítmica de temperatura e prepara a camada de cálculos;
-as simulações ainda não foram implementadas.
+Aplicação educativa em português do Brasil sobre termodinâmica e física
+quântica, com seis simulações interativas. Toda simulação usa apenas física
+estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
+referências, e cada afirmação é marcada como **fato estabelecido**,
+**consenso** ou **hipótese em pesquisa**.
 
 ## Executar
 
@@ -20,31 +21,83 @@ pnpm --filter @workspace/zero-absoluto run typecheck
 pnpm --filter @workspace/zero-absoluto run test
 ```
 
+O build exige as variáveis `PORT` e `BASE_PATH` (definidas em `.replit-artifact/artifact.toml`):
+
+```bash
+PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
+```
+
 ## Estrutura
 
-- `src/App.tsx`: página inicial, navegação persistente e definição das rotas.
-- `src/modules/ModulePage.tsx`: estrutura compartilhada das páginas dos módulos.
-- `src/modules/<modulo>/Page.tsx`: conteúdo de cada módulo, em pasta própria.
-- `src/physics/constants.js`: constantes físicas com unidades comentadas.
-- `src/physics/constants.d.ts`: tipos TypeScript das constantes em JavaScript.
-- `src/physics/calculations.ts`: cálculos puros, separados da interface.
-- `src/physics/calculations.test.ts`: testes unitários com Vitest.
+- `src/App.tsx`: página inicial (régua de temperatura), navegação e rotas.
+- `src/modules/ModulePage.tsx`: estrutura comum dos módulos (limitações e referências).
+- `src/modules/shared.tsx`: controles (escala log, atalhos), selos de evidência, laço de Canvas.
+- `src/modules/Plot.tsx`: gráfico de linhas em SVG próprio, sem biblioteca de gráficos.
+- `src/modules/temperatureBands.ts`: qual módulo descreve cada faixa de temperatura.
+- `src/modules/<modulo>/Page.tsx`: interface de cada módulo.
+- `src/lib/format.ts`: formatação pt-BR, incluindo números a partir de log₁₀ (ex.: 10⁻¹⁹³).
+- `src/physics/constants.js`: **única** fonte de constantes (CODATA 2022, IAU 2015, PDG, AME 2020), com unidade e fonte.
+- `src/physics/*.ts`: funções físicas puras, uma por módulo, cada uma com `*.test.ts`.
+- `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
-## Rotas de conteúdo
+Os testes comparam com valores de referência com tolerância de 2%.
 
-- `/`: escala de temperatura de 1 nK a 1,4 × 10³² K.
-- `/perto-do-zero-absoluto`: Perto do zero absoluto.
-- `/entropia-e-informacao`: Entropia e informação.
-- `/por-que-o-sol-brilha`: Por que o Sol brilha (pico de Gamow).
-- `/fusao-a-frio-e-por-muons`: Fusão a frio e fusão por múons.
-- `/a-temperatura-dos-buracos-negros`: A temperatura dos buracos negros.
-- `/o-nascimento-do-sol`: O nascimento do Sol.
+## Física por módulo
 
-## Física
+### Tela inicial: régua de temperatura
 
-As constantes fundamentais estão baseadas no CODATA 2022; a massa solar é o
-valor nominal adotado pela IAU em 2015. As funções implementadas calculam a
-conversão entre posição e temperatura na escala logarítmica, a energia térmica
-característica `kBT`, o raio de Schwarzschild e a temperatura de Hawking para
-um buraco negro de Schwarzschild. Esses cálculos não constituem as simulações
-dos módulos.
+Escala logarítmica de 1 nK até a temperatura de Planck, T_P = 1,416784 × 10³² K.
+Para cada temperatura, `modulesForTemperature` lista os módulos relevantes (por
+exemplo, a massa de buraco negro com aquela temperatura de Hawking ou o custo de
+Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
+
+### Módulo 1: Perto do zero absoluto (`quantumGas.ts`)
+
+- Comprimento de onda térmico: λ = h / √(2π m k T)
+- Densidade no espaço de fase: n·λ³; condensação em n·λ³ = ζ(3/2) ≈ 2,612
+- Temperatura crítica: T_c = (2πħ² / (m k)) (n / ζ(3/2))^(2/3)
+- Fração condensada (gás ideal uniforme): 1 − (T/T_c)^(3/2)
+- Energia de ponto zero: E₀ = ½ħω
+- Velocidades de Maxwell-Boltzmann: cada componente gaussiana com σ = √(kT/m)
+- Átomo: rubídio-87; densidade fixada para T_c = 170 nK.
+
+### Módulo 2: Entropia e informação (`entropy.ts`)
+
+- S = k ln W, com W = C(N, N_esq) (sempre em ln W)
+- Probabilidade de todas as partículas numa metade: 2⁻ᴺ
+- Expansão livre de 1 mol: ΔS = R ln 2
+- Demônio de Maxwell, gás 2D: S/k = Σ Nᵢ ln Tᵢ + ln C(N, N_esq) + const.; cada observação = 1 bit
+- Princípio de Landauer: E_min = kT ln 2 por bit apagado (≈ 2,87 × 10⁻²¹ J a 300 K)
+
+### Módulo 3: Por que o Sol brilha (`gamow.ts`)
+
+- Energia de Gamow: E_G = 2 m_r c² (π α Z₁Z₂)² (p+p ≈ 493 keV)
+- Pico de Gamow: E₀ = (E_G (kT)² / 4)^(1/3); largura Δ = (4/√3) √(E₀ kT)
+- Taxa relativa: (kT)^(−3/2) ∫ exp(−E/kT − √(E_G/E)) dE, normalizada pela mesma reação a 15,7 milhões K, com S(E) constante; integral em malha logarítmica com log-sum-exp
+- Barreira de Coulomb: αħc · Z₁Z₂ / r ≈ 1,44 MeV·fm × Z₁Z₂ / r, r = 1,2 (A₁^(1/3) + A₂^(1/3)) fm
+- Previsão clássica: exp(−barreira/kT); quântica no pico: exp(−√(E_G/E₀))
+- Energia da reação D+T a partir das massas CODATA: Q ≈ 17,59 MeV
+- Teste extra: a integral numérica concorda com a aproximação gaussiana corrigida, (√π/2) Δ e^(−τ) (1 + 5/(12τ)), com τ = 3E₀/kT.
+
+### Módulo 4: Fusão a frio e fusão por múons (`muonCatalysis.ts`, reusa `gamow.ts`)
+
+- Tunelamento D+D a 300 K pela física do Módulo 3 (E_G(D+D) ≈ 0,986 MeV)
+- Raio de Bohr: a = ħ / (m_r c α); encolhimento da molécula = m_r(μ, d) / m_r(e, d) ≈ 196 (m_μ/m_e ≈ 207)
+- Fusões antes da aderência: ≈ 1/ω_s, com ω_s ≈ 0,4% a 0,9%
+- Balanço: n × 17,59 MeV contra ~5 GeV por múon (estimativa da literatura); empate em ~284 fusões
+- Vida média do múon: τ = 2,197 μs
+
+### Módulo 5: A temperatura dos buracos negros (`blackHole.ts`)
+
+- Temperatura de Hawking: T = ħc³ / (8πGMk) (1 M☉ ≈ 6,2 × 10⁻⁸ K)
+- Raio de Schwarzschild: r_s = 2GM/c²; área A = 4π r_s²
+- Entropia de Bekenstein-Hawking: S = k c³ A / (4 G ħ) (1 M☉ ≈ 10⁷⁷ k)
+- Evaporação (só fótons): t ≈ 5120 π G² M³ / (ħ c⁴) (1 M☉ ≈ 2,1 × 10⁶⁷ anos)
+- Massa com temperatura T: M = ħc³ / (8πGkT) (T da radiação de fundo → ≈ 4,5 × 10²² kg)
+
+### Módulo 6: O nascimento do Sol (`stellar.ts`)
+
+- Kelvin-Helmholtz: t_KH = G M² / (R L) (Sol atual ≈ 3,1 × 10⁷ anos)
+- Queda livre: t_ff = √(3π / (32 G ρ))
+- Sol jovem fraco, Gough (1981): L(t) = L☉ / (1 + 0,4 (1 − t / 4,57 × 10⁹ anos)) (t = 0 → ≈ 0,71 L☉)
+- As fases da linha do tempo (0 a 100 milhões de anos) são texto com nível de evidência; a cena é esquemática e não simula a luminosidade antes da sequência principal.
