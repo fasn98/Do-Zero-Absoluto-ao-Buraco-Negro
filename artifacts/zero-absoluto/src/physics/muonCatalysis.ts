@@ -55,3 +55,13 @@ export function breakEvenFusions(costJ: number = MUON_COST_ESTIMATE_J): number {
 export function muonSurvival(timeS: number): number {
   return Math.exp(-timeS / muonLifetime);
 }
+
+/**
+ * Teto de fusões por múon imposto pela aderência ao ⁴He, usando a menor
+ * fração de aderência da faixa (≈ 0,4% → ~250). Acima disso, o valor é hipotético.
+ */
+export const MAX_FUSIONS_BY_STICKING = fusionsBeforeSticking(STICKING_FRACTION_RANGE[0]);
+
+export function isBeyondStickingLimit(fusions: number): boolean {
+  return fusions > MAX_FUSIONS_BY_STICKING;
+}

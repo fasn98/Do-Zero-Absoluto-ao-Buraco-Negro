@@ -53,14 +53,19 @@ type LogSliderProps = {
   display: ReactNode;
   testId?: string;
   ends?: [string, string];
+  /** Trecho do controle, a partir de `from`, que não é alcançável hoje: aparece hachurado. */
+  hypothetical?: { from: number; label: string };
 };
 
 /** Controle deslizante uniforme em log₁₀ do valor. */
-export function LogSlider({ value, min, max, onChange, label, display, testId, ends }: LogSliderProps) {
+export function LogSlider({ value, min, max, onChange, label, display, testId, ends, hypothetical }: LogSliderProps) {
   const span = Math.log10(max / min);
   const position = Math.round((Math.log10(value / min) / span) * 1000);
+  const hypoStart = hypothetical ? (Math.log10(hypothetical.from / min) / span) * 100 : null;
   return <div className="log-slider">
     <div className="log-slider-head"><span>{label}</span><output>{display}</output></div>
+    <div className="slider-wrap">
+    {hypoStart !== null && <span className="slider-hypothetical" style={{ left: `${hypoStart}%` }} aria-hidden="true" />}
     <input
       type="range" min="0" max="1000" step="1" value={Math.min(1000, Math.max(0, position))}
       className="temperature-slider"
@@ -69,7 +74,9 @@ export function LogSlider({ value, min, max, onChange, label, display, testId, e
       onChange={(event) => onChange(min * 10 ** ((Number(event.target.value) / 1000) * span))}
       data-testid={testId}
     />
+    </div>
     {ends && <div className="scale-ends"><span>{ends[0]}</span><span>{ends[1]}</span></div>}
+    {hypothetical && hypoStart !== null && <div className="hypothetical-legend" style={{ paddingLeft: `min(${hypoStart}%, calc(100% - 210px))` }} data-testid={testId ? `${testId}-hypothetical` : undefined}><i aria-hidden="true" />{hypothetical.label}</div>}
   </div>;
 }
 

@@ -96,9 +96,13 @@ export default function NearZero() {
     }
   });
 
-  // Barra de 10⁻¹⁵ a 10¹ em escala logarítmica (300 K dá ~3,5 × 10⁻¹⁴).
-  const psdPosition = Math.min(1, Math.max(0, (Math.log10(model.psd) + 15) / 16));
-  const criticalPosition = (Math.log10(CRITICAL_PHASE_SPACE_DENSITY) + 15) / 16;
+  // Barra de 10⁻¹⁵ a 10² em escala logarítmica: 300 K dá ~3,5 × 10⁻¹⁴ e 50 nK, ~16,4.
+  // Abaixo de ~15 nK (n·λ³ > 100) a barra fica cheia; 10 nK, o fim do controle, dá ~183.
+  const PSD_MIN_LOG = -15;
+  const PSD_MAX_LOG = 2;
+  const toBar = (psd: number) => Math.min(1, Math.max(0, (Math.log10(psd) - PSD_MIN_LOG) / (PSD_MAX_LOG - PSD_MIN_LOG)));
+  const psdPosition = toBar(model.psd);
+  const criticalPosition = toBar(CRITICAL_PHASE_SPACE_DENSITY);
   const zeroPoint = zeroPointEnergyJ(TRAP_OMEGA);
 
   return <ModulePage
@@ -134,7 +138,7 @@ export default function NearZero() {
           <rect x="0" y="3" width={psdPosition * 100} height="4" rx="2" style={{ fill: model.regime !== 'gas' ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
           <rect x={criticalPosition * 100 - 0.3} y="0" width="0.6" height="10" style={{ fill: 'hsl(var(--foreground))' }} />
         </svg>
-        <div className="scale-ends"><span>10⁻¹⁵</span><span>2,612 (transição)</span></div>
+        <div className="scale-ends"><span>10⁻¹⁵</span><span>marca: 2,612 (transição)</span><span>10²</span></div>
       </div>
 
       {model.regime === 'condensate' && <div className="callout warn" data-testid="text-bec-status">Condensado de Bose-Einstein: n·λ³ passou de 2,612. Cerca de {formatNumber(model.fraction * 100, 0)}% dos átomos estão no mesmo estado quântico, de momento zero.</div>}

@@ -13,6 +13,7 @@ import {
   reducedMassKg,
 } from '../../physics/gamow';
 import {
+  MAX_FUSIONS_BY_STICKING,
   MUON_COST_ESTIMATE_J,
   MUON_ELECTRON_MASS_RATIO,
   RECORD_FUSIONS_PER_MUON,
@@ -21,6 +22,7 @@ import {
   breakEvenFusions,
   energyPerMuonJ,
   fusionsBeforeSticking,
+  isBeyondStickingLimit,
   muonicSizeRatio,
 } from '../../physics/muonCatalysis';
 import { lnToLog10 } from '../../physics/logmath';
@@ -92,18 +94,18 @@ function Molecules() {
       const maxText = panelW - 16;
       ctx.fillStyle = cssColor(canvas, '--foreground', 0.9);
       ctx.textAlign = 'center';
-      fitFont(ctx, label, maxText, 12, '500 {px}px DM Sans, sans-serif');
+      fitFont(ctx, label, maxText, 12, '500 {px}px "Noto Sans", "DM Sans", sans-serif');
       ctx.fillText(label, cx, height - 30);
       ctx.fillStyle = cssColor(canvas, '--muted-foreground', 1);
-      fitFont(ctx, sub, maxText, 11, '{px}px DM Mono, monospace');
+      fitFont(ctx, sub, maxText, 11, '{px}px "Noto Sans Mono", "DM Mono", monospace');
       ctx.fillText(sub, cx, height - 14);
     };
     const base = Math.min(panelW * 0.32, 90);
     // Em telas estreitas, rótulos curtos; fitFont garante que cabem no painel.
     const narrow = panelW < 260;
-    drawMolecule(panelW / 2, height * 0.42, base, narrow ? 'Comum (elétron)' : 'Molécula comum (elétron)', `núcleos a ~${formatLength(2 * BOHR_E)}`, '--chart-5');
+    drawMolecule(panelW / 2, height * 0.42, base, narrow ? 'Íon D₂⁺ (elétron)' : 'Íon molecular D₂⁺ (2 núcleos, 1 elétron)', `núcleos a ~${formatLength(2 * BOHR_E)}`, '--chart-5');
     const muSep = scale === 'zoom' ? base : base / SIZE_RATIO;
-    drawMolecule(panelW * 1.5, height * 0.42, muSep, scale === 'zoom' ? `${narrow ? 'Múonica' : 'Molécula múonica'}, ampliada ${formatNumber(SIZE_RATIO, 0)}×` : `${narrow ? 'Múonica' : 'Molécula múonica'}, escala real`, `núcleos a ~${formatLength(2 * BOHR_MU)}`, '--accent');
+    drawMolecule(panelW * 1.5, height * 0.42, muSep, scale === 'zoom' ? `${narrow ? 'dtμ' : 'Molécula múonica dtμ'}, ampliada ${formatNumber(SIZE_RATIO, 0)}×` : `${narrow ? 'dtμ' : 'Molécula múonica dtμ'}, escala real`, `núcleos a ~${formatLength(2 * BOHR_MU)}`, '--accent');
     if (scale === 'real') {
       ctx.strokeStyle = cssColor(canvas, '--accent', 0.8);
       ctx.beginPath(); ctx.arc(panelW * 1.5, height * 0.42, 12, 0, Math.PI * 2); ctx.stroke();
@@ -113,10 +115,10 @@ function Molecules() {
   });
 
   return <SimCard title="Fusão catalisada por múons: um mecanismo real">
-    <p>O múon é um primo pesado do elétron: mesma carga, {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)} vezes a massa. Se ele toma o lugar do elétron numa molécula de deutério e trítio, a molécula encolhe na mesma proporção, porque o raio de Bohr é inversamente proporcional à massa. Com os núcleos tão próximos, o tunelamento fica rápido e a fusão acontece em cerca de um trilionésimo de segundo, mesmo num alvo de hidrogênio frio.</p>
+    <p>O múon é um primo pesado do elétron: mesma carga, {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)} vezes a massa. Se ele toma o lugar do elétron num sistema de dois núcleos, deutério e trítio, forma a molécula múonica dtμ, que é menor na mesma proporção, porque o raio de Bohr é inversamente proporcional à massa. Com os núcleos tão próximos, o tunelamento fica rápido e a fusão acontece em cerca de um trilionésimo de segundo, mesmo num alvo de hidrogênio frio.</p>
     <div style={{ margin: '12px 0' }}><Segmented label="Escala" value={scale} onChange={setScale} options={[{ value: 'zoom', label: 'Ampliar a molécula múonica' }, { value: 'real', label: 'Mesma escala' }]} /></div>
     <canvas ref={canvasRef} className="sim-canvas" style={{ height: 230 }} aria-label="Comparação entre molécula comum e molécula múonica" />
-    <p className="plot-note">Distâncias aproximadas pelo dobro do raio de Bohr de cada átomo. Na mesma escala, a molécula múonica fica menor que um pixel (marcada pelo círculo). Com massa reduzida, a razão para o deutério é {formatNumber(SIZE_RATIO, 0)}; a razão de massas pura é {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)}.</p>
+    <p className="plot-note">O análogo eletrônico da dtμ (dois núcleos e um múon) é o íon molecular D₂⁺ ou H₂⁺ (dois núcleos e um elétron), com núcleos a ~{formatLength(2 * BOHR_E)}, dois raios de Bohr. Não é a molécula neutra D₂ ou H₂, que tem dois elétrons e núcleos a 74 pm. As duas distâncias são aproximadas pelo dobro do raio de Bohr de cada caso. Na mesma escala, a molécula múonica fica menor que um pixel (marcada pelo círculo). Com massa reduzida, a razão para o deutério é {formatNumber(SIZE_RATIO, 0)}; a razão de massas pura é {formatNumber(MUON_ELECTRON_MASS_RATIO, 0)}.</p>
   </SimCard>;
 }
 
@@ -127,21 +129,29 @@ function EnergyBalance() {
   const maxGeV = Math.max(gev(MUON_COST_ESTIMATE_J), gev(released)) * 1.1;
   const breakEven = breakEvenFusions();
   const [lowStick, highStick] = STICKING_FRACTION_RANGE;
+  const hypothetical = isBeyondStickingLimit(fusions);
+  const pays = released >= MUON_COST_ESTIMATE_J;
+  const stickingRange = `~${formatNumber(fusionsBeforeSticking(highStick), 0)} a ${formatNumber(MAX_FUSIONS_BY_STICKING, 0)}`;
+  let message: string;
+  if (hypothetical) {
+    message = `Valor hipotético: chegar a ${formatNumber(fusions, 0)} fusões por múon não é possível hoje. A cada fusão, o múon tem chance de ${formatNumber(lowStick * 100, 1)}% a ${formatNumber(highStick * 100, 1)}% de grudar no núcleo de hélio produzido e sair do ciclo, o que limita a média a ${stickingRange} fusões; o recorde medido fica perto de ${RECORD_FUSIONS_PER_MUON}, e o múon ainda decai em ~2,2 μs. `
+      + (pays
+        ? 'Só nesse cenário o múon pagaria a própria produção, e converter calor em eletricidade, com perdas, exigiria ainda mais.'
+        : `Mesmo assim, a energia liberada seria ${formatNumber((released / MUON_COST_ESTIMATE_J) * 100, 0)}% do custo do múon.`);
+  } else {
+    message = `Com ${formatNumber(fusions, 0)} fusões, a energia liberada é ${formatNumber((released / MUON_COST_ESTIMATE_J) * 100, 0)}% do custo do múon. Seriam precisas ~${formatNumber(breakEven, 0)} fusões só para empatar, acima do limite imposto pela aderência.`;
+  }
   return <SimCard title="Por que não gera energia">
-    <LogSlider label="Fusões catalisadas por múon" value={fusions} min={10} max={2000} onChange={(v) => setFusions(Math.round(v))} display={formatNumber(fusions, 0)} testId="input-muon-fusions" ends={['10', '2.000']} />
+    <LogSlider label="Fusões catalisadas por múon" value={fusions} min={10} max={2000} onChange={(v) => setFusions(Math.round(v))} display={formatNumber(fusions, 0)} testId="input-muon-fusions" ends={['10', '2.000']} hypothetical={{ from: MAX_FUSIONS_BY_STICKING, label: `acima de ~${formatNumber(MAX_FUSIONS_BY_STICKING, 0)}: hipotético (aderência ao hélio)` }} />
     <div className="energy-bars" role="img" aria-label="Energia liberada comparada ao custo do múon">
-      <div><span>Liberada: {formatSig(gev(released))} GeV</span><i style={{ width: `${(gev(released) / maxGeV) * 100}%`, background: 'hsl(var(--primary))' }} /></div>
+      <div><span>Liberada: {formatSig(gev(released))} GeV{hypothetical ? ' (hipotético)' : ''}</span><i className={hypothetical ? 'hypothetical' : undefined} style={{ width: `${(gev(released) / maxGeV) * 100}%`, background: 'hsl(var(--primary))' }} /></div>
       <div><span>Custo de produzir o múon: ~{formatNumber(gev(MUON_COST_ESTIMATE_J), 0)} GeV</span><i style={{ width: `${(gev(MUON_COST_ESTIMATE_J) / maxGeV) * 100}%`, background: 'hsl(var(--accent))' }} /></div>
     </div>
-    <div className={released >= MUON_COST_ESTIMATE_J ? 'callout' : 'callout warn'} data-testid="text-muon-balance">
-      {released >= MUON_COST_ESTIMATE_J
-        ? `Com ${formatNumber(fusions, 0)} fusões o múon pagaria a própria produção, mas nenhum experimento chegou perto disso, e converter calor em eletricidade, com perdas, exige ainda mais.`
-        : `Com ${formatNumber(fusions, 0)} fusões, a energia liberada é ${formatNumber((released / MUON_COST_ESTIMATE_J) * 100, 0)}% do custo do múon. Seriam precisas ~${formatNumber(breakEven, 0)} fusões só para empatar.`}
-    </div>
+    <div className={pays && !hypothetical ? 'callout' : 'callout warn'} data-testid="text-muon-balance">{message}</div>
     <StatGrid>
       <Stat label="Energia por fusão D+T" value={`${formatSig(jToMeV(energyPerMuonJ(1)))} MeV`} note="das massas CODATA" />
       <Stat label="Vida média do múon" value={`${formatSig(muonLifetime * 1e6)} μs`} note="depois ele decai" />
-      <Stat label="Limite pela aderência" value={`~${formatNumber(fusionsBeforeSticking(highStick), 0)} a ${formatNumber(fusionsBeforeSticking(lowStick), 0)}`} note={`1/ω_s, ω_s ≈ ${formatNumber(lowStick * 100, 1)}% a ${formatNumber(highStick * 100, 1)}%`} />
+      <Stat label="Limite pela aderência" value={stickingRange} note={`1/ω_s, ω_s ≈ ${formatNumber(lowStick * 100, 1)}% a ${formatNumber(highStick * 100, 1)}%`} />
     </StatGrid>
     <p>Dois limites independentes: em cada fusão há uma chance ω_s de o múon ficar grudado no núcleo de hélio produzido, saindo do jogo; e ele só vive ~2,2 μs. Na prática, o recorde é da ordem de 100 a 150 fusões por múon.</p>
   </SimCard>;

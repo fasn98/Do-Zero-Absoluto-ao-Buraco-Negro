@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  MAX_FUSIONS_BY_STICKING,
   MUON_ELECTRON_MASS_RATIO,
   bohrRadiusM,
   breakEvenFusions,
   energyPerMuonJ,
   fusionsBeforeSticking,
+  isBeyondStickingLimit,
   muonSurvival,
   muonicSizeRatio,
 } from "./muonCatalysis";
@@ -49,5 +51,17 @@ describe("fusão por múons (Módulo 4)", () => {
     within2(jToMeV(EG), 0.986);
     const log10P = lnTunnelingProbability(gamowPeakEnergyJ(EG, kTJ(300)), EG) / Math.LN10;
     expect(log10P).toBeLessThan(-150);
+  });
+
+  it("acima de ~250 fusões por múon (aderência de 0,4%) o valor é hipotético", () => {
+    within2(MAX_FUSIONS_BY_STICKING, 250);
+    expect(isBeyondStickingLimit(150)).toBe(false);
+    expect(isBeyondStickingLimit(250)).toBe(false);
+    expect(isBeyondStickingLimit(251)).toBe(true);
+    expect(isBeyondStickingLimit(2000)).toBe(true);
+  });
+
+  it("2 raios de Bohr ≈ 106 pm: distância de equilíbrio do íon H₂⁺ (2,00 a₀), não da molécula H₂ (74 pm)", () => {
+    within2(2 * bohrRadiusM(reducedMassKg(electronMass, deuteronMass)), 1.057e-10);
   });
 });
