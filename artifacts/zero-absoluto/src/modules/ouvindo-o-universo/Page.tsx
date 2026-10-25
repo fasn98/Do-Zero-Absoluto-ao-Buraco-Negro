@@ -122,6 +122,7 @@ function Chirp() {
       <div className="btn-row">
         <button type="button" className="btn" onClick={() => { setM1(GW150914.m1); setM2(GW150914.m2); }} data-testid="button-gw150914">GW150914 (36 + 29)</button>
         <button type="button" className="btn primary" onClick={play} disabled={playing} data-testid="button-gw-audio">{playing ? 'Tocando…' : speedUp > 1 ? `Ouvir o chirp (acelerado ${speedUp}×)` : 'Ouvir o chirp (velocidade real)'}</button>
+        <span className="btn-note" data-testid="text-audio-note">Use fone de ouvido: o som real é grave demais para o alto-falante do celular.</span>
       </div>
     </div>
 
