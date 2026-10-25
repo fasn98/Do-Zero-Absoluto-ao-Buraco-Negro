@@ -55,6 +55,8 @@ export function lnGamma(x: number): number {
 /** ln C(n, k): logaritmo do coeficiente binomial. */
 export function lnBinomial(n: number, k: number): number {
   if (k < 0 || k > n) return -Infinity;
+  // C(n, 0) = C(n, n) = 1 exatamente; lnGamma deixaria um resto de arredondamento.
+  if (k === 0 || k === n) return 0;
   return lnGamma(n + 1) - lnGamma(k + 1) - lnGamma(n - k + 1);
 }
 

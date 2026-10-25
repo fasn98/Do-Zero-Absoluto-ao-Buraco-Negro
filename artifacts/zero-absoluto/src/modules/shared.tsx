@@ -29,7 +29,9 @@ export function SimCard({ title, children, label }: { title: string; children: R
 
 /** Símbolo matemático ou letra grega: nunca passa por text-transform (λ não vira Λ, kT não vira KT). */
 export function Sym({ children }: { children: ReactNode }) {
-  return <span className="sym">{children}</span>;
+  // Espaços não separáveis: a fórmula nunca quebra no meio ("S = k ln W").
+  const content = typeof children === 'string' ? children.replace(/ /g, '\u00a0') : children;
+  return <span className="sym">{content}</span>;
 }
 
 export function Stat({ label, value, note, testId }: { label: ReactNode; value: ReactNode; note?: ReactNode; testId?: string }) {

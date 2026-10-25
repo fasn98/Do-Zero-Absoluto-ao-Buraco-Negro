@@ -32,6 +32,8 @@ describe("logmath", () => {
     expect(lnGamma(5)).toBeCloseTo(Math.log(24), 10);
     expect(lnGamma(0.5)).toBeCloseTo(0.5 * Math.log(Math.PI), 10);
     expect(lnBinomial(4, 2)).toBeCloseTo(Math.log(6), 10);
+    expect(lnBinomial(40, 40)).toBe(0);
+    expect(lnBinomial(40, 0)).toBe(0);
   });
 });
 

@@ -3,6 +3,7 @@ import ModulePage from '../ModulePage';
 import { Claim, LogSlider, SimCard, Stat, StatGrid, Sym, cssColor, useCanvasLoop } from '../shared';
 import {
   boltzmannEntropyJK,
+  cleanLnW,
   demonLedger,
   landauerLimitJ,
   lnMicrostates,
@@ -76,7 +77,7 @@ function FreeExpansion() {
   });
 
   const reset = () => { gas.current = makeGas(EXPANSION_N, true); history.current = [0]; setNLeft(EXPANSION_N); setDivider(true); };
-  const lnW = lnMicrostates(EXPANSION_N, nLeft);
+  const lnW = cleanLnW(lnMicrostates(EXPANSION_N, nLeft));
   const lnWMax = lnMicrostates(EXPANSION_N, EXPANSION_N / 2);
   const points = history.current.map((v, i, arr) => `${(i / Math.max(1, arr.length - 1)) * 100},${40 - (v / lnWMax) * 36}`).join(' ');
 

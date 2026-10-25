@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   boltzmannEntropyJK,
+  cleanLnW,
   demonLedger,
   erasureEntropyOverK,
   landauerLimitJ,
@@ -53,5 +54,15 @@ describe("entropia e informação (Módulo 2)", () => {
     // apagar não muda o custo total: mover bits da memória para "apagados"
     expect(demonLedger(-3.1, 21, 0).balanceOverK).toBeCloseTo(apagados.balanceOverK, 12);
     expect(demonLedger(-3.1, 5, 16).balanceOverK).toBeCloseTo(apagados.balanceOverK, 12);
+  });
+
+  it("gás todo de um lado: W = 1, ln W = 0 e S = 0 exatos", () => {
+    expect(lnMicrostates(40, 40)).toBe(0);
+    expect(lnMicrostates(40, 0)).toBe(0);
+    expect(boltzmannEntropyJK(lnMicrostates(40, 40))).toBe(0);
+    // resto de arredondamento vira zero na exibição; valores reais não são afetados
+    expect(cleanLnW(2.8e-15)).toBe(0);
+    expect(cleanLnW(-3e-12)).toBe(0);
+    expect(cleanLnW(Math.log(40))).toBeCloseTo(Math.log(40), 12);
   });
 });

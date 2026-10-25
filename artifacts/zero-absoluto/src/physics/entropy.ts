@@ -14,6 +14,11 @@ export function lnMicrostates(total: number, nLeft: number): number {
   return lnBinomial(total, nLeft);
 }
 
+/** ln W para exibição: |ln W| < 10⁻⁹ é resto de arredondamento e vira 0 exato. */
+export function cleanLnW(lnW: number): number {
+  return Math.abs(lnW) < 1e-9 ? 0 : lnW;
+}
+
 /** S = k ln W, em J/K. */
 export function boltzmannEntropyJK(lnW: number): number {
   return boltzmannConstant * lnW;
