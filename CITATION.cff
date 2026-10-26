@@ -21,6 +21,9 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.23674691
     description: "DOI da versão 1.0.0, arquivada no Zenodo."
+  - type: doi
+    value: 10.5281/zenodo.23677544
+    description: "DOI da versão 1.1.0, arquivada no Zenodo."
 license: MIT
 repository-code: "https://github.com/fasn98/Do-Zero-Absoluto-ao-Buraco-Negro"
 url: "https://do-zero-absoluto-ao-buraco-negro.replit.app"

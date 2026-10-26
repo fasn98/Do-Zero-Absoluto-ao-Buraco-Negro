@@ -140,7 +140,7 @@ Use o DOI de conceito, que reúne todas as versões e resolve sempre para a mais
 
 > Sales Nogueira, F. A. (2026). *Do zero absoluto ao buraco negro* [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.23674690
 
-Para citar exatamente a versão 1.0.0, use o DOI dela: [10.5281/zenodo.23674691](https://doi.org/10.5281/zenodo.23674691). Os metadados completos estão em [CITATION.cff](CITATION.cff); o GitHub gera a citação em outros formatos pelo botão "Cite this repository".
+Para citar exatamente uma versão, use o DOI dela: 1.1.0, [10.5281/zenodo.23677544](https://doi.org/10.5281/zenodo.23677544); 1.0.0, [10.5281/zenodo.23674691](https://doi.org/10.5281/zenodo.23674691). Os metadados completos estão em [CITATION.cff](CITATION.cff); o GitHub gera a citação em outros formatos pelo botão "Cite this repository".
 
 Autor: Fabio Augusto Sales Nogueira, ORCID [0009-0001-9303-8707](https://orcid.org/0009-0001-9303-8707).
 
