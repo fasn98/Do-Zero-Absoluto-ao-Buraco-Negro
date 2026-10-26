@@ -1,0 +1,51 @@
+name: Sugestão de módulo
+description: Proponha um tema novo ou uma simulação para uma das trilhas.
+title: "[Módulo] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Os módulos usam só física estabelecida e verificável nas simulações, e separam fato, consenso e hipótese. *English is fine too.*
+  - type: input
+    id: tema
+    attributes:
+      label: Tema
+      description: Por exemplo, "Neutrinos e oscilações".
+    validations:
+      required: true
+  - type: dropdown
+    id: trilha
+    attributes:
+      label: Trilha
+      options:
+        - Trilha 1 · Do zero absoluto ao buraco negro
+        - Trilha 2 · Origem e destino do universo
+        - Não sei
+    validations:
+      required: true
+  - type: textarea
+    id: pergunta
+    attributes:
+      label: Pergunta central e simulação
+      description: Que pergunta o módulo responde, e o que o leitor poderia mexer na simulação?
+    validations:
+      required: true
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Fato, consenso e hipótese
+      description: No tema, o que é fato estabelecido, o que é consenso e o que ainda é hipótese em pesquisa?
+    validations:
+      required: true
+  - type: textarea
+    id: fontes
+    attributes:
+      label: Fontes
+      description: Artigos de revisão ou dados de referência, de preferência com DOI.
+    validations:
+      required: true
+  - type: input
+    id: publico
+    attributes:
+      label: Público e uso
+      description: Por exemplo, "aula de física moderna no 3º ano do ensino médio".

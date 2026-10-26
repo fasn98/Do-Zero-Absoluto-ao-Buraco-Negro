@@ -1,0 +1,49 @@
+name: Erro de física ou de número
+description: Um valor, uma fórmula, um selo de evidência ou uma referência parece errado.
+title: "[Física] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado! Erros de física são a prioridade deste projeto. Quanto mais precisa a fonte, mais rápida a correção.
+        *English is fine too.*
+  - type: input
+    id: modulo
+    attributes:
+      label: Módulo e endereço
+      description: Por exemplo, "2.3, https://do-zero-absoluto-ao-buraco-negro.replit.app/confronto-com-dados-reais?dados=bao-cmb".
+    validations:
+      required: true
+  - type: textarea
+    id: exibido
+    attributes:
+      label: O que o app mostra
+      description: O valor, a frase ou o selo exibido, com os controles na posição em que você estava.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que você esperava
+      description: O valor ou a afirmação correta, e o raciocínio ou o cálculo.
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Fonte
+      description: Referência que sustenta a correção, de preferência com DOI.
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de problema
+      options:
+        - Número ou unidade
+        - Fórmula ou modelo
+        - Selo de evidência (fato, consenso, hipótese)
+        - Referência ou DOI
+        - Outro
+    validations:
+      required: true

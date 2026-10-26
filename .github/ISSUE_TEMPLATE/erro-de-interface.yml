@@ -1,0 +1,51 @@
+name: Erro de interface
+description: Algo não aparece, não responde, fica cortado ou ilegível.
+title: "[Interface] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por relatar! *English is fine too.*
+  - type: input
+    id: endereco
+    attributes:
+      label: Endereço da página
+      description: Copie o endereço completo, com os parâmetros (por exemplo, "?dados=bao-cmb").
+    validations:
+      required: true
+  - type: textarea
+    id: problema
+    attributes:
+      label: O que aconteceu
+      description: O que você fez, o que esperava e o que viu.
+    validations:
+      required: true
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador e aparelho
+      description: Por exemplo, "Chrome 130 no Android" ou "Firefox 131 no Windows".
+    validations:
+      required: true
+  - type: dropdown
+    id: tela
+    attributes:
+      label: Largura da tela
+      options:
+        - Celular
+        - Tablet
+        - Computador
+    validations:
+      required: true
+  - type: dropdown
+    id: tema
+    attributes:
+      label: Tema
+      options:
+        - Claro
+        - Escuro
+  - type: textarea
+    id: captura
+    attributes:
+      label: Captura de tela
+      description: Se puder, arraste uma imagem para cá.

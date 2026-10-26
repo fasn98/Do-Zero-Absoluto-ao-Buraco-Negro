@@ -67,6 +67,23 @@ PORT=5173 BASE_PATH=/ pnpm run build     # versão de produção em dist/public
 
 As variáveis `PORT` e `BASE_PATH` são obrigatórias (o Vite as lê em `vite.config.ts`).
 
+## Exemplos de uso
+
+**Para começar (no navegador, sem instalar nada):**
+
+1. Abra a [Trilha 1](https://do-zero-absoluto-ao-buraco-negro.replit.app/trilha-1) e arraste a régua de temperatura até 310 K: aparecem os módulos que tratam dessa faixa (entre eles, o da consciência quântica).
+2. Abra [Por que o Sol brilha](https://do-zero-absoluto-ao-buraco-negro.replit.app/por-que-o-sol-brilha), mude a temperatura e veja o pico de Gamow se deslocar.
+3. Em qualquer módulo, leia os selos de evidência e a seção "O que este modelo deixa de fora".
+
+**Para aulas e uso avançado:** vários módulos abrem num estado exato pela URL, o que permite preparar links para uma aula.
+
+- [`/a-linha-do-tempo-cosmica?marco=recombinacao`](https://do-zero-absoluto-ao-buraco-negro.replit.app/a-linha-do-tempo-cosmica?marco=recombinacao): o universo na recombinação (também `?t=<segundos>` e `&h0=shoes`).
+- [`/os-destinos-possiveis?atalho=big-rip`](https://do-zero-absoluto-ao-buraco-negro.replit.app/os-destinos-possiveis?atalho=big-rip): o Big Rip com w = −1,5 (também `lcdm`, `recontracao`, `desi`).
+- [`/confronto-com-dados-reais?dados=bao-cmb`](https://do-zero-absoluto-ao-buraco-negro.replit.app/confronto-com-dados-reais?dados=bao-cmb): o plano w₀ × wₐ com BAO e CMB (também `bao` e `bao-cmb-sn`).
+- [`/a-consciencia-e-quantica?decoerencia=hagan`](https://do-zero-absoluto-ao-buraco-negro.replit.app/a-consciencia-e-quantica?decoerencia=hagan): a corrida de relógios com a estimativa de Hagan et al. (também `&massa=nucleons-r0`).
+
+Para reproduzir a análise do DESI DR2 fora do navegador, veja a validação em Python abaixo.
+
 ## Testes e validação
 
 ```bash
@@ -102,6 +119,14 @@ Registros do processo:
 - [docs/prompts/](docs/prompts/) é o registro dos enunciados usados para orientar o Claude Code, do primeiro (o dos simuladores, `forno_solar.md`) aos de cada fase e módulo.
 - [cc.sh](cc.sh) é o script que mantém o Claude Code no Replit: guarda o programa, o login e o histórico dentro do workspace, que sobrevive às reinicializações do container (essas pastas ficam fora do Git e da versão publicada).
 - [CLAUDE.md](CLAUDE.md) reúne as convenções do projeto que o Claude Code segue, e [docs/achados.md](docs/achados.md), os problemas encontrados nas fontes ao reproduzir análises publicadas.
+
+## Suporte
+
+- **Dúvidas, erros e sugestões:** abra uma [issue](https://github.com/fasn98/Do-Zero-Absoluto-ao-Buraco-Negro/issues/new/choose). Há modelos para erro de física ou de número, erro de interface e sugestão de módulo. Perguntas de uso também podem ser feitas por issue.
+- **Contribuir com código ou texto:** veja o [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Conduta:** o projeto segue o [Código de Conduta](CODE_OF_CONDUCT.md) (Contributor Covenant 2.1).
+
+*Support: please open a GitHub issue (Portuguese or English).*
 
 ## Como citar
 

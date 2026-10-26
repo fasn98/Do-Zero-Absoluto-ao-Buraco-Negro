@@ -147,4 +147,4 @@ O `.gitignore` e o `.replitignore` excluem `.claude-persist/` e `.claude-bin/` (
 
 ## Histórico de tarefas
 
-Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`; a da Fase 3 (Módulo 2.3), em `docs/prompts/trilha2-fase3.md`; a do Módulo 12, em `docs/prompts/modulo-12.md`.
+Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`; a da Fase 3 (Módulo 2.3), em `docs/prompts/trilha2-fase3.md`; a do Módulo 12, em `docs/prompts/modulo-12.md`; a preparação do artigo para o JOSE (`paper/`, diretrizes de comunidade e o workflow `.github/workflows/draft-pdf.yml`, que gera o PDF de rascunho quando `paper/` muda), em `docs/prompts/jose-paper.md`.

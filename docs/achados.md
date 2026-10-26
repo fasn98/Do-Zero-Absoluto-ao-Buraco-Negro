@@ -2,6 +2,27 @@
 
 Problemas encontrados nas fontes ao reproduzir análises publicadas. Cada achado traz a referência, o cálculo e como o app lida com ele. Os números foram calculados com `scripts/validacao_cosmo.py` (quadratura adaptativa do scipy), salvo indicação.
 
+## 0. Reprodução dos resultados do DESI DR2 (Módulo 2.3, Etapa A)
+
+Médias a posteriori de `scripts/validacao_cosmo.py mcmc` (duas cadeias de Metropolis-Hastings de 60 mil passos por combinação, R̂ = 1,00 em w₀ e w_a; priors do DESI: w₀ ∈ [−3, 1], w_a ∈ [−3, 2], w₀ + w_a < 0) e Δχ² de `scripts/validacao_cosmo.py ajuste`, comparados com a Tabela V e a Tabela VI de DESI Collaboration, Phys. Rev. D 112, 083515 (2025):
+
+| Combinação | Grandeza | Este projeto | DESI DR2 publicado | Diferença |
+|---|---|---|---|---|
+| DESI + CMB | w₀ | −0,411 ± 0,21 | −0,42 ± 0,21 | +0,04σ |
+| | w_a | −1,756 ± 0,62 | −1,75 ± 0,58 | −0,01σ |
+| | Ω_m | 0,3532 ± 0,022 | 0,353 ± 0,021 | +0,01σ |
+| | H₀ | 63,81 ± 1,9 | 63,6 (+1,6 −2,1) | +0,1σ |
+| | Δχ² (w₀w_a − ΛCDM) | −8,21 → 2,40σ | −12,5 → 3,1σ (CMB completo); −8,0 → 2,4σ (CMB comprimido em θ*, ω_b, ω_bc) | ver o achado 3 |
+| DESI + CMB + Union3 | w₀ | −0,674 ± 0,092 | −0,667 ± 0,088 | −0,08σ |
+| | w_a | −1,041 ± 0,32 | −1,09 (+0,31 −0,27) | +0,17σ |
+| | Ω_m | 0,3265 ± 0,0088 | 0,3275 ± 0,0086 | −0,12σ |
+| | H₀ | 66,20 ± 0,84 | 65,91 ± 0,84 | +0,35σ |
+| | Δχ² | −14,08 → 3,33σ | −17,4 → 3,8σ | — |
+| Só DESI (BAO) | Ω_m (ΛCDM) | 0,2973 | 0,2975 ± 0,0086 | 0,0σ |
+| | Δχ² | −4,66 → 1,66σ | −4,7 → 1,7σ | 0,0σ |
+
+O CMB entra aqui pelos "distance priors" (R, l_A, ω_b), que não carregam o lenteamento do CMB; por isso a preferência por w₀w_a coincide com a versão comprimida publicada pelo DESI (2,4σ) e fica abaixo da obtida com o CMB completo (3,1σ).
+
 ## 1. Chen, Huang e Wang (2019): coeficiente de g₁ na eq. 9
 
 **Referência:** L. Chen, Q.-G. Huang e K. Wang, "Distance Priors from Planck Final Release", JCAP 02, 028 (2019), DOI [10.1088/1475-7516/2019/02/028](https://doi.org/10.1088/1475-7516/2019/02/028), arXiv:1808.05724v1.
