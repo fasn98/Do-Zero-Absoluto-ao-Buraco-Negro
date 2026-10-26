@@ -1,0 +1,13 @@
+# Planck 2018 TT,TE,EE+lowE: "distance priors" (R, l_A, ω_b) para o modelo ΛCDM.
+# Fonte: L. Chen, Q.-G. Huang e K. Wang, "Distance Priors from Planck Final Release",
+#   J. Cosmol. Astropart. Phys. 02, 028 (2019), DOI 10.1088/1475-7516/2019/02/028, arXiv:1808.05724v1.
+# Médias sem arredondamento e matriz inversa da covariância: apêndice (arquivos test.ini e
+#   Distance_invcov.txt para o CosmoMC). Valores arredondados da Tabela I: R = 1,7502 ± 0,0046;
+#   l_A = 301,471 (+0,089 −0,090); ω_b = 0,02236 ± 0,00015; correlações R-l_A 0,46, R-ω_b −0,66, l_A-ω_b −0,33.
+# Baixado em 2026-10-26 (arXiv). Licença: números copiados do artigo, com atribuição; o texto do artigo
+#   é © SISSA/IOP; dados numéricos não são objeto de direito autoral.
+# Linha 1: médias R, l_A, ω_b. Linhas 2 a 4: inversa da covariância, na mesma ordem.
+1.750235 301.4707 0.02235976
+94392.3971 -1360.4913 1664517.2916
+-1360.4913 161.4349 3671.6180
+1664517.2916 3671.6180 79719182.5162

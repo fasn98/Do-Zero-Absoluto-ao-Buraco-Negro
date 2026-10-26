@@ -117,6 +117,15 @@ export function lnExpansionRate(lnA: number, c: Cosmology): number {
   return 0.5 * logSumExp([Math.log(c.omegaR) - 4 * lnA, Math.log(c.omegaM) - 3 * lnA, Math.log(c.omegaL) + lnDarkEnergyDensity(lnA, c)]);
 }
 
+/**
+ * E² = (H/H₀)² em função de ln a, sem alocar memória: para laços rápidos (Módulo 2.3),
+ * onde ln a fica entre −30 e 0 e não há risco de estouro.
+ */
+export function expansionRateSquared(lnA: number, c: Cosmology): number {
+  const de = c.w0 === undefined || (c.w0 === -1 && !c.wa) ? 1 : Math.exp(lnDarkEnergyDensity(lnA, c));
+  return c.omegaR * Math.exp(-4 * lnA) + c.omegaM * Math.exp(-3 * lnA) + c.omegaL * de;
+}
+
 /** H(a) em km/s/Mpc. */
 export function hubbleParameter(a: number, c: Cosmology): number {
   return c.h0 * Math.exp(lnExpansionRate(Math.log(a), c));

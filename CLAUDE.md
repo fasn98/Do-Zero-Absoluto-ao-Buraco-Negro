@@ -48,6 +48,8 @@ As trilhas e os módulos ficam declarados em `src/modules/tracks.ts` (Trilha 1 r
 - `modules/shared.tsx`: `Sym`, `EvidenceTag`, `Claim`, `SimCard`, `Stat`, `StatGrid`, `Segmented` e controles.
 - `modules/Plot.tsx`: gráfico de linhas em SVG próprio (séries, marcadores, regiões sombreadas, pontos rotulados). Sem biblioteca de gráficos.
 - `physics/friedmann.ts`: resolvedor de Friedmann (Módulo 2.1), com energia escura w(a) = w₀ + w_a(1 − a) opcional; `physics/cosmicFates.ts`: Big Rip, recontração e CPL (Módulo 2.2).
+- `physics/cosmoLikelihood.ts`, `physics/linalg.ts`: distâncias (D_M, D_H, D_V, r_s, r_d, R, l_A) e χ² do BAO, do CMB comprimido e das supernovas (Módulo 2.3).
+- `data/cosmo/`: dados reais do Módulo 2.3 (ver "Dados cosmológicos" abaixo).
 - `modules/cosmicMilestones.ts`, `modules/cosmicTime.tsx`: marcos da história cósmica com selos e a régua de tempo compartilhada (estado em `sessionStorage`).
 - `modules/<modulo>/Page.tsx`: interface de cada módulo.
 - `lib/format.ts`: formatador compartilhado.
@@ -66,6 +68,29 @@ As trilhas e os módulos ficam declarados em `src/modules/tracks.ts` (Trilha 1 r
 - Todo módulo termina com **"O que este modelo deixa de fora"** (prop `limitations`) e com **referências com DOI conferido** (prop `references`; abra cada DOI e confira autores, revista, volume, página e ano antes de incluir).
 - Funciona em **360 px** e no desktop, tema claro e escuro. Sem emojis na interface.
 - Textos da interface e comentários do código em português do Brasil.
+
+## Dados cosmológicos (`src/data/cosmo/`)
+
+Cada arquivo tem cabeçalho com fonte, DOI, versão, data de download e licença. Não altere números; para atualizar, baixe de novo da fonte e registre a nova versão.
+
+| Arquivo | Conteúdo | Fonte | Licença |
+|---|---|---|---|
+| `desi_dr2_bao_mean.txt`, `desi_dr2_bao_cov.txt` | 13 medidas de D_V/r_d, D_M/r_d, D_H/r_d e covariância | DESI DR2, PRD 112, 083515 (2025), DOI 10.1103/tr6y-kpc6; arquivo oficial em `CobayaSampler/bao_data`, commit b7b8a36e9b | repositório sem licença; números publicados no artigo (CC BY 4.0) |
+| `planck2018_distance_priors.txt` | R, l_A, ω_b e a inversa da covariância (Planck 2018 TT,TE,EE+lowE, ΛCDM) | Chen, Huang e Wang, JCAP 02, 028 (2019), DOI 10.1088/1475-7516/2019/02/028, apêndice | números do artigo, com atribuição |
+| `union3_compressed.txt` | 22 nós de módulo de distância e a inversa da covariância | Rubin et al., arXiv:2311.12098; `rubind/union3_release`, `mu_mat_union3_cosmo=2_mu.fits`, commit a3e75550b4 | MIT |
+| `validacao_python.json` | χ² de referência em pontos fixos, gerados por `scripts/validacao_cosmo.py pontos` | — | — |
+
+As médias do BAO coincidem com a Tabela IV do artigo; os desvios e correlações do arquivo oficial diferem dos da tabela em até ~6% (a tabela traz médias e desvios das posteriores marginalizadas). O artigo indica o arquivo do Cobaya como a verossimilhança oficial.
+
+**Validação independente em Python:** `scripts/validacao_cosmo.py` (numpy e scipy, que o Replit não tem; vêm do Nix):
+
+```bash
+nix-shell -p "python3.withPackages (ps: [ps.numpy ps.scipy])" --run "python3 scripts/validacao_cosmo.py pontos"   # regrava validacao_python.json
+nix-shell -p "python3.withPackages (ps: [ps.numpy ps.scipy])" --run "python3 scripts/validacao_cosmo.py ajuste"   # melhores ajustes e Δχ²
+nix-shell -p "python3.withPackages (ps: [ps.numpy ps.scipy])" --run "python3 scripts/validacao_cosmo.py mcmc"     # médias a posteriori
+```
+
+O teste `physics/cosmoLikelihood.test.ts` compara o TypeScript com `validacao_python.json` (tolerância de 0,1 em χ²). Se mudar a física de um lado, regrave o JSON e rode os testes.
 
 ## Comandos
 
@@ -112,4 +137,4 @@ O `.gitignore` e o `.replitignore` excluem `.claude-persist/` e `.claude-bin/` (
 
 ## Histórico de tarefas
 
-Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`.
+Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`; a da Fase 3 (Módulo 2.3), em `docs/prompts/trilha2-fase3.md`.

@@ -1,0 +1,23 @@
+# DESI DR2 BAO: médias de D_V/r_d, D_M/r_d e D_H/r_d (todos os traçadores, GCcomb).
+# Fonte: DESI Collaboration (M. Abdul Karim et al.), "DESI DR2 Results II: Measurements of Baryon
+#   Acoustic Oscillations and Cosmological Constraints", Phys. Rev. D 112, 083515 (2025),
+#   DOI 10.1103/tr6y-kpc6, arXiv:2503.14738, Tabela IV.
+# Arquivo: desi_bao_dr2/desi_gaussian_bao_ALL_GCcomb_mean.txt do repositório CobayaSampler/bao_data
+#   (https://github.com/CobayaSampler/bao_data), commit b7b8a36e9b (2025-03-20), o arquivo usado
+#   pela colaboração com o Cobaya.
+# Baixado em 2026-10-26. Licença: o repositório não declara licença; os mesmos números (médias, desvios e
+#   correlações) estão publicados no artigo, de acesso aberto sob CC BY 4.0. Conferidos contra a Tabela IV.
+# Colunas: z_eff, valor, grandeza.
+0.29500000 7.94167639 DV_over_rs
+0.51000000 13.58758434 DM_over_rs
+0.51000000 21.86294686 DH_over_rs
+0.70600000 17.35069094 DM_over_rs
+0.70600000 19.45534918 DH_over_rs
+0.93400000 21.57563956 DM_over_rs
+0.93400000 17.64149464 DH_over_rs
+1.32100000 27.60085612 DM_over_rs
+1.32100000 14.17602155 DH_over_rs
+1.48400000 30.51190063 DM_over_rs
+1.48400000 12.81699964 DH_over_rs
+2.33 8.631545674846294 DH_over_rs
+2.33 38.988973961958784 DM_over_rs
