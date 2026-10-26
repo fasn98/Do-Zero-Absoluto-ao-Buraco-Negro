@@ -40,7 +40,7 @@ const SCENARIOS = [
 function verdict(deltaChi2: number) {
   const s = sigmaFromDeltaChi2(deltaChi2);
   if (deltaChi2 <= DELTA_CHI2_2SIGMA) return { short: 'Permitido a 2σ', long: 'permitido a 2σ', allowed: true };
-  if (s < 5) return { short: 'Em tensão', long: 'fora da região de 2σ, mas abaixo de 5σ: em tensão, não descartado', allowed: false };
+  if (s < 5) return { short: 'Em tensão com este conjunto de dados', long: 'fora da região de 2σ, mas abaixo de 5σ: em tensão com este conjunto de dados, não descartado', allowed: false };
   return { short: 'Excluído', long: 'excluído (mais de 5σ)', allowed: false };
 }
 
@@ -239,13 +239,13 @@ function Survivors({ marks }: { marks: { id: string; delta: number; verdict: Ret
   const rows: { id: string; name: ReactNode; value: string; note: string }[] = [
     { id: 'lcdm', name: <>Expansão eterna com <Sym>Λ</Sym> constante (<Sym>ΛCDM</Sym>)</>, value: get('lcdm').verdict.short, note: `a ${sigmaText(get('lcdm').delta)} do melhor ajuste (Δχ² = ${formatSig(get('lcdm').delta, 3)})` },
     { id: 'big-rip', name: <>Big Rip com <Sym>w = −1,5</Sym></>, value: get('big-rip').verdict.short, note: `a ${sigmaText(get('big-rip').delta)} do melhor ajuste` },
-    { id: 'recontracao', name: <>Recontração com <Sym>Ω<sub>Λ</sub> = −0,1</Sym></>, value: 'Excluído', note: 'fora deste plano; já descartada pela idade das estrelas (Módulo 2.2)' },
+    { id: 'recontracao', name: <>Recontração com <Sym>Ω<sub>Λ</sub> = −0,1</Sym></>, value: 'Descartado', note: 'pela idade das estrelas mais velhas (Módulo 2.2), qualquer que seja o conjunto de dados; não é um ponto deste plano' },
     { id: 'desi', name: 'Energia escura dinâmica do DESI', value: get('desi').verdict.short, note: `a ${sigmaText(get('desi').delta)} do melhor ajuste; a CPL não decide o destino distante` },
   ];
   return <div data-testid="text-23-survivors">
     <div className="sub-title">Quais destinos sobrevivem</div>
     <StatGrid>{rows.map((r) => <Stat key={r.id} label={r.name} value={r.value} note={r.note} testId={`text-23-fate-${r.id}`} />)}</StatGrid>
-    <p className="plot-note">"Permitido a 2σ" quer dizer só que os dados não o excluem com 95% de confiança. "Em tensão" fica entre 2σ e 5σ: os dados preferem outro modelo, mas não o bastante para descartá-lo, porque o padrão da física para isso é 5σ. A CPL descreve o passado recente (a ≤ 1); como mostra o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>, ela não diz se o futuro distante termina em expansão eterna, Big Rip ou outra coisa.</p>
+    <p className="plot-note">"Permitido a 2σ" quer dizer só que os dados não o excluem com 95% de confiança. Entre 2σ e 5σ, os dados preferem outro modelo, mas não o descartam. Tensões desse tamanho já desapareceram antes, com mais dados ou sistemáticas corrigidas. A posição em σ também depende das supernovas usadas: com o mesmo BAO e o mesmo CMB, o DESI encontra de 2,8σ a 4,2σ. Acima de 5σ, o padrão da física para descartar, o cenário fica excluído. O Λ negativo puro continua descartado pela idade das estrelas, independentemente desta análise. A CPL descreve o passado recente (a ≤ 1); como mostra o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>, ela não diz se o futuro distante termina em expansão eterna, Big Rip ou outra coisa.</p>
   </div>;
 }
 
