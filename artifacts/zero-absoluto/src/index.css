@@ -472,3 +472,36 @@ a { color: inherit; text-decoration: none; }
 .field-layout { display:grid; grid-template-columns:minmax(0, 320px) minmax(0, 1fr); gap:20px; align-items:start; margin-top:12px; }
 .field-map { width:100%; aspect-ratio:1; image-rendering:auto; border-radius:10px; border:1px solid hsl(var(--border)); display:block; }
 @media (max-width:760px) { .field-layout { grid-template-columns:1fr; } }
+
+/* Módulo 2.5: linha do tempo do futuro e cartões das perguntas em aberto */
+.future-axis { margin:18px 0 6px; padding:0 12px; }
+.future-track { position:relative; height:34px; border-bottom:1px solid hsl(var(--border)); }
+.future-span { position:absolute; bottom:-4px; height:7px; border-radius:4px; background:hsl(var(--accent) / .45); }
+.future-dot { position:absolute; bottom:6px; transform:translateX(-50%); width:20px; height:20px; border-radius:50%; display:grid; place-items:center; font:600 10px var(--app-font-mono); background:hsl(var(--card)); border:1.5px solid hsl(var(--primary)); color:hsl(var(--foreground)); }
+.future-dot.level-consenso { border-color:hsl(var(--chart-5)); }
+.future-dot.level-hipotese { border-color:hsl(var(--accent)); border-style:dashed; }
+.future-ticks { position:relative; height:18px; margin-top:4px; }
+.future-ticks span { position:absolute; transform:translateX(-50%); font:10px var(--app-font-mono); color:hsl(var(--muted-foreground)); }
+.future-ticks-label { text-align:center; font-size:11px; color:hsl(var(--muted-foreground)); margin-top:2px; }
+.future-num { display:inline-grid; place-items:center; width:18px; height:18px; border-radius:50%; border:1px solid hsl(var(--border)); font-size:10px; margin-right:4px; }
+.question-index { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 16px; }
+.question-index a { text-decoration:none; }
+.question-grid { display:grid; gap:16px; }
+.question-card { border:1px solid hsl(var(--card-border)); border-radius:12px; padding:16px 18px; background:hsl(var(--background) / .5); scroll-margin-top:80px; }
+.question-card h3 { font:400 21px var(--app-font-serif); margin:0 0 10px; }
+.question-card dl { margin:0; display:grid; gap:12px; }
+.question-row { display:grid; grid-template-columns:170px 1fr; gap:12px; }
+.question-row dt { font:500 10px var(--app-font-mono); text-transform:uppercase; letter-spacing:.08em; color:hsl(var(--muted-foreground)); display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+.question-row dd { margin:0; font-size:13px; line-height:1.65; }
+.question-source { display:block; font-size:11px; color:hsl(var(--muted-foreground)); margin-top:4px; }
+.question-hypotheses { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+.question-hypotheses p { margin:4px 0 0; }
+.question-test { font-size:12px; color:hsl(var(--muted-foreground)); }
+.sim-card .closing-line { font:400 22px/1.4 var(--app-font-serif)!important; margin:20px 0 0; max-width:720px; color:hsl(var(--foreground)); }
+@media (max-width: 640px) {
+  .question-row { grid-template-columns:1fr; gap:4px; }
+  .question-card { padding:14px; }
+  .future-axis { padding:0 8px; }
+}
+.future-text { margin:4px 0 0; font-size:13px; line-height:1.65; color:hsl(var(--muted-foreground)); }
+.future-list .timeline-year { white-space:normal; }

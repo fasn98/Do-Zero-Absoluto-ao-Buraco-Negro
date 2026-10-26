@@ -1,0 +1,20 @@
+{
+ "_fonte": "scripts/validacao_fronteira.py (scipy.integrate.quad); constantes de src/physics/constants.js",
+ "omega_lambda": 0.6849084753393337,
+ "evaporacao_anos": {
+  "1": 2.095682423232581e+67,
+  "1e11": 2.0956824232325813e+100
+ },
+ "t_ds_K": 2.1975493223814706e-30,
+ "idade_hoje_anos": 13790720728.968973,
+ "cruzamento_fundo_tds_anos": 1227304398575.6306,
+ "fator_de_escala_no_cruzamento": 1.2402360994775841e+30,
+ "temperatura_hawking_1msol_K": 6.170073824811396e-08,
+ "inicio_evaporacao_1msol_anos": 321216023496.23773,
+ "maior_massa_que_evapora_msol": 2.8077066402882482e+22,
+ "planck": {
+  "comprimento_m": 1.61625502392855e-35,
+  "tempo_s": 5.391246446661944e-44,
+  "temperatura_K": 1.4167841617232972e+32
+ }
+}

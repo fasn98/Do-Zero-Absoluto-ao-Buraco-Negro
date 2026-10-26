@@ -14,7 +14,7 @@ export const TRACK2_MODULES: TrackModule[] = [
   { number: '2.2', title: 'Os destinos possíveis', description: 'Expansão eterna, Big Rip ou Big Crunch: o desfecho depende da natureza da energia escura.', path: '/os-destinos-possiveis', tag: 'ENERGIA ESCURA' },
   { number: '2.3', title: 'Confronto com dados reais', description: 'Supernovas, oscilações acústicas e o fundo cósmico: quais cenários os dados reais ainda permitem.', path: '/confronto-com-dados-reais', tag: 'OBSERVAÇÕES' },
   { number: '2.4', title: 'Inflação e perturbações', description: 'A hipótese da inflação e as pequenas flutuações que viraram galáxias.', path: '/inflacao-e-perturbacoes', tag: 'UNIVERSO PRIMORDIAL' },
-  { number: '2.5', title: 'A fronteira', description: 'O que ainda não sabemos sobre o primeiro instante, a matéria escura e a energia escura.', tag: 'PERGUNTAS ABERTAS' },
+  { number: '2.5', title: 'A fronteira', description: 'O futuro mais distante, o piso de temperatura do universo e as perguntas que a física ainda não respondeu.', path: '/a-fronteira', tag: 'PERGUNTAS ABERTAS' },
 ];
 
 export type Track = {

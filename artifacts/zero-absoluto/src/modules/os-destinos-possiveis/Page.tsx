@@ -298,7 +298,7 @@ export default function PossibleFates() {
         <li><b>Ricochetes de Ijjas e Steinhardt.</b> Uma fase de contração lenta deixa o universo liso e plano e depois ricocheteia em expansão, sem passar por uma singularidade. Propõem que isso substitui a inflação.</li>
         <li><b>Cosmologia cíclica conforme de Penrose (2010).</b> O futuro infinitamente diluído de um universo seria equivalente, por uma mudança de escala, ao Big Bang do seguinte. Penrose e colaboradores apontaram círculos concêntricos e "pontos de Hawking" no fundo cósmico como assinaturas, mas análises independentes (Wehus e Eriksen, 2011; Jow e Scott, 2020) não encontraram excesso em relação ao acaso: as assinaturas alegadas são contestadas.</li>
       </ul>
-      <p>Por que não dá para simular? Na relatividade geral, uma contração que vira expansão exige que algo viole as condições de energia (em particular a condição de energia nula, respeitada por toda matéria conhecida) ou que a gravidade quântica, que ainda não existe como teoria testada, entre em cena. Sem essa física, não há equação estabelecida para resolver. O tema volta no Módulo 2.5, "A fronteira" (em breve).</p>
+      <p>Por que não dá para simular? Na relatividade geral, uma contração que vira expansão exige que algo viole as condições de energia (em particular a condição de energia nula, respeitada por toda matéria conhecida) ou que a gravidade quântica, que ainda não existe como teoria testada, entre em cena. Sem essa física, não há equação estabelecida para resolver. O tema volta no <Link href="/a-fronteira#comeco" className="inline-link">Módulo 2.5, a fronteira</Link>.</p>
     </SimCard>
   </ModulePage>;
 }

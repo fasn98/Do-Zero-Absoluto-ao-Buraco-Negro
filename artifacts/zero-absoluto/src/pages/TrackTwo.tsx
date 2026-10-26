@@ -14,7 +14,7 @@ const MILESTONES = cosmicMilestones();
 const T0 = ageOfUniverseS();
 const MODULE_21 = TRACK2_MODULES[0];
 const READY = TRACK2_MODULES.filter((m) => m.path).length;
-const NUMERALS: Record<number, string> = { 2: 'dois', 3: 'três', 4: 'quatro' };
+const NUMERALS: Record<number, string> = { 2: 'dois', 3: 'três', 4: 'quatro', 5: 'cinco' };
 
 /** Régua de tempo cósmico (parâmetros do Planck 2018), sincronizada com o Módulo 2.1. */
 function CosmicRuler() {
@@ -73,7 +73,7 @@ export default function TrackTwo() {
     <section aria-labelledby="track2-modules-heading">
       <div className="section-heading">
         <div><div className="eyebrow">CINCO ETAPAS</div><h2 id="track2-modules-heading">A história do cosmos</h2></div>
-        <p>{READY === 1 ? 'Um módulo disponível' : `${READY} módulos disponíveis`}; {TRACK2_MODULES.length - READY === 1 ? 'o outro está' : `os outros ${NUMERALS[TRACK2_MODULES.length - READY] ?? TRACK2_MODULES.length - READY} estão`} em preparação.</p>
+        <p>{READY === TRACK2_MODULES.length ? `Os ${NUMERALS[READY] ?? READY} módulos estão disponíveis.` : <>{READY === 1 ? 'Um módulo disponível' : `${READY} módulos disponíveis`}; {TRACK2_MODULES.length - READY === 1 ? 'o outro está' : `os outros ${NUMERALS[TRACK2_MODULES.length - READY] ?? TRACK2_MODULES.length - READY} estão`} em preparação.</>}</p>
       </div>
       <TrackModuleGrid track={track} />
     </section>

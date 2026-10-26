@@ -72,6 +72,9 @@ describe("trilhas", () => {
     expect(trackForPath("/")).toBeNull();
     expect(trackForPath("/confronto-com-dados-reais")?.id).toBe("2");
     expect(trackForPath("/inflacao-e-perturbacoes")?.id).toBe("2");
-    expect(TRACKS[1].modules.filter((m) => !m.path).map((m) => m.number)).toEqual(["2.5"]);
+    expect(trackForPath("/a-fronteira")?.id).toBe("2");
+    expect(trackForModule("2.5").counter("2.5")).toBe("2.5 / 2.5");
+    // Trilha 2 completa: nenhum módulo "em breve".
+    expect(TRACKS[1].modules.filter((m) => !m.path)).toEqual([]);
   });
 });

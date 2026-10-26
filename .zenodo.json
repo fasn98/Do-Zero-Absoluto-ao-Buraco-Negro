@@ -2,6 +2,7 @@
   "title": "Do zero absoluto ao buraco negro",
   "description": "App educativo de física, em português do Brasil, com simulações interativas baseadas em física estabelecida, em duas trilhas: temperaturas extremas e matéria quântica, e origem e destino do universo (incluindo o confronto de cenários de energia escura com dados reais do DESI DR2, Planck 2018 e Union3). Cada afirmação é marcada como fato estabelecido, consenso ou hipótese em pesquisa. Código sob MIT; textos, figuras e capturas sob CC BY 4.0.",
   "upload_type": "software",
+  "version": "1.1.0",
   "creators": [
     {
       "name": "Sales Nogueira, Fabio Augusto",

@@ -99,7 +99,7 @@ export function EpochNotice({ epoch }: { epoch: CosmicEpoch }) {
   }
   if (epoch === 'projecao') {
     return <div className="band-item band-empty epoch-notice" data-testid="text-epoch-notice">
-      <div><EvidenceTag level="hipotese" /><strong>Projeção do ΛCDM, não um fato</strong><p>Depois de hoje, a linha do tempo é o que o modelo prevê se a energia escura for uma constante cosmológica. O futuro depende do cenário: se ela variar, como os dados do DESI sugerem sem confirmação, ou crescer, o desfecho muda. <Link href="/os-destinos-possiveis" className="inline-link" data-testid="link-epoch-module-22">Compare os cenários no Módulo 2.2</Link>.</p></div>
+      <div><EvidenceTag level="hipotese" /><strong>Projeção do ΛCDM, não um fato</strong><p>Depois de hoje, a linha do tempo é o que o modelo prevê se a energia escura for uma constante cosmológica. O futuro depende do cenário: se ela variar, como os dados do DESI sugerem sem confirmação, ou crescer, o desfecho muda. <Link href="/os-destinos-possiveis" className="inline-link" data-testid="link-epoch-module-22">Compare os cenários no Módulo 2.2</Link>. O futuro mais distante, até 10¹⁰⁰ anos, e o piso de temperatura do universo estão no <Link href="/a-fronteira" className="inline-link" data-testid="link-epoch-module-25">Módulo 2.5, a fronteira</Link>.</p></div>
     </div>;
   }
   return null;

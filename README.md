@@ -31,15 +31,15 @@ Uma régua de temperatura, de 1 nK à temperatura de Planck, e 12 módulos:
 
 ### Trilha 2 · Origem e destino do universo
 
-Uma régua de tempo cósmico, do tempo de Planck a 100 trilhões de anos, e 5 módulos:
+Uma régua de tempo cósmico, do tempo de Planck a 100 trilhões de anos, e 5 módulos, todos disponíveis desde a versão 1.1.0:
 
 | Nº | Módulo | Tema |
 |---|---|---|
 | 2.1 | [A linha do tempo cósmica](https://do-zero-absoluto-ao-buraco-negro.replit.app/a-linha-do-tempo-cosmica) | Do primeiro segundo a 100 trilhões de anos: a equação de Friedmann conta a história do universo. |
 | 2.2 | [Os destinos possíveis](https://do-zero-absoluto-ao-buraco-negro.replit.app/os-destinos-possiveis) | Expansão eterna, Big Rip ou Big Crunch: o desfecho depende da natureza da energia escura. |
-| 2.3 | [Confronto com dados reais](https://do-zero-absoluto-ao-buraco-negro.replit.app/confronto-com-dados-reais) | Supernovas, oscilações acústicas e o fundo cósmico: quais cenários os dados reais ainda permitem. |
-| 2.4 | Inflação e perturbações (em breve) | A hipótese da inflação e as pequenas flutuações que viraram galáxias. |
-| 2.5 | A fronteira (em breve) | O que ainda não sabemos sobre o primeiro instante, a matéria escura e a energia escura. |
+| 2.3 | [Confronto com dados reais](https://do-zero-absoluto-ao-buraco-negro.replit.app/confronto-com-dados-reais) | Supernovas, oscilações acústicas e o fundo cósmico: quais cenários os dados reais ainda permitem. Uma seção separada, com dados simulados, mostra se sirenes padrão do LISA e do Einstein Telescope levariam a decisão sobre a energia escura a 5σ. |
+| 2.4 | [Inflação e perturbações](https://do-zero-absoluto-ao-buraco-negro.replit.app/inflacao-e-perturbacoes) | A hipótese da inflação e as pequenas flutuações que viraram galáxias. |
+| 2.5 | [A fronteira](https://do-zero-absoluto-ao-buraco-negro.replit.app/a-fronteira) | O futuro mais distante, o piso de temperatura do universo e as perguntas que a física ainda não respondeu. |
 
 ## Selos de evidência
 

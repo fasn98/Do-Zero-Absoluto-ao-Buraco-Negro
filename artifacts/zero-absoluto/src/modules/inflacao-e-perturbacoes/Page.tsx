@@ -262,6 +262,6 @@ export default function InflationAndPerturbations() {
     <Seeds />
     <WhichInflation />
     <Frontier />
-    <p className="plot-note">Antes: <Link href="/confronto-com-dados-reais" className="inline-link">Módulo 2.3, confronto com dados reais</Link>. Para os cenários de ricochete, veja o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>.</p>
+    <p className="plot-note">Antes: <Link href="/confronto-com-dados-reais" className="inline-link">Módulo 2.3, confronto com dados reais</Link>. Para os cenários de ricochete, veja o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>. Depois: o que ainda não sabemos sobre a era de Planck, a matéria escura e o futuro mais distante, no <Link href="/a-fronteira" className="inline-link" data-testid="link-24-next">Módulo 2.5, a fronteira</Link>.</p>
   </ModulePage>;
 }
