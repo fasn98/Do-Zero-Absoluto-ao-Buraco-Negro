@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'wouter';
-import { EvidenceTag, LinearSlider, Segmented, SimCard, Stat, StatGrid, Sym } from '../shared';
+import { EvidenceTag, LinearSlider, Segmented, SimCard, Stat, StatGrid, Sym, useScrollToHash } from '../shared';
 import { DELTA_CHI2_1SIGMA, DELTA_CHI2_2SIGMA } from '../../physics/cosmoFit';
 import { TRUTHS, confidenceEllipse, expectedEvents, sirenForecastAt, sirenScenario, truthBetween, wSeparation, type Cov2, type SirenScenarioId, type WPoint } from '../../physics/sirens';
 import { formatNumber, formatSig } from '../../lib/format';
@@ -61,7 +61,7 @@ export default function SirenForecast() {
   const zs = expectedEvents(scenario).z;
   const zMax = info.bins.filter((b) => b[2] > 0).reduce((m, b) => Math.max(m, b[1]), 0);
   const isLisa = info.detector === 'LISA';
-  useScrollToHash('sirenes');
+  useScrollToHash((id) => id === 'sirenes');
   const sd = (c: Cov2) => ({ w0: Math.sqrt(c[0][0]), wa: Math.sqrt(c[1][1]) });
   const now = sd(forecast.current);
   const next = sd(forecast.combined);
@@ -111,27 +111,6 @@ export default function SirenForecast() {
       <span>Energia escura dinâmica: <EvidenceTag level="hipotese" /></span>
     </div>
   </SimCard>;
-}
-
-/**
- * Rola até a seção quando a página abre com #sirenes (link do Módulo 8). O painel de dados reais,
- * acima, muda de altura quando a grade termina; a rolagem acompanha por alguns segundos, até o
- * leitor rolar por conta própria.
- */
-function useScrollToHash(id: string) {
-  useEffect(() => {
-    if (typeof window === 'undefined' || window.location.hash !== `#${id}`) return undefined;
-    const go = () => document.getElementById(id)?.scrollIntoView({ block: 'start' });
-    go();
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(go);
-    observer?.observe(document.body);
-    const stop = () => { observer?.disconnect(); window.removeEventListener('wheel', stop); window.removeEventListener('touchstart', stop); window.removeEventListener('keydown', stop); };
-    window.addEventListener('wheel', stop, { passive: true });
-    window.addEventListener('touchstart', stop, { passive: true });
-    window.addEventListener('keydown', stop);
-    const timer = window.setTimeout(stop, 6000);
-    return () => { window.clearTimeout(timer); stop(); };
-  }, [id]);
 }
 
 // --- Plano da previsão --------------------------------------------------------------------

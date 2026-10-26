@@ -139,8 +139,8 @@ export function cosmicMilestones(c: Cosmology = PLANCK_2018): CosmicMilestone[] 
       id: 'futuro', name: 'Futuro dominado por Λ', short: 'Futuro', level: 'hipotese',
       whenShort: duration(yr(1e11)),
       when: `depois de hoje; e-dobra de ~${formatSig(efold)} bilhões de anos`, range: [1.5 * t0, Infinity], anchor: yr(1e11),
-      text: `Se a energia escura for constante, a expansão fica exponencial: as distâncias crescem um fator e (≈ 2,72) a cada ~${formatSig(efold)} bilhões de anos, e as galáxias fora do Grupo Local saem do nosso horizonte. Depende de a energia escura ser constante: os dados do DESI (Módulo 11) sugerem, sem confirmação, que ela pode variar.`,
-      link: { href: '/os-destinos-possiveis', label: 'Módulo 2.2: os destinos possíveis' },
+      text: `Se a energia escura for constante, a expansão fica exponencial: as distâncias crescem um fator e (≈ 2,72) a cada ~${formatSig(efold)} bilhões de anos, e as galáxias fora do Grupo Local saem do nosso horizonte. Depende de a energia escura ser constante: os dados do DESI, analisados no Módulo 2.3, sugerem, sem confirmação, que ela pode variar. Por que a constante cosmológica tem o valor que tem é outro enigma, discutido no Módulo 11 da Trilha 1.`,
+      link: { href: '/confronto-com-dados-reais', label: 'Módulo 2.3: confronto com dados reais' },
     },
   ];
 }

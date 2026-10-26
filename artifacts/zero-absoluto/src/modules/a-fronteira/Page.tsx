@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import ModulePage from '../ModulePage';
-import { Claim, EvidenceTag, LogSlider, SimCard, Stat, StatGrid, Sym, type EvidenceLevel } from '../shared';
+import { Claim, EvidenceTag, LogSlider, SimCard, Stat, StatGrid, Sym, useScrollToHash, type EvidenceLevel } from '../shared';
 import { LinePlot } from '../Plot';
 import { cmbColderThanS, cmbDeSitterCrossingS, deSitterTemperatureK, evaporationOnsetS, evaporationTimeYears, largestEvaporatingMassKg } from '../../physics/frontier';
 import { hawkingTemperatureK } from '../../physics/blackHole';
@@ -169,10 +169,7 @@ function QuestionCard({ q }: { q: OpenQuestion }) {
 
 function OpenQuestions() {
   // Links com #pergunta (por exemplo, do Módulo 2.2) abrem a página no cartão.
-  useEffect(() => {
-    const id = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
-    if (id && CARDS.some((q) => q.id === id)) document.getElementById(id)?.scrollIntoView({ block: 'start' });
-  }, []);
+  useScrollToHash((id) => CARDS.some((q) => q.id === id));
   return <SimCard title="Mapa das perguntas em aberto">
     <p>Sete perguntas que a física ainda não respondeu. Cada cartão separa o que foi medido das hipóteses e diz, para cada hipótese, se existe hoje um teste possível. Nenhuma hipótese aqui é a resposta.</p>
     <nav className="question-index" aria-label="Perguntas">{CARDS.map((q, i) => <a key={q.id} href={`#${q.id}`} className="preset">{i + 1}. {q.short}</a>)}</nav>

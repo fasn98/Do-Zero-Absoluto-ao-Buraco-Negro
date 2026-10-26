@@ -1,5 +1,28 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 
+/**
+ * Rola até o elemento indicado no # da URL, se `accepts(id)`. O conteúdo acima pode mudar de altura
+ * (gráficos que medem a largura, a grade do Módulo 2.3); a rolagem acompanha por alguns segundos,
+ * até o leitor rolar por conta própria. O espaço do cabeçalho fixo vem do scroll-margin-top no CSS.
+ */
+export function useScrollToHash(accepts: (id: string) => boolean) {
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id || !accepts(id)) return undefined;
+    const go = () => document.getElementById(id)?.scrollIntoView({ block: 'start' });
+    go();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(go);
+    observer?.observe(document.body);
+    const stop = () => { observer?.disconnect(); window.removeEventListener('wheel', stop); window.removeEventListener('touchstart', stop); window.removeEventListener('keydown', stop); };
+    window.addEventListener('wheel', stop, { passive: true });
+    window.addEventListener('touchstart', stop, { passive: true });
+    window.addEventListener('keydown', stop);
+    const timer = window.setTimeout(stop, 6000);
+    return () => { window.clearTimeout(timer); stop(); };
+  }, []); // só na abertura da página
+}
+
 /** 'projecao': previsão com dados simulados, nunca uma medida. */
 export type EvidenceLevel = 'fato' | 'consenso' | 'hipotese' | 'projecao';
 
