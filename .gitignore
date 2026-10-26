@@ -58,3 +58,7 @@ Thumbs.db
 
 # Capturas de tela (scripts/capturas.mjs)
 capturas/
+
+# Variáveis de ambiente e segredos: nunca no Git (vale fora do Replit, que já ignora .env globalmente)
+.env
+.env.*
