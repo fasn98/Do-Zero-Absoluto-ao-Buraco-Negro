@@ -16,8 +16,14 @@ import { atomicMassConstant, protonChargeRadius, reducedPlanckConstant } from ".
 import { assertPositive } from "./calculations";
 import { DP_R0_LOWER_BOUND_M, diosiPenroseEnergyJ, sphereRadiusM } from "./diosiPenrose";
 
-/** Massa do dímero de tubulina (α + β), em daltons: ~110 kDa, o valor usado pelo Orch-OR. */
-export const TUBULIN_DIMER_MASS_DA = 1.1e5;
+/**
+ * Massa do dímero de tubulina (α + β), em daltons, pelas sequências humanas no UniProt:
+ * TUBA1A (Q71U36), 50.136 Da, e TUBB (P07437), 49.671 Da. Sem os nucleotídeos (GTP/GDP) nem
+ * modificações pós-traducionais: ~100 kDa.
+ */
+export const TUBULIN_ALPHA_MASS_DA = 50136;
+export const TUBULIN_BETA_MASS_DA = 49671;
+export const TUBULIN_DIMER_MASS_DA = TUBULIN_ALPHA_MASS_DA + TUBULIN_BETA_MASS_DA;
 /**
  * Número de tubulinas que o Orch-OR propõe para um evento de τ ≈ 25 ms (ritmo gama): ~2 × 10¹⁰
  * (Hameroff e Penrose, Phys. Life Rev. 11, 39, 2014, citado por McQueen, Phys. Life Rev. 44, 201, 2023).

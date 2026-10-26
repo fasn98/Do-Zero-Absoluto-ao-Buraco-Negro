@@ -43,6 +43,7 @@ function Race() {
   const [model, setModel] = useState<MassModel>(() => MASS_MODELS.find((m) => m.id === params?.get('massa'))?.id ?? 'nucleons');
   const chosen = DECOHERENCE_ESTIMATES.find((e) => e.id === estimate)!;
   const collapse = orchORCollapseTimeS(ORCH_OR_TUBULINS, model);
+  const nucleonTime = orchORCollapseTimeS(ORCH_OR_TUBULINS, 'nucleons');
   const marks: ClockMark[] = useMemo(() => [
     ...DECOHERENCE_ESTIMATES.map((e) => ({ id: e.id, label: e.short, range: e.range, family: 'decoerencia' as const, highlight: e.id === estimate })),
     { id: 'colapso', label: `Colapso D-P, ${formatSci(ORCH_OR_TUBULINS, 0)} tubulinas`, range: [collapse, collapse] as [number, number], family: 'colapso' as const, highlight: true },
@@ -72,11 +73,12 @@ function Race() {
         : <>Se a decoerência for tão lenta quanto Hagan, Hameroff e Tuszynski propõem, a hipótese continua possível.</>} O desacordo não é de aritmética: está nas premissas físicas (qual é o sistema em superposição, quanto ele se separa, como a água e os íons o blindam). É isso que os experimentos tentam decidir.
     </div>
     <div className="sub-title">O colapso de Diósi-Penrose nas tubulinas</div>
-    <p>O Orch-OR estima quantas tubulinas precisam estar em superposição para que o colapso aconteça num tempo de interesse, com <Sym>τ = ħ / E<sub>G</sub></Sym>. Para um evento de 25 ms, Hameroff e Penrose estimam ~{formatSci(ORCH_OR_TUBULINS, 0)} tubulinas, de ~{formatNumber(TUBULIN_DIMER_MASS_DA / 1000, 0)} kDa cada. Aqui, a mesma conta do Módulo 10 para esse número de tubulinas. O resultado muda por muitas ordens de grandeza conforme a forma como a massa está distribuída:</p>
+    <p>O Orch-OR estima quantas tubulinas precisam estar em superposição para que o colapso aconteça num tempo de interesse, com <Sym>τ = ħ / E<sub>G</sub></Sym>. Para um evento de 25 ms, Hameroff e Penrose estimam ~{formatSci(ORCH_OR_TUBULINS, 0)} tubulinas. Cada dímero de tubulina tem ~{formatNumber(TUBULIN_DIMER_MASS_DA / 1000, 0)} kDa (sequências humanas no UniProt). Aqui, a mesma conta do Módulo 10 para esse número de tubulinas. O resultado muda por muitas ordens de grandeza conforme a forma como a massa está distribuída:</p>
     <Segmented label="Modelo de distribuição de massa" value={model} onChange={setModel} options={MASS_MODELS.map((m) => ({ value: m.id, label: m.label }))} />
     <StatGrid>
       {MASS_MODELS.map((m) => <Stat key={m.id} label={m.label} value={timeText([orchORCollapseTimeS(ORCH_OR_TUBULINS, m.id), orchORCollapseTimeS(ORCH_OR_TUBULINS, m.id)])} note={`${m.detail}; para 25 ms seriam ${formatSci(tubulinsForCollapseTime(ORCH_OR_TIME_S, m.id), 1)} tubulinas`} testId={`text-12-collapse-${m.id}`} />)}
     </StatGrid>
+    <div className="callout" data-testid="text-12-collapse-gap">Com a massa concentrada nos núcleons, a conta do app dá <b>{formatSig(nucleonTime * 1000, 2)} ms</b> para {formatSci(ORCH_OR_TUBULINS, 0)} tubulinas; Hameroff e Penrose dizem <b>25 ms</b>. A diferença, de ~{formatNumber(nucleonTime / ORCH_OR_TIME_S, 0)} vezes, não é um erro de um lado ou de outro: vem do modelo de distribuição de massa (como a massa se agrupa em núcleos, que raio cada pedaço tem, quanto ele se desloca). É exatamente o ponto deste módulo: o tempo de colapso depende de escolhas que a hipótese ainda não fixou.</div>
     <p className="plot-note" data-testid="text-12-collapse-note">Com a massa concentrada nos núcleons, E<sub>G</sub> é grande e o colapso é rápido. Espalhada sobre R₀ ≥ 0,54 Å, como exige o teste de Gran Sasso, e com um deslocamento do tamanho de um núcleon, E<sub>G</sub> cai por mais de catorze ordens de grandeza: seriam necessárias mais tubulinas que as ~{formatSci(BRAIN_TUBULINS, 0)} do cérebro inteiro. Derakhshani e colegas (2022), com um modelo mais detalhado, chegam a ~4 × 10²³. Nenhum desses números foi medido: são consequências de uma hipótese, sob hipóteses adicionais sobre a massa.</p>
   </SimCard>;
 }
@@ -121,6 +123,7 @@ export default function QuantumConsciousness() {
     limitations={[
       <>Os tempos de decoerência são estimativas de ordem de grandeza, e cada um depende do modelo físico do artigo que o calculou.</>,
       <>Não existe uma definição operacional de consciência aceita por todos; nenhuma medida física diz, sozinha, se um sistema é consciente.</>,
+      <>Somar linearmente as energias, E<sub>G</sub>(N) = N · E<sub>G</sub>(1), supõe tubulinas independentes, cada uma em sua própria superposição. Um deslocamento coletivo e coerente de muitas tubulinas juntas mudaria a conta, porque E<sub>G</sub> depende da massa total deslocada e de como ela está distribuída no espaço.</>,
       <>O cálculo de Diósi-Penrose para tubulinas depende da distribuição de massa, do deslocamento e do parâmetro de corte R₀. Aqui as energias das tubulinas se somam e os núcleons são tratados um a um, sem agrupá-los em núcleos: simplificações que mudam o resultado por um fator de ~10, muito menos que a diferença entre os modelos.</>,
       <>O número de tubulinas usado ({formatSci(ORCH_OR_TUBULINS, 0)}) é o proposto pelo Orch-OR para um evento de ~25 ms; outros trabalhos do mesmo grupo usam valores diferentes.</>,
     ]}

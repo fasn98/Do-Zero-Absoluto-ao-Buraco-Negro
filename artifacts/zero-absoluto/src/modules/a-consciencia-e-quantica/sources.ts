@@ -77,6 +77,8 @@ export const REFERENCES: Reference[] = [
   { text: 'B. C. Carter e B. P. Bean, "Sodium Entry during Action Potentials of Mammalian Neurons", Neuron 64, 898 (2009).', url: 'https://doi.org/10.1016/j.neuron.2009.12.011' },
   { text: 'G. Buzsáki e X.-J. Wang, "Mechanisms of Gamma Oscillations", Annual Review of Neuroscience 35, 203 (2012).', url: 'https://doi.org/10.1146/annurev-neuro-062111-150444' },
   { text: 'C. Sergent, S. Baillet e S. Dehaene, "Timing of the brain events underlying access to consciousness during the attentional blink", Nature Neuroscience 8, 1391 (2005).', url: 'https://doi.org/10.1038/nn1549' },
+  { text: 'UniProt Consortium, UniProtKB Q71U36 (TUBA1A, tubulina α-1A humana, 50.136 Da).', url: 'https://www.uniprot.org/uniprotkb/Q71U36/entry' },
+  { text: 'UniProt Consortium, UniProtKB P07437 (TUBB, tubulina β humana, 49.671 Da).', url: 'https://www.uniprot.org/uniprotkb/P07437/entry' },
   { text: 'H. Fischer, I. Polikarpov e A. F. Craievich, "Average protein density is a molecular-weight-dependent function", Protein Science 13, 2825 (2004).', url: 'https://doi.org/10.1110/ps.04688204' },
   { text: 'E. Bianconi et al., "An estimation of the number of cells in the human body", Annals of Human Biology 40, 463 (2013).', url: 'https://doi.org/10.3109/03014460.2013.807878' },
   { text: 'R. G. McMurray et al., "Examining Variations of Resting Metabolic Rate of Adults", Medicine & Science in Sports & Exercise 46, 1352 (2014).', url: 'https://doi.org/10.1249/MSS.0000000000000232' },
