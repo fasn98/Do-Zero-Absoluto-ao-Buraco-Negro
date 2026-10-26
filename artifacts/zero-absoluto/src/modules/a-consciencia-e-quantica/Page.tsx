@@ -22,6 +22,17 @@ function timeText([a, b]: [number, number]) {
 /** Ordens de grandeza que faltam de τ até t (0 se já alcança). */
 const ordersShort = (tau: number, target: number) => Math.max(0, Math.log10(target / tau));
 
+/** Distância de um intervalo de decoerência até um tempo-alvo, em texto ("16 a 17 ordens de grandeza"). */
+function ordersText([lo, hi]: [number, number], target: number) {
+  const min = ordersShort(hi, target);
+  const max = ordersShort(lo, target);
+  // A mesma precisão nos dois extremos: uma casa decimal enquanto a distância for pequena.
+  const fmt = (x: number) => formatNumber(x, max < 5 ? 1 : 0);
+  if (max < 0.05) return 'alcança';
+  if (fmt(min) === fmt(max)) return `${fmt(max)} ordens de grandeza`;
+  return `${min < 0.05 ? '0' : fmt(min)} a ${fmt(max)} ordens de grandeza`;
+}
+
 function Debate() {
   return <div className="claims">
     <Claim level="hipotese" title="Orch-OR: consciência e colapso nos microtúbulos">
@@ -49,10 +60,7 @@ function Race() {
     { id: 'colapso', label: `Colapso D-P, ${formatSci(ORCH_OR_TUBULINS, 0)} tubulinas`, range: [collapse, collapse] as [number, number], family: 'colapso' as const, highlight: true },
     ...NEURAL_TIMES.map((n) => ({ id: n.id, label: n.short, range: n.range, family: 'neural' as const })),
   ], [estimate, collapse]);
-  // Distância até a escala neural: do limite superior da estimativa até 1 ms (potencial de ação) e até 25 ms (gama).
-  const tau = chosen.range[1];
-  const toSpike = ordersShort(tau, 1e-3);
-  const toGamma = ordersShort(tau, 0.025);
+  // Distância até a escala neural (1 ms, potencial de ação; 25 ms, gama), para os dois extremos da estimativa.
   return <SimCard title="A corrida de relógios">
     <p>Para que um efeito quântico importe no cérebro, a superposição precisa durar ao menos o tempo dos processos neurais. O gráfico põe lado a lado os tempos de decoerência estimados em cada artigo, o tempo de colapso que o Orch-OR propõe e os tempos medidos da atividade neural, numa escala de 10⁻²⁵ s a 1 s.</p>
     <div className="controls">
@@ -64,8 +72,8 @@ function Race() {
     <ClockRace marks={marks} neuralBand={NEURAL_BAND} />
     <StatGrid>
       <Stat label="Decoerência escolhida" value={timeText(chosen.range)} note={chosen.source} testId="text-12-decoherence" />
-      <Stat label="Até um potencial de ação (~1 ms)" value={toSpike < 0.05 ? 'alcança' : `${formatNumber(toSpike, 0)} ordens de grandeza`} note="quantas potências de dez faltam" testId="text-12-orders-spike" />
-      <Stat label="Até o ritmo gama (~25 ms)" value={toGamma < 0.05 ? 'alcança' : `${formatNumber(toGamma, toGamma < 3 ? 1 : 0)} ordens de grandeza`} note="ciclo de 40 Hz, ligado à percepção" testId="text-12-orders-gamma" />
+      <Stat label="Até um potencial de ação (~1 ms)" value={ordersText(chosen.range, 1e-3)} note="quantas potências de dez faltam" testId="text-12-orders-spike" />
+      <Stat label="Até o ritmo gama (~25 ms)" value={ordersText(chosen.range, 0.025)} note="ciclo de 40 Hz, ligado à percepção" testId="text-12-orders-gamma" />
     </StatGrid>
     <div className="callout" data-testid="text-12-verdict">
       {estimate.startsWith('tegmark')
