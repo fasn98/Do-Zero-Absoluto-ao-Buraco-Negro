@@ -79,7 +79,7 @@ Cada arquivo tem cabeçalho com fonte, DOI, versão, data de download e licença
 |---|---|---|---|
 | `desi_dr2_bao_mean.txt`, `desi_dr2_bao_cov.txt` | 13 medidas de D_V/r_d, D_M/r_d, D_H/r_d e covariância | DESI DR2, PRD 112, 083515 (2025), DOI 10.1103/tr6y-kpc6; arquivo oficial em `CobayaSampler/bao_data`, commit b7b8a36e9b | repositório sem licença; números publicados no artigo (CC BY 4.0) |
 | `planck2018_distance_priors.txt` | R, l_A, ω_b e a inversa da covariância (Planck 2018 TT,TE,EE+lowE, ΛCDM) | Chen, Huang e Wang, JCAP 02, 028 (2019), DOI 10.1088/1475-7516/2019/02/028, apêndice | números do artigo, com atribuição |
-| `union3_compressed.txt` | 22 nós de módulo de distância e a inversa da covariância | Rubin et al., arXiv:2311.12098; `rubind/union3_release`, `mu_mat_union3_cosmo=2_mu.fits`, commit a3e75550b4 | MIT |
+| `union3_compressed.txt` | 22 nós de módulo de distância e a inversa da covariância | Rubin et al., ApJ 986, 231 (2025), DOI 10.3847/1538-4357/adc0a5, arXiv:2311.12098; `rubind/union3_release`, `mu_mat_union3_cosmo=2_mu.fits`, commit a3e75550b4 | MIT |
 | `validacao_python.json` | χ² de referência em pontos fixos, gerados por `scripts/validacao_cosmo.py pontos` | — | — |
 
 As médias do BAO coincidem com a Tabela IV do artigo; os desvios e correlações do arquivo oficial diferem dos da tabela em até ~6% (a tabela traz médias e desvios das posteriores marginalizadas). O artigo indica o arquivo do Cobaya como a verossimilhança oficial.

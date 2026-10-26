@@ -288,7 +288,7 @@ export default function DataConfrontation() {
     references={[
       { text: 'DESI Collaboration (M. Abdul Karim et al.), "DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints", Physical Review D 112, 083515 (2025).', url: 'https://doi.org/10.1103/tr6y-kpc6' },
       { text: 'L. Chen, Q.-G. Huang e K. Wang, "Distance Priors from Planck Final Release", Journal of Cosmology and Astroparticle Physics 02, 028 (2019).', url: 'https://doi.org/10.1088/1475-7516/2019/02/028' },
-      { text: 'D. Rubin et al., "Union Through UNITY: Cosmology with 2,000 SNe Using a Unified Bayesian Framework", arXiv:2311.12098 (2023).', url: 'https://arxiv.org/abs/2311.12098' },
+      { text: 'D. Rubin et al., "Union through UNITY: Cosmology with 2000 SNe Using a Unified Bayesian Framework", The Astrophysical Journal 986, 231 (2025); arXiv:2311.12098.', url: 'https://doi.org/10.3847/1538-4357/adc0a5' },
       { text: 'N. Aghanim et al. (Planck), "Planck 2018 results. VI. Cosmological parameters", Astronomy & Astrophysics 641, A6 (2020).', url: 'https://doi.org/10.1051/0004-6361/201833910' },
       { text: 'W. Hu e N. Sugiyama, "Small-Scale Cosmological Perturbations: an Analytic Approach", The Astrophysical Journal 471, 542 (1996).', url: 'https://doi.org/10.1086/177989' },
       { text: 'D. J. Eisenstein e W. Hu, "Baryonic Features in the Matter Transfer Function", The Astrophysical Journal 496, 605 (1998).', url: 'https://doi.org/10.1086/305424' },
