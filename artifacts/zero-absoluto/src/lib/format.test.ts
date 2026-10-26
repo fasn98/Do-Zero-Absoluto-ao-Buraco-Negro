@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatNumber, formatSig, formatDuration, formatFromLog10, formatLength, formatSci, formatTemperature } from "./format";
+import { formatNumber, formatSig, formatDuration, formatRedshift, formatFromLog10, formatLength, formatSci, formatTemperature } from "./format";
 import { evaporationTimeS, hawkingTemperatureK, schwarzschildRadiusM } from "../physics/blackHole";
 import { julianYear, solarMass } from "../physics/constants";
 
@@ -59,5 +59,22 @@ describe("formatação de números extremos", () => {
   it("minutos e trilhões de anos", () => {
     expect(formatDuration(178, 31557600)).toBe("2,97 min");
     expect(formatDuration(1e14 * 31557600, 31557600)).toBe("100 trilhões de anos");
+  });
+});
+
+describe("temperaturas altas e redshift", () => {
+  it("nunca mostra 1.000 milhões K e usa o singular", () => {
+    expect(formatTemperature(0.99999e9)).toBe("1 bilhão K");
+    expect(formatTemperature(0.99999e9, 3)).toBe("1,00 bilhão K");
+    expect(formatTemperature(1.57e7)).toBe("15,7 milhões K");
+    expect(formatTemperature(2.5e9, 3)).toBe("2,50 bilhões K");
+    expect(formatTemperature(2973.5, 3)).toBe("2.970 K");
+    expect(formatTemperature(2.7255, 3)).toBe("2,73 K");
+  });
+  it("redshift com 3 algarismos", () => {
+    expect(formatRedshift(3440.7)).toBe("3.440");
+    expect(formatRedshift(1090)).toBe("1.090");
+    expect(formatRedshift(0.63172)).toBe("0,632");
+    expect(formatRedshift(2.5e8)).toBe("2,50 × 10⁸");
   });
 });

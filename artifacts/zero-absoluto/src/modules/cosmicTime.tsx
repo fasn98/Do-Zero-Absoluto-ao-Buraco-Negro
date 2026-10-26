@@ -31,6 +31,20 @@ export function setCosmicTime(timeS: number) {
   listeners.forEach((listener) => listener());
 }
 
+/**
+ * Parâmetros de URL para abrir a linha do tempo num ponto exato (usados pelo
+ * script de capturas e úteis para links): `?marco=<id>` vai até o marco e
+ * `?t=<segundos>` até um instante. `t` tem prioridade.
+ */
+export function timeFromUrl(milestones: { id: string; anchor: number }[]): number | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const t = Number(params.get('t'));
+  if (params.has('t') && t > 0) return t;
+  const id = params.get('marco');
+  return milestones.find((m) => m.id === id)?.anchor ?? null;
+}
+
 export function useCosmicTime(): [number, (timeS: number) => void] {
   const value = useSyncExternalStore(
     (listener) => { listeners.add(listener); return () => listeners.delete(listener); },

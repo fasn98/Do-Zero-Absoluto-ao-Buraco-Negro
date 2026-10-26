@@ -17,7 +17,7 @@ import {
   type Cosmology,
 } from '../physics/friedmann';
 import { julianYear, solarAge } from '../physics/constants';
-import { formatDuration, formatFromLog10, formatSig, formatTemperature, superscript } from '../lib/format';
+import { formatDuration, formatFromLog10, formatRedshift as redshift, formatSig, formatTemperature, superscript } from '../lib/format';
 import type { EvidenceLevel } from './shared';
 
 export type CosmicMilestone = {
@@ -48,7 +48,6 @@ const INFLATION_END_S = 1e-32;
 
 const yr = (years: number) => years * julianYear;
 const duration = (seconds: number) => formatDuration(seconds, julianYear);
-const redshift = (z: number) => (z >= 100 ? Math.round(z).toLocaleString('pt-BR') : formatSig(z));
 
 /** Marcos da história cósmica, com os tempos do modelo para a cosmologia escolhida. */
 export function cosmicMilestones(c: Cosmology = PLANCK_2018): CosmicMilestone[] {
@@ -90,7 +89,7 @@ export function cosmicMilestones(c: Cosmology = PLANCK_2018): CosmicMilestone[] 
       id: 'igualdade', name: 'Igualdade matéria-radiação', short: 'Igualdade', level: 'consenso',
       whenShort: duration(tEq),
       when: `z ≈ ${redshift(zEq)}, ${duration(tEq)}`, range: point(tEq), anchor: tEq,
-      text: 'A densidade da matéria passa a superar a da radiação, e a expansão desacelera de outro jeito: a ∝ t^(2/3) em vez de t^(1/2). A data é derivada do modelo ΛCDM ajustado aos dados, e não observada diretamente.',
+      text: 'A densidade da matéria passa a superar a da radiação, e a expansão desacelera de outro jeito: o fator de escala passa a crescer como t elevado a 2/3, e não mais a 1/2. A data é derivada do modelo ΛCDM ajustado aos dados, e não observada diretamente.',
     },
     {
       id: 'recombinacao', name: 'Recombinação e fundo cósmico de micro-ondas', short: 'Recombinação', level: 'fato',
@@ -183,9 +182,8 @@ export function temperatureReading(timeS: number, c: Cosmology = PLANCK_2018): T
       : undefined;
     return { value: `${formatFromLog10(log10T)} K`, note };
   }
-  const T = 10 ** log10T;
-  // Entre 1 K e 10⁶ K, 3 algarismos significativos (2,73 K; 2.970 K).
-  return { value: T >= 1 && T < 1e6 ? `${formatSig(T)} K` : formatTemperature(T) };
+  // 3 algarismos significativos: 2,73 K; 2.970 K; 1,00 bilhão K.
+  return { value: formatTemperature(10 ** log10T, 3) };
 }
 
 /** Instante na escala da régua: posição de 0 a 1, uniforme em log₁₀ t. */

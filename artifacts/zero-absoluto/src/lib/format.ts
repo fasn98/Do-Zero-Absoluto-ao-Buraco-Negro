@@ -41,19 +41,34 @@ export function formatSci(value: number, digits = 2): string {
   return (value < 0 ? '−' : '') + formatFromLog10(Math.log10(Math.abs(value)), digits);
 }
 
-export function formatTemperature(value: number) {
+/**
+ * Temperatura legível. Os limites de faixa ficam em 0,9995 × 10ⁿ para que o
+ * arredondamento nunca produza "1.000 milhões K". Com `significant`, acima de
+ * 1 K o valor sai com esse número fixo de algarismos (ex.: "1,00 bilhão K").
+ */
+export function formatTemperature(value: number, significant?: number) {
   // Abaixo de 1 K: até 3 algarismos significativos; abaixo de 1 nK, notação científica
   // em kelvin, para nunca arredondar um valor positivo para zero.
   const sig = (v: number) => v.toLocaleString('pt-BR', { maximumSignificantDigits: 3 });
+  const big = (v: number, decimals: number) => (significant ? formatSig(v, significant) : formatNumber(v, decimals));
+  const scaled = (v: number, one: string, many: string) => {
+    const text = big(v, 2);
+    return `${text} ${Number(text.replace(/\./g, '').replace(',', '.')) < 2 ? one : many} K`;
+  };
   if (value > 0 && value < 0.9995e-9) return `${formatSci(value)} K`;
   if (value < 0.9995e-6) return `${sig(value * 1e9)} nK`;
   if (value < 0.9995e-3) return `${sig(value * 1e6)} μK`;
   if (value < 0.9995) return `${sig(value * 1e3)} mK`;
-  if (value < 1000) return `${formatNumber(value, 1)} K`;
-  if (value < 1e6) return `${Math.round(value).toLocaleString('pt-BR')} K`;
-  if (value < 1e9) return `${formatNumber(value / 1e6)} milhões K`;
-  if (value < 1e12) return `${formatNumber(value / 1e9)} bilhões K`;
+  if (value < 999.5) return `${big(value, 1)} K`;
+  if (value < 0.9995e6) return `${significant ? formatSig(value, significant) : Math.round(value).toLocaleString('pt-BR')} K`;
+  if (value < 0.9995e9) return scaled(value / 1e6, 'milhão', 'milhões');
+  if (value < 0.9995e12) return scaled(value / 1e9, 'bilhão', 'bilhões');
   return `${formatSci(value)} K`;
+}
+
+/** Redshift com 3 algarismos significativos ("1.090", "3.440", "0,632"); notação científica a partir de 10⁶. */
+export function formatRedshift(z: number) {
+  return Math.abs(z) < 0.9995e6 ? formatSig(z) : formatSci(z);
 }
 
 /** Tempo em segundos para texto legível. */

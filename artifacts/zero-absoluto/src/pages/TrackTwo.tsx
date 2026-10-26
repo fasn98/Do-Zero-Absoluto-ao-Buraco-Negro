@@ -1,8 +1,9 @@
+import { useEffect } from 'react';
 import { Link } from 'wouter';
 import { EvidenceTag } from '../modules/shared';
 import { TRACKS, TRACK2_MODULES } from '../modules/tracks';
 import { cosmicEpoch, cosmicMilestones, nearestMilestone, temperatureReading } from '../modules/cosmicMilestones';
-import { CosmicTimeSlider, EpochNotice, useCosmicTime } from '../modules/cosmicTime';
+import { CosmicTimeSlider, EpochNotice, timeFromUrl, useCosmicTime } from '../modules/cosmicTime';
 import { ageOfUniverseS } from '../physics/friedmann';
 import { julianYear } from '../physics/constants';
 import { formatDuration } from '../lib/format';
@@ -16,6 +17,10 @@ const MODULE_21 = TRACK2_MODULES[0];
 /** Régua de tempo cósmico (parâmetros do Planck 2018), sincronizada com o Módulo 2.1. */
 function CosmicRuler() {
   const [time, setTime] = useCosmicTime();
+  useEffect(() => {
+    const t = timeFromUrl(MILESTONES);
+    if (t !== null) setTime(t);
+  }, [setTime]);
   const epoch = cosmicEpoch(time);
   const temperature = temperatureReading(time);
   const nearest = nearestMilestone(time, MILESTONES);

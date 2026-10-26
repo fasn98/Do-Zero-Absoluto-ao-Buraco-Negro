@@ -79,7 +79,21 @@ PORT=19201 BASE_PATH=/ pnpm run build         # saída em dist/public
 
 ## Capturas de tela
 
-**Atenção: o script de capturas não está versionado no repositório.** As sessões anteriores usaram o Chromium headless do Replit (`/repl/tools/bin/chromium`, perfis em `.config/chromium-headless/`) apontando para o servidor de desenvolvimento, em 360 px de largura e em desktop. Ao recriar o script, salve-o em `scripts/` e atualize esta seção com o comando exato.
+Script versionado: `scripts/capturas.mjs`. Usa o Chromium headless do Replit (`/repl/tools/bin/chromium`) pelo protocolo DevTools, sem dependências. O servidor de desenvolvimento precisa estar rodando (porta 19201). Rode da raiz do workspace:
+
+```bash
+node scripts/capturas.mjs                                    # conjunto padrão, 360 px e 1440 px
+node scripts/capturas.mjs /trilha-1 /pior-previsao           # rotas escolhidas
+node scripts/capturas.mjs --larguras=360 /trilha-2           # só celular
+node scripts/capturas.mjs --tema=escuro /                    # tema escuro
+node scripts/capturas.mjs --avaliar='document.title' /       # só avalia JS na página, sem imagem
+```
+
+- Saída em `capturas/` (fora do Git): `<rota>_<largura>.png`, página inteira, e `<rota>_<largura>.txt` com o texto de todos os elementos `data-testid="text-*"`, para conferir os valores exibidos.
+- Para cada página, o script avisa `ROLAGEM HORIZONTAL` se a página for mais larga que a janela.
+- Parâmetros de URL do Módulo 2.1 e da régua da Trilha 2: `?marco=<id>` (planck, inflacao, nucleossintese, igualdade, recombinacao, primeiras-estrelas, reionizacao, sol, aceleracao, energia-escura, hoje, futuro), `?t=<segundos>` (tem prioridade sobre o marco) e `?h0=shoes` (só no Módulo 2.1). Exemplo: `"/a-linha-do-tempo-cosmica?marco=hoje&h0=shoes"`.
+- Imagens altas: corte em pedaços antes de abrir, por exemplo `magick arquivo.png -crop x3000 +repage pedaco_%02d.png`.
+- Não use `captureBeyondViewport`: ele distorce os gráficos de `Plot.tsx`, que medem a própria largura. O script aumenta a janela até a altura da página antes de capturar.
 
 Rotina esperada: capturar cada página alterada em 360 px e desktop, abrir as imagens, corrigir o que aparecer e informar os valores exibidos.
 

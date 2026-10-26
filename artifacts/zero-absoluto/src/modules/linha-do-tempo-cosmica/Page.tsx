@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import ModulePage from '../ModulePage';
 import { Claim, EvidenceTag, Segmented, SimCard, Stat, StatGrid, Sym } from '../shared';
 import { LinePlot, type Dot } from '../Plot';
-import { CosmicTimeSlider, EpochNotice, useCosmicTime } from '../cosmicTime';
+import { CosmicTimeSlider, EpochNotice, setCosmicTime, timeFromUrl, useCosmicTime } from '../cosmicTime';
 import { cosmicEpoch, cosmicMilestones, nearestMilestone, temperatureReading, type CosmicMilestone } from '../cosmicMilestones';
 import {
   PLANCK_2018_AGE_GYR,
@@ -29,20 +29,13 @@ import {
   type Cosmology,
 } from '../../physics/friedmann';
 import { julianYear } from '../../physics/constants';
-import { formatDuration, formatFromLog10, formatNumber, formatSci, formatSig, superscript } from '../../lib/format';
+import { formatDuration, formatFromLog10, formatNumber, formatRedshift, formatSci, formatSig, superscript } from '../../lib/format';
 
 type Preset = 'planck' | 'shoes';
 const COSMOLOGIES: Record<Preset, Cosmology> = { planck: makeCosmology(PLANCK_2018_H0), shoes: makeCosmology(SHOES_H0) };
 
 const duration = (seconds: number) => formatDuration(seconds, julianYear);
 const log10Years = (seconds: number) => Math.log10(seconds / julianYear);
-
-/** Redshift legível: 3 algarismos abaixo de 1.000, inteiro com separador até 10⁶, notação científica acima. */
-function formatRedshift(z: number) {
-  if (z < 1000) return formatSig(z);
-  if (z < 1e6) return Math.round(z).toLocaleString('pt-BR');
-  return formatSci(z);
-}
 
 /** Fração de densidade em porcentagem, a partir de log₁₀ da fração (sem underflow). */
 function formatFraction(log10Fraction: number) {
@@ -85,9 +78,9 @@ function Readout({ time, c, t0 }: { time: number; c: Cosmology; t0: number }) {
     <StatGrid>
       <Stat label="Tempo desde o Big Bang" value={duration(time)} note={future ? `daqui a ${duration(time - t0)}` : `há ${duration(t0 - time)}`} testId="text-21-time" />
       <Stat label={<>Fator de escala <Sym>a</Sym></>} value={formatFromLog10(log10A)} note="tamanho relativo a hoje (a = 1)" testId="text-21-a" />
-      <Stat label={<>Redshift <Sym>z</Sym></>} value={future ? '—' : formatRedshift(Math.expm1(-lnA))} note={future ? 'no futuro, z não se aplica; veja a' : 'z = 1/a − 1'} testId="text-21-z" />
+      <Stat label={<>Redshift <Sym>z</Sym></>} value={future ? '—' : formatRedshift(Math.expm1(-lnA))} note={future ? 'no futuro, z não se aplica; veja o fator a' : 'z = 1/a − 1'} testId="text-21-z" />
       <Stat label={<>Temperatura <Sym>T = T₀(1 + z)</Sym></>} value={temperature.value} note={temperature.note ?? 'radiação de fundo, T₀ = 2,7255 K'} testId="text-21-T" />
-      <Stat label={<>Taxa de expansão <Sym>H</Sym></>} value={`${formatFromLog10(log10H)} km/s/Mpc`} note={`H₀ = ${formatSig(c.h0, 4)} km/s/Mpc hoje`} testId="text-21-H" />
+      <Stat label={<>Taxa de expansão <Sym>H</Sym></>} value={`${formatFromLog10(log10H)} km/s/Mpc`} note={`H₀ = ${formatNumber(c.h0, 2)} km/s/Mpc hoje`} testId="text-21-H" />
       <Stat label="Domina a expansão" value={fractions.radiation > fractions.matter && fractions.radiation > fractions.darkEnergy ? 'Radiação' : fractions.matter > fractions.darkEnergy ? 'Matéria' : 'Energia escura'} note="maior fração de densidade" testId="text-21-dominant" />
     </StatGrid>
     <div className="sub-title" style={{ marginBottom: 4 }}>Frações de densidade</div>
@@ -97,9 +90,9 @@ function Readout({ time, c, t0 }: { time: number; c: Cosmology; t0: number }) {
       <div className="dark-energy" style={{ width: share(fractions.darkEnergy) }} />
     </div>
     <StatGrid>
-      <Stat label={<>Radiação <Sym>Ω_r(a)</Sym></>} value={formatFraction(fractions.radiation)} note="fótons e neutrinos" testId="text-21-frac-r" />
-      <Stat label={<>Matéria <Sym>Ω_m(a)</Sym></>} value={formatFraction(fractions.matter)} note="escura e comum" testId="text-21-frac-m" />
-      <Stat label={<>Energia escura <Sym>Ω_Λ(a)</Sym></>} value={formatFraction(fractions.darkEnergy)} note="constante cosmológica" testId="text-21-frac-l" />
+      <Stat label={<>Radiação <Sym>Ω<sub>r</sub>(a)</Sym></>} value={formatFraction(fractions.radiation)} note="fótons e neutrinos" testId="text-21-frac-r" />
+      <Stat label={<>Matéria <Sym>Ω<sub>m</sub>(a)</Sym></>} value={formatFraction(fractions.matter)} note="escura e comum" testId="text-21-frac-m" />
+      <Stat label={<>Energia escura <Sym>Ω<sub>Λ</sub>(a)</Sym></>} value={formatFraction(fractions.darkEnergy)} note="constante cosmológica" testId="text-21-frac-l" />
     </StatGrid>
   </>;
 }
@@ -125,9 +118,9 @@ function CosmicClock({ preset, setPreset }: { preset: Preset; setPreset: (p: Pre
       <div>
         <div className="log-slider-head"><span>Parâmetros</span></div>
         <Segmented label="Parâmetros cosmológicos" value={preset} onChange={setPreset} options={[{ value: 'planck', label: 'Planck 2018 (H₀ = 67,4)' }, { value: 'shoes', label: 'Universo local, SH0ES (H₀ = 73,04)' }]} />
-        <p className="plot-note">Ω_m = 0,315 nos dois casos; Ω_r = {formatSci(c.omegaR)}; Ω_Λ = {formatSig(c.omegaL)}. Idade: <b data-testid="text-21-age">{formatSig(secondsToGyr(t0), 4)} bilhões de anos</b>.</p>
+        <p className="plot-note">Ω<sub>m</sub> = 0,315 nos dois casos; Ω<sub>r</sub> = {formatSci(c.omegaR)}; Ω<sub>Λ</sub> = {formatSig(c.omegaL)}. Idade: <b data-testid="text-21-age">{formatSig(secondsToGyr(t0), 4)} bilhões de anos</b>.</p>
       </div>
-      {preset === 'shoes' && <div className="callout warn" data-testid="text-21-shoes-note">Com o H₀ do SH0ES e Ω_m fixo, a idade cai para {formatSig(secondsToGyr(t0), 3)} bilhões de anos. Numa análise real, Ω_m também mudaria: o fundo cósmico fixa sobretudo Ω_m h², e um H₀ maior viria com Ω_m menor. Este atalho só ilustra a tensão de Hubble do <Link href="/ouvindo-o-universo" className="inline-link">Módulo 8</Link>: as duas medições de H₀ não cabem no mesmo ΛCDM.</div>}
+      {preset === 'shoes' && <div className="callout warn" data-testid="text-21-shoes-note">Com o H₀ do SH0ES e Ω<sub>m</sub> fixo, a idade cai para {formatSig(secondsToGyr(t0), 3)} bilhões de anos. Numa análise real, Ω<sub>m</sub> também mudaria: o fundo cósmico fixa sobretudo Ω<sub>m</sub> h², e um H₀ maior viria com Ω<sub>m</sub> menor. Este atalho só ilustra a tensão de Hubble do <Link href="/ouvindo-o-universo" className="inline-link">Módulo 8</Link>: as duas medições de H₀ não cabem no mesmo ΛCDM.</div>}
       <div>
         <div className="log-slider-head"><span>Tempo desde o Big Bang</span><output>{duration(time)}</output></div>
         <CosmicTimeSlider value={time} onChange={setTime} todayS={t0} testId="input-21-time" />
@@ -152,7 +145,7 @@ function ScaleFactorPlot({ preset }: { preset: Preset }) {
   const plotted = PLOTTED.map((id) => milestones.find((m) => m.id === id)!);
   const dots: Dot[] = plotted.map((m, i) => ({ x: log10Years(m.anchor), y: lnScaleFactorAtTime(m.anchor, c) / Math.LN10, label: String(i + 1), below: m.id === 'primeiras-estrelas' || m.id === 'futuro' }));
   return <SimCard title="O fator de escala a(t)">
-    <p>Em escala log-log, cada era é quase uma reta: <Sym>a ∝ t^(1/2)</Sym> quando a radiação domina, <Sym>a ∝ t^(2/3)</Sym> quando a matéria domina. Com a energia escura, a curva dispara: o crescimento passa a ser exponencial.</p>
+    <p>Em escala log-log, cada era é quase uma reta: <Sym>a ∝ t<sup>1/2</sup></Sym> quando a radiação domina, <Sym>a ∝ t<sup>2/3</sup></Sym> quando a matéria domina. Com a energia escura, a curva dispara: o crescimento passa a ser exponencial.</p>
     <LinePlot
       title="Fator de escala em função do tempo, em escala log-log, com as três eras"
       xMin={X_RANGE[0]} xMax={X_RANGE[1]} yMin={-10} yMax={3}
@@ -197,7 +190,7 @@ function FractionsPlot({ preset }: { preset: Preset }) {
       ]}
       height={240}
     />
-    <p className="plot-note">Com estes parâmetros, a igualdade matéria-radiação cai em z ≈ {formatRedshift(matterRadiationEqualityRedshift(COSMOLOGIES[preset]))}. O Planck 2018 dá z_eq = {PLANCK_2018_Z_EQ.toLocaleString('pt-BR')} ± 21. A diferença vem dos neutrinos: aqui eles são três espécies sem massa (N_eff = 3), enquanto o Planck usa N_eff = 3,046, um pouco mais de radiação, e inclui no Ω_m a massa dos neutrinos (0,06 eV no total), que hoje conta como matéria, mas em z_eq ainda se comportava como radiação. Usando só a matéria fria do Planck, Ω_c h² + Ω_b h² ≈ 0,1418, sai z_eq ≈ 3.387.</p>
+    <p className="plot-note">Com estes parâmetros, a igualdade matéria-radiação cai em z ≈ {formatRedshift(matterRadiationEqualityRedshift(COSMOLOGIES[preset]))}. O Planck 2018 dá z<sub>eq</sub> = {PLANCK_2018_Z_EQ.toLocaleString('pt-BR')} ± 21. A diferença vem dos neutrinos: aqui eles são três espécies sem massa (N<sub>eff</sub> = 3), enquanto o Planck usa N<sub>eff</sub> = 3,046, um pouco mais de radiação, e inclui no Ω<sub>m</sub> a massa dos neutrinos (0,06 eV no total), que hoje conta como matéria, mas em z<sub>eq</sub> ainda se comportava como radiação. Usando só a matéria fria do Planck, Ω<sub>c</sub> h² + Ω<sub>b</sub> h² ≈ 0,1418, sai z<sub>eq</sub> ≈ 3.387.</p>
   </SimCard>;
 }
 
@@ -226,32 +219,38 @@ function Horizons({ preset }: { preset: Preset }) {
       <Stat label="Horizonte de partículas" value={`${formatSig(metersToGly(particleHorizonM(c)))} bilhões de anos-luz`} note={<Sym>c ∫₀¹ da / (a² H)</Sym>} testId="text-21-particle-horizon" />
       <Stat label="Horizonte de eventos" value={`${formatSig(metersToGly(eventHorizonM(c)))} bilhões de anos-luz`} note={<Sym>c ∫₁^∞ da / (a² H)</Sym>} testId="text-21-event-horizon" />
       <Stat label={<>Tempo de Hubble <Sym>1/H₀</Sym></>} value={`${formatSig(secondsToGyr(hubbleTimeS(c)))} bilhões de anos`} note="coincide quase com a idade, por acaso da época atual" testId="text-21-hubble-time" />
-      <Stat label={<>E-dobra no futuro <Sym>1/(H₀√Ω_Λ)</Sym></>} value={`${formatSig(secondsToGyr(lambdaEfoldTimeS(c)))} bilhões de anos`} note="se Λ for constante (hipótese)" testId="text-21-efold" />
-      <Stat label={<>Radiação hoje <Sym>Ω_r h²</Sym></>} value={formatSci(radiationDensityH2())} note="fótons a 2,7255 K e 3 neutrinos sem massa" />
+      <Stat label={<>E-dobra no futuro <Sym>1/(H₀√Ω<sub>Λ</sub>)</Sym></>} value={`${formatSig(secondsToGyr(lambdaEfoldTimeS(c)))} bilhões de anos`} note="se Λ for constante (hipótese)" testId="text-21-efold" />
+      <Stat label={<>Radiação hoje <Sym>Ω<sub>r</sub> h²</Sym></>} value={formatSci(radiationDensityH2())} note="fótons a 2,7255 K e 3 neutrinos sem massa" />
     </StatGrid>
-    <p className="plot-note">Distâncias comóveis, medidas hoje. O valor de Ω_r h² sai de T₀ e das constantes fundamentais: os fótons dão 2,47 × 10⁻⁵ e os três neutrinos somam 68%. O valor citado com frequência, 4,15 × 10⁻⁵, é o mesmo arredondado para baixo; com N_eff = 3,044 seria 4,18 × 10⁻⁵.</p>
+    <p className="plot-note">Distâncias comóveis, medidas hoje. O valor de Ω<sub>r</sub> h² sai de T₀ e das constantes fundamentais: os fótons dão 2,47 × 10⁻⁵ e os três neutrinos somam 68%. O valor citado com frequência, 4,15 × 10⁻⁵, é o mesmo arredondado para baixo; com N<sub>eff</sub> = 3,044 seria 4,18 × 10⁻⁵.</p>
   </SimCard>;
 }
 
 export default function CosmicTimeline() {
-  const [preset, setPreset] = useState<Preset>('planck');
+  // ?h0=shoes abre com o atalho do SH0ES; ?marco=<id> ou ?t=<segundos> posicionam o controle.
+  const [preset, setPreset] = useState<Preset>(() => (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('h0') === 'shoes' ? 'shoes' : 'planck'));
+  useEffect(() => {
+    const t = timeFromUrl(cosmicMilestones(COSMOLOGIES[preset]));
+    if (t !== null) setCosmicTime(t);
+    // Só na abertura da página.
+  }, []);
   return <ModulePage
     title="A linha do tempo cósmica"
     description="Com a equação de Friedmann e três ingredientes (radiação, matéria e energia escura), dá para reconstruir a história da expansão do universo: quando ele ficou transparente, quando a energia escura assumiu o controle e o que o modelo prevê para o futuro. Nem tudo nessa história tem o mesmo grau de certeza."
     number="2.1"
     tag="COSMOLOGIA"
     limitations={[
-      <>Neutrinos tratados como três espécies sem massa (N_eff = 3). A massa real, de pelo menos ~0,06 eV no total, desloca z_eq e, levemente, a idade.</>,
-      <>Universo exatamente plano. A curvatura medida é compatível com zero (Planck com BAO: Ω_K = 0,0007 ± 0,0019), mas isso é uma medição, não uma hipótese do modelo.</>,
+      <>Neutrinos tratados como três espécies sem massa (N<sub>eff</sub> = 3). A massa real, de pelo menos ~0,06 eV no total, desloca z<sub>eq</sub> e, levemente, a idade.</>,
+      <>Universo exatamente plano. A curvatura medida é compatível com zero (Planck com BAO: Ω<sub>K</sub> = 0,0007 ± 0,0019), mas isso é uma medição, não uma hipótese do modelo.</>,
       <>Energia escura constante (w = −1). O Módulo 2.2 vai abrir essa hipótese.</>,
       <>Antes da nucleossíntese, a física de partículas em altas energias (transições de fase, matéria escura, bariogênese) não é modelada. A relação T = T₀(1 + z) supõe o conteúdo de radiação de hoje: antes de ~10 s, quando elétrons e pósitrons ainda existiam, temperatura e tempo reais diferem em dezenas de por cento, e antes de 1 s só a ordem de grandeza é indicada.</>,
       <>Recombinação e reionização são processos graduais; aqui aparecem num único redshift (z = 1.090 e z = 7,7).</>,
-      <>O atalho do SH0ES mantém Ω_m fixo; uma análise real ajustaria todos os parâmetros juntos.</>,
+      <>O atalho do SH0ES mantém Ω<sub>m</sub> fixo; uma análise real ajustaria todos os parâmetros juntos.</>,
     ]}
     references={[
       { text: 'N. Aghanim et al. (Planck), "Planck 2018 results. VI. Cosmological parameters", Astronomy & Astrophysics 641, A6 (2020).', url: 'https://doi.org/10.1051/0004-6361/201833910' },
       { text: 'D. J. Fixsen, "The Temperature of the Cosmic Microwave Background", The Astrophysical Journal 707, 916 (2009).', url: 'https://doi.org/10.1088/0004-637X/707/2/916' },
-      { text: 'B. D. Fields, P. Molaro e S. Sarkar, "Big-Bang Nucleosynthesis", em Particle Data Group (S. Navas et al.), Review of Particle Physics, Physical Review D 110, 030001 (2024); edição de 2026 em International Journal of Modern Physics A 41, 2630011 (2026).', url: 'https://doi.org/10.1142/S0217751X26300115' },
+      { text: 'B. D. Fields, P. Molaro e S. Sarkar, "Big Bang Nucleosynthesis" (cap. 24, revisado em agosto de 2025), em Particle Data Group (F. Takahashi et al.), Review of Particle Physics, International Journal of Modern Physics A 41, 2630011 (2026).', url: 'https://doi.org/10.1142/S0217751X26300115' },
       { text: 'S. Perlmutter et al., "Measurements of Ω and Λ from 42 High-Redshift Supernovae", The Astrophysical Journal 517, 565 (1999).', url: 'https://doi.org/10.1086/307221' },
       { text: 'A. G. Riess et al., "Observational Evidence from Supernovae for an Accelerating Universe and a Cosmological Constant", The Astronomical Journal 116, 1009 (1998).', url: 'https://doi.org/10.1086/300499' },
       { text: 'A. G. Riess et al., "Type Ia Supernova Discoveries at z > 1 from the Hubble Space Telescope: Evidence for Past Deceleration and Constraints on Dark Energy Evolution", The Astrophysical Journal 607, 665 (2004).', url: 'https://doi.org/10.1086/383612' },

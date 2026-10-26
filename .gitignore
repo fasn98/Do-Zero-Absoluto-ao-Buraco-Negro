@@ -55,3 +55,6 @@ Thumbs.db
 .local/
 .claude-persist/
 .claude-bin/
+
+# Capturas de tela (scripts/capturas.mjs)
+capturas/
