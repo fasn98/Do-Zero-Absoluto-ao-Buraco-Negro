@@ -8,9 +8,19 @@ abstract: >-
   matéria quântica, e origem e destino do universo. Cada afirmação é marcada
   como fato estabelecido, consenso ou hipótese em pesquisa.
 authors:
-  - family-names: Nogueira
-    given-names: Fabio
+  - family-names: "Sales Nogueira"
+    given-names: "Fabio Augusto"
+    orcid: "https://orcid.org/0009-0001-9303-8707"
 version: 1.0.0
+date-released: "2026-10-26"
+doi: 10.5281/zenodo.23674690
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23674690
+    description: "DOI de conceito: todas as versões (resolve sempre para a mais recente)."
+  - type: doi
+    value: 10.5281/zenodo.23674691
+    description: "DOI da versão 1.0.0, arquivada no Zenodo."
 license: MIT
 repository-code: "https://github.com/fasn98/Do-Zero-Absoluto-ao-Buraco-Negro"
 url: "https://do-zero-absoluto-ao-buraco-negro.replit.app"
@@ -20,4 +30,3 @@ keywords:
   - termodinâmica
   - cosmologia
   - recursos educacionais abertos
-# doi: o DOI será acrescentado depois da primeira versão no Zenodo.

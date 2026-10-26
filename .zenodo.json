@@ -3,7 +3,10 @@
   "description": "App educativo de física, em português do Brasil, com simulações interativas baseadas em física estabelecida, em duas trilhas: temperaturas extremas e matéria quântica, e origem e destino do universo (incluindo o confronto de cenários de energia escura com dados reais do DESI DR2, Planck 2018 e Union3). Cada afirmação é marcada como fato estabelecido, consenso ou hipótese em pesquisa. Código sob MIT; textos, figuras e capturas sob CC BY 4.0.",
   "upload_type": "software",
   "creators": [
-    { "name": "Nogueira, Fabio" }
+    {
+      "name": "Sales Nogueira, Fabio Augusto",
+      "orcid": "0009-0001-9303-8707"
+    }
   ],
   "license": "MIT",
   "language": "por",
@@ -15,6 +18,10 @@
     "recursos educacionais abertos"
   ],
   "related_identifiers": [
-    { "identifier": "https://do-zero-absoluto-ao-buraco-negro.replit.app", "relation": "isSupplementedBy", "resource_type": "other" }
+    {
+      "identifier": "https://do-zero-absoluto-ao-buraco-negro.replit.app",
+      "relation": "isSupplementedBy",
+      "resource_type": "other"
+    }
   ]
 }

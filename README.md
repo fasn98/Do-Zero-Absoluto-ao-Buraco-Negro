@@ -1,5 +1,7 @@
 # Do zero absoluto ao buraco negro
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23674690.svg)](https://doi.org/10.5281/zenodo.23674690)
+
 App educativo de física, em português do Brasil, para adultos curiosos com formação técnica, sem serem físicos. Cada módulo combina leitura com simulações interativas baseadas apenas em física estabelecida e verificável, e separa com rigor o que é **fato estabelecido**, o que é **consenso** e o que ainda é **hipótese em pesquisa**.
 
 **Site:** https://do-zero-absoluto-ao-buraco-negro.replit.app
@@ -88,7 +90,7 @@ O script reproduz as médias de w₀ e wₐ publicadas pelo DESI DR2 a menos de 
 
 ## Uso de IA no desenvolvimento
 
-O código deste projeto foi escrito com o **Claude Code** (Anthropic), sob direção e revisão de Fabio Nogueira. Nada foi aceito só por ter sido gerado: os resultados foram verificados por
+O código deste projeto foi escrito com o **Claude Code** (Anthropic), sob direção e revisão de Fabio Augusto Sales Nogueira. Nada foi aceito só por ter sido gerado: os resultados foram verificados por
 
 - **testes automatizados**, que comparam cada função de física com valores publicados;
 - **cálculos independentes**, como o script em Python que refaz a verossimilhança cosmológica por outro caminho e reproduz os resultados publicados pelo DESI;
@@ -101,10 +103,26 @@ Registros do processo:
 - [cc.sh](cc.sh) é o script que mantém o Claude Code no Replit: guarda o programa, o login e o histórico dentro do workspace, que sobrevive às reinicializações do container (essas pastas ficam fora do Git e da versão publicada).
 - [CLAUDE.md](CLAUDE.md) reúne as convenções do projeto que o Claude Code segue, e [docs/achados.md](docs/achados.md), os problemas encontrados nas fontes ao reproduzir análises publicadas.
 
+## Como citar
+
+Use o DOI de conceito, que reúne todas as versões e resolve sempre para a mais recente:
+
+**Em português:**
+
+> SALES NOGUEIRA, Fabio Augusto. *Do zero absoluto ao buraco negro*: app educativo de física com simulações interativas. Zenodo, 2026. Software. DOI: 10.5281/zenodo.23674690. Disponível em: https://doi.org/10.5281/zenodo.23674690.
+
+**In English:**
+
+> Sales Nogueira, F. A. (2026). *Do zero absoluto ao buraco negro* [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.23674690
+
+Para citar exatamente a versão 1.0.0, use o DOI dela: [10.5281/zenodo.23674691](https://doi.org/10.5281/zenodo.23674691). Os metadados completos estão em [CITATION.cff](CITATION.cff); o GitHub gera a citação em outros formatos pelo botão "Cite this repository".
+
+Autor: Fabio Augusto Sales Nogueira, ORCID [0009-0001-9303-8707](https://orcid.org/0009-0001-9303-8707).
+
 ## Licenças
 
 - **Código:** MIT ([LICENSE](LICENSE)).
 - **Textos, figuras e capturas de tela:** CC BY 4.0 ([LICENSE-CONTENT.md](LICENSE-CONTENT.md)).
 - **Dados de terceiros:** condições de cada fonte em [DATA-LICENSES.md](DATA-LICENSES.md).
 
-Para citar o projeto, use o arquivo [CITATION.cff](CITATION.cff).
+Para citar o projeto, veja a seção "Como citar" acima.
