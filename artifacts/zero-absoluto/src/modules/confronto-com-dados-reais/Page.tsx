@@ -227,7 +227,7 @@ function Confrontation() {
           <p className="milestone-when">{m.delta < 0.01 ? 'no melhor ajuste' : `a ${sigmaText(m.delta)} do melhor ajuste`}: {m.verdict.long}</p>
         </div>
       </li>)}</ol>
-      <p className="plot-note" data-testid="text-23-sn-note">Supernovas: só o Union3 tem versão comprimida oficial, pequena o bastante para o navegador. Com o DES-Y5 ou o Pantheon+ os números seriam outros, como o próprio DESI mostra: 2,8σ (Pantheon+), 3,8σ (Union3) e 4,2σ (DES-Y5). O ponto "DESI DR2 (DESY5)" no plano é o ajuste com o DES-Y5, que não está entre os dados daqui.</p>
+      <p className="plot-note" data-testid="text-23-sn-note">Supernovas: só o Union3 tem versão comprimida oficial, pequena o bastante para o navegador. Com o DES-Y5 ou o Pantheon+ os números seriam outros, como o próprio DESI mostra: 2,8σ (Pantheon+), 3,8σ (Union3) e 4,2σ (DES-Y5). O ponto "DESI DR2 (DESY5)" no plano é o ajuste com o DES-Y5, que não está entre os dados daqui. Em 2025, a colaboração DES recalibrou as próprias supernovas (calibração "Dovekie"): com os mesmos eventos, sem nenhum dado novo, a preferência por energia escura que muda com o tempo caiu de 4,2σ (o valor do DESI DR2) para 3,2σ; com o mesmo CMB nas duas análises, de 4,0σ para 3,2σ (Popovic et al., MNRAS 548, stag632, 2026). É um exemplo concreto de tensão que diminui quando sistemáticas são corrigidas.</p>
     </>}
     {grid && <Survivors marks={marks} />}
     {grid && <WPlot band={band} best={best!} />}
@@ -246,7 +246,7 @@ function Survivors({ marks }: { marks: { id: string; delta: number; verdict: Ret
   return <div data-testid="text-23-survivors">
     <div className="sub-title">Quais destinos sobrevivem</div>
     <StatGrid>{rows.map((r) => <Stat key={r.id} label={r.name} value={r.value} note={r.note} testId={`text-23-fate-${r.id}`} />)}</StatGrid>
-    <p className="plot-note">"Permitido a 2σ" quer dizer só que os dados não o excluem com 95% de confiança. Entre 2σ e 5σ, os dados preferem outro modelo, mas não o descartam. Tensões desse tamanho já desapareceram antes, com mais dados ou sistemáticas corrigidas. A posição em σ também depende das supernovas usadas: com o mesmo BAO e o mesmo CMB, o DESI encontra de 2,8σ a 4,2σ. Acima de 5σ, o padrão da física para descartar, o cenário fica excluído. O Λ negativo puro continua descartado pela idade das estrelas, independentemente desta análise. A CPL descreve o passado recente (a ≤ 1); como mostra o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>, ela não diz se o futuro distante termina em expansão eterna, Big Rip ou outra coisa.</p>
+    <p className="plot-note">"Permitido a 2σ" quer dizer só que os dados não o excluem com 95% de confiança. Entre 2σ e 5σ, os dados preferem outro modelo, mas não o descartam. Tensões desse tamanho já desapareceram antes, com mais dados ou sistemáticas corrigidas; a própria preferência com o DES-Y5 caiu de 4,2σ para 3,2σ depois da recalibração Dovekie, descrita acima. A posição em σ também depende das supernovas usadas: com o mesmo BAO e o mesmo CMB, o DESI encontra de 2,8σ a 4,2σ. Acima de 5σ, o padrão da física para descartar, o cenário fica excluído. O Λ negativo puro continua descartado pela idade das estrelas, independentemente desta análise. A CPL descreve o passado recente (a ≤ 1); como mostra o <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link>, ela não diz se o futuro distante termina em expansão eterna, Big Rip ou outra coisa.</p>
   </div>;
 }
 
@@ -293,7 +293,8 @@ export default function DataConfrontation() {
       { text: 'N. Aghanim et al. (Planck), "Planck 2018 results. VI. Cosmological parameters", Astronomy & Astrophysics 641, A6 (2020).', url: 'https://doi.org/10.1051/0004-6361/201833910' },
       { text: 'W. Hu e N. Sugiyama, "Small-Scale Cosmological Perturbations: an Analytic Approach", The Astrophysical Journal 471, 542 (1996).', url: 'https://doi.org/10.1086/177989' },
       { text: 'D. J. Eisenstein e W. Hu, "Baryonic Features in the Matter Transfer Function", The Astrophysical Journal 496, 605 (1998).', url: 'https://doi.org/10.1086/305424' },
-      { text: 'M. Chevallier e D. Polarski, "Accelerating Universes with Scaling Dark Matter", International Journal of Modern Physics D 10, 213 (2001).', url: 'https://doi.org/10.1142/S0218271801000822' },
+      { text: 'B. Popovic et al. (DES Collaboration), "The Dark Energy Survey supernova program: a reanalysis of cosmology results and evidence for evolving dark energy with an updated Type Ia supernova calibration", Monthly Notices of the Royal Astronomical Society 548, stag632 (2026).', url: 'https://doi.org/10.1093/mnras/stag632' },
+  { text: 'M. Chevallier e D. Polarski, "Accelerating Universes with Scaling Dark Matter", International Journal of Modern Physics D 10, 213 (2001).', url: 'https://doi.org/10.1142/S0218271801000822' },
       { text: 'E. V. Linder, "Exploring the Expansion History of the Universe", Physical Review Letters 90, 091301 (2003).', url: 'https://doi.org/10.1103/PhysRevLett.90.091301' },
     ]}
   >

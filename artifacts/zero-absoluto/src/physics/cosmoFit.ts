@@ -73,7 +73,7 @@ export function residuals(p: CosmoParams, combination: DataCombination): number[
 const sumSquares = (r: number[]) => r.reduce((s, v) => s + v * v, 0);
 
 /** Parâmetros livres de cada combinação e seus limites (escala típica, mínimo, máximo). */
-type Free = { key: keyof CosmoParams; scale: number; lo: number; hi: number };
+export type Free = { key: keyof CosmoParams; scale: number; lo: number; hi: number };
 const FREE_BAO: Free[] = [{ key: 'omegaM', scale: 0.01, lo: 0.05, hi: 0.7 }];
 const FREE_CMB: Free[] = [
   { key: 'omegaM', scale: 0.01, lo: 0.05, hi: 0.7 },
@@ -82,16 +82,23 @@ const FREE_CMB: Free[] = [
 ];
 const FREE_W: Free[] = [{ key: 'w0', scale: 0.05, lo: -3, hi: 1 }, { key: 'wa', scale: 0.1, lo: -3, hi: 2 }];
 export const freeParameters = (combination: DataCombination) => (combination === 'bao' ? FREE_BAO : FREE_CMB);
+/** Só sirenes: Ω_m e H₀ livres (ω_b não afeta d_L). */
+export const FREE_SIREN_ONLY: Free[] = FREE_CMB.slice(0, 2);
 
 export type FitResult = { params: CosmoParams; chi2: number; evaluations: number };
 
 /** Levenberg-Marquardt com jacobiano por diferenças finitas, dentro dos limites. */
 export function minimize(start: CosmoParams, combination: DataCombination, free: Free[], maxIterations = 40): FitResult {
+  return minimizeResiduals(start, (p) => residuals(p, combination), free, maxIterations);
+}
+
+/** O mesmo minimizador, para qualquer vetor de resíduos branqueados (usado também pela previsão com sirenes). */
+export function minimizeResiduals(start: CosmoParams, residualFn: (p: CosmoParams) => number[], free: Free[], maxIterations = 40): FitResult {
   let evaluations = 0;
   const evaluate = (p: CosmoParams) => {
     evaluations += 1;
     if (p.w0 + p.wa >= 0) return null;
-    const r = residuals(p, combination);
+    const r = residualFn(p);
     return r.every(Number.isFinite) ? r : null;
   };
   const clamp = (f: Free, v: number) => Math.min(f.hi, Math.max(f.lo, v));
