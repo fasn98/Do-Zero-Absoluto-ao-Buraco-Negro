@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Se você usar este software ou seu conteúdo, cite-o como abaixo."
+type: software
+title: "Do zero absoluto ao buraco negro"
+abstract: >-
+  App educativo de física, em português do Brasil, com simulações interativas
+  baseadas em física estabelecida, em duas trilhas: temperaturas extremas e
+  matéria quântica, e origem e destino do universo. Cada afirmação é marcada
+  como fato estabelecido, consenso ou hipótese em pesquisa.
+authors:
+  - family-names: Nogueira
+    given-names: Fabio
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/fasn98/Do-Zero-Absoluto-ao-Buraco-Negro"
+url: "https://do-zero-absoluto-ao-buraco-negro.replit.app"
+keywords:
+  - ensino de física
+  - simulações
+  - termodinâmica
+  - cosmologia
+  - recursos educacionais abertos
+# doi: o DOI será acrescentado depois da primeira versão no Zenodo.
