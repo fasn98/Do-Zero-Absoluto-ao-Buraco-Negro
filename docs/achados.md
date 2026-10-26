@@ -97,3 +97,25 @@ O desvio vira +0,17 km/s/Mpc em H₀ (0,3σ do Planck). Combinado com o BAO, o e
 O segundo caso é só uma reparametrização: Chen et al. definem R, z* e z_d com o Ω_m total (incluindo neutrinos), e o nosso Ω_m já faz esse papel. O terceiro é incoerente com a definição dos priors e piora o ajuste. **Nenhum foi mantido.**
 
 **Causa provável.** Compressão do CMB. Na Tabela V do artigo do DESI DR2 (DESI Collaboration, Phys. Rev. D 112, 083515, 2025, DOI 10.1103/tr6y-kpc6; arXiv:2503.14738v3), bloco ΛCDM, a linha **DESI+BBN+θ∗** dá Ω_m = 0,2967 ± 0,0045 e **H₀ = 68,45 ± 0,47** km/s/Mpc. Nessa combinação o CMB entra só pelo ângulo acústico θ* e ω_b vem da nucleossíntese (BBN): é a informação "geométrica" do CMB, sem o resto do espectro nem o lenteamento. O nosso H₀ = 68,69 fica a 0,5σ desse valor. Na mesma tabela, a linha DESI+CMB (CMB completo) dá 68,17 ± 0,28, de onde vem a diferença de 1,9σ. A informação que falta nos distance priors (sobretudo o lenteamento do CMB) é a mesma que eleva a preferência por w₀w_a de 2,4σ para 3,1σ no artigo do DESI (Tabela VI).
+
+## 4. Previsão com sirenes: o Fisher não reproduz exatamente Belgacem et al. (2019) no ET
+
+**Referência:** E. Belgacem et al., "Cosmology and dark energy from joint gravitational wave-GRB observations", JCAP 08, 015 (2019), DOI [10.1088/1475-7516/2019/08/015](https://doi.org/10.1088/1475-7516/2019/08/015), Tabelas 4 e 11 (Einstein Telescope + THESEUS, massas planas, cenário otimista).
+
+**O que o artigo usa.** As colunas "ET, flat" são só sirenes: CMB, BAO e supernovas entram em colunas separadas ("CMB+BAO+SNe" e "combined"). O universo de referência é ΛCDM com Ω_m = 0,3087 e H₀ = 67,64 km/s/Mpc (a média do CMB + BAO + SNe deles). Os números vêm de uma MCMC com CLASS, nos seis parâmetros do ΛCDM, mais w constante na Tabela 11 (w_a = 0, Ξ₀ = 1). A soma das massas dos neutrinos é fixa em 0,06 eV. A MCMC roda sobre **um único catálogo sorteado**, com ruído. Os priors não são informados.
+
+**Comparação** (Fisher do app, `physics/sirens.ts`; MCMC em 40 catálogos com ruído, `scripts/investigacao_belgacem.py`):
+
+| Grandeza | Publicado | Fisher | MCMC, 40 catálogos (mediana; faixa) |
+|---|---|---|---|
+| σ(H₀)/H₀, ΛCDM | 0,28% | 0,276% | 0,275% |
+| σ(Ω_m)/Ω_m, ΛCDM | 3,68% | 4,39% | 4,35%; 4,06% a 4,71% |
+| σ(w₀), wCDM | 0,109 | 0,153 | 0,148; 0,088 a 0,192 (3 de 40 catálogos ≤ 0,109) |
+
+**Conclusão.**
+- **w₀:** a diferença cabe na dispersão entre catálogos. A largura da posterior de um catálogo único pode sair menor que o Fisher. O limite de Cramér-Rao vale para a variância média entre realizações, não para a posterior de um catálogo só.
+- **Ω_m no ΛCDM:** nenhum dos 40 catálogos chega a 3,68%, e a causa **não foi identificada**.
+  - A dispersão do erro instrumental dentro de cada faixa de z (Tabela 24) explica só ~4%: dá 4,21%.
+  - Sem o termo de lentes, Ω_m sai 3,73%, mas o H₀ cai para 0,247% e deixa de bater com os 0,28% publicados.
+  - O mais provável é o catálogo evento a evento, que o artigo só resume por faixa.
+- **Consequência:** os erros do app no ET são iguais ou um pouco maiores que os publicados, e a separação prevista (~6,8σ no ET otimista) é, se algo, conservadora.

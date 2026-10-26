@@ -9,6 +9,7 @@ import { DESI_DR2_DESY5 } from '../../physics/cosmicFates';
 import { isoline, upsample } from '../../lib/contours';
 import { formatNumber, formatSig } from '../../lib/format';
 import type { GridMessage } from './gridProtocol';
+import SirenForecast from './SirenForecast';
 
 const COMBINATIONS: { value: DataCombination; label: string; url: string }[] = [
   { value: 'bao', label: 'Só BAO', url: 'bao' },
@@ -285,6 +286,10 @@ export default function DataConfrontation() {
       <>Supernovas comprimidas do Union3 (22 nós); as sistemáticas entram só pela covariância publicada. Só há versão comprimida oficial do Union3; o DES-Y5 e o Pantheon+ não foram usados.</>,
       <>Perfil da verossimilhança, e não marginalização completa por MCMC. As médias publicadas pelo DESI vêm de cadeias; a validação em Python deste módulo reproduz essas médias a menos de 0,4σ.</>,
       <>O resultado depende do conjunto de supernovas, como o próprio DESI mostra (2,8σ a 4,2σ).</>,
+      <>Previsão com sirenes: erros de <Sym>d<sub>L</sub></Sym> aproximados pelas fórmulas publicadas (Speri et al. 2021 para o LISA; Belgacem et al. 2019 para o Einstein Telescope), sem simulação completa das formas de onda.</>,
+      <>Previsão com sirenes: contrapartidas eletromagnéticas supostas com redshift exato, a menos da velocidade própria da galáxia e, no LISA acima de z = 2, do erro do redshift fotométrico. Sirenes escuras (sem contrapartida) não foram incluídas.</>,
+      <>Previsão com sirenes: matriz de Fisher, que supõe incertezas gaussianas e dá a precisão média. Um único catálogo sorteado pode dar bem mais ou bem menos: em 8 sorteios do Einstein Telescope otimista, só com sirenes, o Δχ² variou de 1,6 a 14,5, para um valor esperado de 5,4. As distribuições em z do LISA foram digitalizadas de figuras publicadas.</>,
+      <>Previsão com sirenes: sistemáticas futuras desconhecidas não estão incluídas.</>,
     ]}
     references={[
       { text: 'DESI Collaboration (M. Abdul Karim et al.), "DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints", Physical Review D 112, 083515 (2025).', url: 'https://doi.org/10.1103/tr6y-kpc6' },
@@ -296,6 +301,17 @@ export default function DataConfrontation() {
       { text: 'B. Popovic et al. (DES Collaboration), "The Dark Energy Survey supernova program: a reanalysis of cosmology results and evidence for evolving dark energy with an updated Type Ia supernova calibration", Monthly Notices of the Royal Astronomical Society 548, stag632 (2026).', url: 'https://doi.org/10.1093/mnras/stag632' },
   { text: 'M. Chevallier e D. Polarski, "Accelerating Universes with Scaling Dark Matter", International Journal of Modern Physics D 10, 213 (2001).', url: 'https://doi.org/10.1142/S0218271801000822' },
       { text: 'E. V. Linder, "Exploring the Expansion History of the Universe", Physical Review Letters 90, 091301 (2003).', url: 'https://doi.org/10.1103/PhysRevLett.90.091301' },
+      { text: 'N. Tamanini et al., "Science with the space-based interferometer eLISA. III: Probing the expansion of the universe using gravitational wave standard sirens", Journal of Cosmology and Astroparticle Physics 04, 002 (2016).', url: 'https://doi.org/10.1088/1475-7516/2016/04/002' },
+      { text: 'P. Auclair et al. (LISA Cosmology Working Group), "Cosmology with the Laser Interferometer Space Antenna", Living Reviews in Relativity 26, 5 (2023).', url: 'https://doi.org/10.1007/s41114-023-00045-2' },
+      { text: 'L. Speri et al., "Testing the quasar Hubble diagram with LISA standard sirens", Physical Review D 103, 083526 (2021) (modelo de erro de d_L do LISA).', url: 'https://doi.org/10.1103/PhysRevD.103.083526' },
+      { text: 'A. Mangiagli et al., "Massive black hole binaries in LISA: Multimessenger prospects and electromagnetic counterparts", Physical Review D 106, 103017 (2022) (distribuição em z, Fig. 1).', url: 'https://doi.org/10.1103/PhysRevD.106.103017' },
+      { text: 'A. Mangiagli et al., "Massive black hole binaries in LISA: Constraining cosmological parameters at high redshifts", Physical Review D 111, 083043 (2025) (número de eventos com contrapartida).', url: 'https://doi.org/10.1103/PhysRevD.111.083043' },
+      { text: 'E. Belgacem et al., "Cosmology and dark energy from joint gravitational wave-GRB observations", Journal of Cosmology and Astroparticle Physics 08, 015 (2019) (Einstein Telescope + THESEUS).', url: 'https://doi.org/10.1088/1475-7516/2019/08/015' },
+      { text: 'M. Branchesi et al., "Science with the Einstein Telescope: a comparison of different designs", Journal of Cosmology and Astroparticle Physics 07, 068 (2023).', url: 'https://doi.org/10.1088/1475-7516/2023/07/068' },
+      { text: 'A. Abac et al. (Einstein Telescope Collaboration), "The Science of the Einstein Telescope", Journal of Cosmology and Astroparticle Physics 03, 081 (2026) (situação do THESEUS).', url: 'https://doi.org/10.1088/1475-7516/2026/03/081' },
+      { text: 'J. T. Hinkle et al., "Examining a Peak-luminosity/Decline-rate Relationship for Tidal Disruption Events", The Astrophysical Journal Letters 894, L10 (2020).', url: 'https://doi.org/10.3847/2041-8213/ab89a2' },
+      { text: 'ESA, "Capturing the ripples of spacetime: LISA gets go-ahead" (25/1/2024) e página da missão LISA (consultadas em 26/10/2026).', url: 'https://www.esa.int/Science_Exploration/Space_Science/LISA' },
+      { text: 'Einstein Telescope, página oficial: cronograma e processo de escolha do local (consultada em 26/10/2026).', url: 'https://www.et-gw.eu/' },
     ]}
   >
     <div className="claims">
@@ -310,5 +326,6 @@ export default function DataConfrontation() {
       </Claim>
     </div>
     <Confrontation />
+    <SirenForecast />
   </ModulePage>;
 }

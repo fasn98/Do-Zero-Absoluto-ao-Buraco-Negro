@@ -295,6 +295,7 @@ export default function Listening() {
         <p>GW170817 foi a primeira medição de H₀ com ondas gravitacionais. Ela é independente da escada de distâncias, mas sua incerteza, de cerca de 15%, ainda é grande demais para decidir a tensão de Hubble. Uma sirene isolada não basta: a precisão melhora com o número de eventos com contraparte de luz.</p>
       </Claim>
     </div>
+    <p className="plot-note" data-testid="link-8-sirens-forecast">E com centenas de sirenes, muito mais longe? A previsão para os detectores do futuro, o LISA e o Einstein Telescope, e o que elas diriam sobre a energia escura, está no <Link href="/confronto-com-dados-reais#sirenes" className="inline-link">Módulo 2.3, "E se tivéssemos sirenes gigantes?"</Link>.</p>
 
     <TensionPanel />
     <div className="claims">

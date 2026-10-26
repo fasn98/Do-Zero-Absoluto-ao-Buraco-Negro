@@ -121,15 +121,77 @@ export type SirenForecast = {
   combined: { w0: number; wa: number };
 };
 
-export function sirenFisherForecast(id: SirenScenarioId, truth: CosmoParams): SirenForecast {
+/** Covariância marginal 2×2 de (w₀, w_a). */
+export type Cov2 = [[number, number], [number, number]];
+export type WPoint = { w0: number; wa: number };
+
+const SIREN_KEYS: (keyof CosmoParams)[] = ['omegaM', 'h0', 'w0', 'wa'];
+
+function wCovariance(F: number[][], keys: (keyof CosmoParams)[]): Cov2 {
+  const C = invertMatrix(F);
+  const i = keys.indexOf('w0');
+  const j = keys.indexOf('wa');
+  return [[C[i][i], C[i][j]], [C[j][i], C[j][j]]];
+}
+
+/**
+ * Previsão de Fisher centrada no universo verdadeiro `truth`: covariâncias de (w₀, w_a) com os dados
+ * atuais (mesma precisão, mas centrados na verdade), com as sirenes sozinhas e com os dois somados.
+ * `id = null`: só os dados atuais.
+ */
+export function sirenForecastAt(id: SirenScenarioId | null, truth: CosmoParams) {
+  const Fr = fisherOf((p) => residuals(p, 'bao+cmb+sn'), truth, KEYS);
+  const current = wCovariance(Fr, KEYS);
+  if (!id) return { current, combined: current, sirensOnly: null };
   const sirens = sirenResidualFn(id, truth);
-  const real = (p: CosmoParams) => residuals(p, 'bao+cmb+sn');
-  const Fr = fisherOf(real, truth, KEYS);
-  const Fs = fisherOf(sirens, truth, KEYS);
-  const sKeys: (keyof CosmoParams)[] = ['omegaM', 'h0', 'w0', 'wa'];
-  const Fso = fisherOf(sirens, truth, sKeys);
-  const pick = (F: number[][], keys: (keyof CosmoParams)[]) => ({ w0: marginal(F, keys, 'w0'), wa: marginal(F, keys, 'wa') });
-  return { current: pick(Fr, KEYS), sirensOnly: pick(Fso, sKeys), combined: pick(addMatrices(Fr, Fs), KEYS) };
+  return {
+    current,
+    combined: wCovariance(addMatrices(Fr, fisherOf(sirens, truth, KEYS)), KEYS),
+    sirensOnly: wCovariance(fisherOf(sirens, truth, SIREN_KEYS), SIREN_KEYS),
+  };
+}
+
+/** Δχ² = Δθᵀ C⁻¹ Δθ entre dois pontos do plano, com a covariância C. */
+export function wSeparation(cov: Cov2, a: WPoint, b: WPoint) {
+  const det = cov[0][0] * cov[1][1] - cov[0][1] * cov[1][0];
+  const d0 = a.w0 - b.w0;
+  const d1 = a.wa - b.wa;
+  const deltaChi2 = (cov[1][1] * d0 * d0 - 2 * cov[0][1] * d0 * d1 + cov[0][0] * d1 * d1) / det;
+  return { deltaChi2, sigma: sigmaFromDeltaChi2(deltaChi2) };
+}
+
+/** Universo intermediário: fração f do caminho entre o ΛCDM (f = 0) e o melhor ajuste do DESI (f = 1), em todos os parâmetros. */
+export function truthBetween(fraction: number): CosmoParams {
+  const a = TRUTHS.lcdm;
+  const b = TRUTHS.desi;
+  const mix = (k: keyof CosmoParams) => a[k] + fraction * (b[k] - a[k]);
+  return { omegaM: mix('omegaM'), h0: mix('h0'), omegaBh2: mix('omegaBh2'), w0: mix('w0'), wa: mix('wa') };
+}
+
+/** Elipse de confiança de nível Δχ² (2,30 para 1σ e 6,18 para 2σ, com 2 parâmetros) em torno de `center`. */
+export function confidenceEllipse(center: WPoint, cov: Cov2, deltaChi2: number, n = 96): [number, number][] {
+  const a = cov[0][0];
+  const b = cov[0][1];
+  const c = cov[1][1];
+  const half = Math.sqrt(((a - c) / 2) ** 2 + b * b);
+  const l1 = (a + c) / 2 + half;
+  const l2 = (a + c) / 2 - half;
+  const angle = Math.atan2(l1 - a, b || 1e-300);
+  const r1 = Math.sqrt(deltaChi2 * l1);
+  const r2 = Math.sqrt(deltaChi2 * Math.max(l2, 0));
+  return Array.from({ length: n + 1 }, (_, k) => {
+    const t = (2 * Math.PI * k) / n;
+    const u = r1 * Math.cos(t);
+    const v = r2 * Math.sin(t);
+    return [center.w0 + u * Math.cos(angle) - v * Math.sin(angle), center.wa + u * Math.sin(angle) + v * Math.cos(angle)];
+  });
+}
+
+const marginalOf = (cov: Cov2) => ({ w0: Math.sqrt(cov[0][0]), wa: Math.sqrt(cov[1][1]) });
+
+export function sirenFisherForecast(id: SirenScenarioId, truth: CosmoParams): SirenForecast {
+  const f = sirenForecastAt(id, truth);
+  return { current: marginalOf(f.current), sirensOnly: marginalOf(f.sirensOnly!), combined: marginalOf(f.combined) };
 }
 
 /** Fisher em ΛCDM (Ω_m e H₀ livres) só com sirenes: incertezas relativas de H₀ e Ω_m. */
@@ -166,15 +228,6 @@ export function sirenSeparation(id: SirenScenarioId, truthId: 'lcdm' | 'desi', w
  */
 export function sirenFisherSeparation(id: SirenScenarioId | null, truthId: 'lcdm' | 'desi', withCurrentData: boolean) {
   const truth = TRUTHS[truthId];
-  const keys: (keyof CosmoParams)[] = withCurrentData ? KEYS : ['omegaM', 'h0', 'w0', 'wa'];
-  let F = keys.map(() => keys.map(() => 0));
-  if (id) F = addMatrices(F, fisherOf(sirenResidualFn(id, truth), truth, keys));
-  if (withCurrentData) F = addMatrices(F, fisherOf((p) => residuals(p, 'bao+cmb+sn'), truth, keys));
-  const C = invertMatrix(F);
-  const i = keys.indexOf('w0');
-  const j = keys.indexOf('wa');
-  const Cinv = invertMatrix([[C[i][i], C[i][j]], [C[j][i], C[j][j]]]);
-  const d = [TRUTHS.lcdm.w0 - TRUTHS.desi.w0, TRUTHS.lcdm.wa - TRUTHS.desi.wa];
-  const deltaChi2 = d[0] * (Cinv[0][0] * d[0] + Cinv[0][1] * d[1]) + d[1] * (Cinv[1][0] * d[0] + Cinv[1][1] * d[1]);
-  return { deltaChi2, sigma: sigmaFromDeltaChi2(deltaChi2) };
+  if (withCurrentData) return wSeparation(sirenForecastAt(id, truth).combined, TRUTHS.lcdm, TRUTHS.desi);
+  return wSeparation(sirenForecastAt(id, truth).sirensOnly!, TRUTHS.lcdm, TRUTHS.desi);
 }

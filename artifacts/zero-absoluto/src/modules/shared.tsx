@@ -1,11 +1,13 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 
-export type EvidenceLevel = 'fato' | 'consenso' | 'hipotese';
+/** 'projecao': previsão com dados simulados, nunca uma medida. */
+export type EvidenceLevel = 'fato' | 'consenso' | 'hipotese' | 'projecao';
 
 const EVIDENCE_LABEL: Record<EvidenceLevel, string> = {
   fato: 'Fato estabelecido',
   consenso: 'Consenso',
   hipotese: 'Hipótese em pesquisa',
+  projecao: 'Projeção',
 };
 
 export function EvidenceTag({ level }: { level: EvidenceLevel }) {
@@ -20,8 +22,8 @@ export function Claim({ level, title, children }: { level: EvidenceLevel; title:
   </article>;
 }
 
-export function SimCard({ title, children, label }: { title: string; children: ReactNode; label?: string }) {
-  return <section className="sim-card" aria-label={label ?? title}>
+export function SimCard({ title, children, label, id }: { title: string; children: ReactNode; label?: string; id?: string }) {
+  return <section className="sim-card" aria-label={label ?? title} id={id}>
     <h2 className="sim-title">{title}</h2>
     {children}
   </section>;
