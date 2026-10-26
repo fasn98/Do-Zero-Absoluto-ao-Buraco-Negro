@@ -8,7 +8,9 @@ tags:
   - open educational resources
   - TypeScript
 authors:
-  - name: Fabio Augusto Sales Nogueira
+  - name:
+      given-names: Fabio Augusto
+      surname: Sales Nogueira
     orcid: 0009-0001-9303-8707
     affiliation: 1
 affiliations:
