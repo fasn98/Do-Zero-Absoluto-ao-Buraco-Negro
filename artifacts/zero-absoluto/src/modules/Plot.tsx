@@ -2,6 +2,10 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 
 export type Series = { label: string; color: string; points: [number, number][]; dashed?: boolean; width?: number };
 export type Marker = { x: number; label: string; color?: string };
+/** Faixa vertical sombreada entre x = from e x = to, com rótulo opcional no topo. */
+export type Region = { from: number; to: number; color: string; label?: string };
+/** Ponto com rótulo curto (ex.: número de um marco). */
+export type Dot = { x: number; y: number; label: string; color?: string; below?: boolean };
 
 type LinePlotProps = {
   series: Series[];
@@ -17,6 +21,8 @@ type LinePlotProps = {
   yLabel?: string;
   markers?: Marker[];
   band?: [number, number];
+  regions?: Region[];
+  dots?: Dot[];
   height?: number;
   title: string;
   children?: ReactNode;
@@ -26,7 +32,7 @@ const PAD_BASE = { left: 44, right: 14, top: 14, bottom: 42 };
 const LABEL_ROW = 16;
 
 /** Gráfico de linhas em SVG puro, com cores das variáveis do tema. */
-export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, height = 300, title, children }: LinePlotProps) {
+export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, regions = [], dots = [], height = 300, title, children }: LinePlotProps) {
   // A largura do viewBox acompanha a largura real, para que os textos fiquem no tamanho em px.
   const ref = useRef<HTMLElement>(null);
   const clipId = `plot-clip-${useId().replace(/:/g, '')}`;
@@ -52,6 +58,15 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
   return <figure className="plot" ref={ref}>
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={title} preserveAspectRatio="xMidYMid meet">
       <defs><clipPath id={clipId}><rect x={PAD.left} y={PAD.top - 2} width={W - PAD.left - PAD.right} height={H - PAD.top - PAD.bottom + 4} /></clipPath></defs>
+      {regions.map((r) => {
+        const x0 = sx(Math.max(xMin, r.from));
+        const x1 = sx(Math.min(xMax, r.to));
+        if (x1 <= x0) return null;
+        return <g key={`${r.from}-${r.label ?? ''}`}>
+          <rect x={x0} y={PAD.top} width={x1 - x0} height={H - PAD.top - PAD.bottom} style={{ fill: r.color }} />
+          {r.label && x1 - x0 > 34 && <text x={(x0 + x1) / 2} y={PAD.top + 13} textAnchor="middle" className="plot-region">{r.label}</text>}
+        </g>;
+      })}
       {band && <rect x={sx(band[0])} y={PAD.top} width={Math.max(0, sx(band[1]) - sx(band[0]))} height={H - PAD.top - PAD.bottom} style={{ fill: 'hsl(var(--accent) / .1)' }} />}
       {yTicks.map((y) => <g key={`y${y}`}>
         <line x1={PAD.left} x2={W - PAD.right} y1={sy(y)} y2={sy(y)} style={{ stroke: 'hsl(var(--border))' }} strokeWidth={1} />
@@ -75,6 +90,10 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
       })}
       <g clipPath={`url(#${clipId})`}>{series.map((s, index) => <polyline key={index} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
         points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}</g>
+      {dots.filter((d) => d.x >= xMin && d.x <= xMax && d.y >= yMin && d.y <= yMax).map((d) => <g key={d.label}>
+        <circle cx={sx(d.x)} cy={sy(d.y)} r={4} style={{ fill: d.color ?? 'hsl(var(--foreground))', stroke: 'hsl(var(--card))' }} strokeWidth={1.5} />
+        <text x={sx(d.x)} y={sy(d.y) + (d.below ? 16 : -8)} textAnchor="middle" className="plot-dot">{d.label}</text>
+      </g>)}
       {children}
     </svg>
     <figcaption className="plot-legend">{series.map((s) => <span key={s.label}>

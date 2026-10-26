@@ -388,3 +388,68 @@ a { color: inherit; text-decoration: none; }
  .data-table.compact { font-size:11px; }
  .data-table.compact th, .data-table.compact td { padding:7px 3px; white-space:normal; }
 }
+
+/* --- Trilhas --- */
+.track-hero { padding:58px 0 34px; max-width:780px; }
+.track-hero h1 { font:400 clamp(44px,6vw,72px)/.97 var(--app-font-serif); letter-spacing:-.035em; margin:16px 0 18px; }
+.track-hero p { font-size:15px; line-height:1.8; max-width:560px; color:hsl(var(--muted-foreground)); margin:0; }
+.track-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:78px; }
+.track-card { border:1px solid hsl(var(--card-border)); background:hsl(var(--card)); border-radius:14px; padding:24px 24px 18px; display:flex; flex-direction:column; transition:border-color .2s, background .2s; }
+.track-card:hover { border-color:hsl(var(--primary)/.5); background:hsl(var(--primary)/.04); }
+.track-card h3 { font:400 32px/1.05 var(--app-font-serif); margin:20px 0 8px; }
+.track-card > p { font-size:13px; color:hsl(var(--muted-foreground)); line-height:1.6; margin:0 0 14px; }
+.track-preview { list-style:none; margin:0 0 6px; padding:12px 0 0; border-top:1px solid hsl(var(--border)); display:grid; gap:7px; font-size:12.5px; flex:1; }
+.track-preview li { display:flex; gap:10px; }
+.track-preview li span { font:10px var(--app-font-mono); color:hsl(var(--accent)); min-width:22px; padding-top:2px; }
+.track-preview li.soon, .track-preview li.more { color:hsl(var(--muted-foreground)); }
+.module-card.soon { cursor:default; }
+.module-card.soon:hover { background:transparent; }
+.module-card.soon h3, .module-card.soon p { opacity:.62; }
+.module-card.soon .module-bottom { color:hsl(var(--muted-foreground)); }
+.nav-soon { font-size:12px; color:hsl(var(--muted-foreground)/.5); cursor:default; }
+.nav-links a.nav-track { font-weight:600; }
+.cosmic-slider { padding-top:12px; }
+.cosmic-zone { position:absolute; top:50%; height:12px; transform:translateY(-50%); pointer-events:none; border:1px dashed hsl(var(--accent) / .6); }
+.cosmic-zone.speculative { border-radius:6px 0 0 6px; background:repeating-linear-gradient(135deg, hsl(var(--accent) / .25) 0 3px, transparent 3px 7px); }
+.cosmic-zone.projection { border-radius:0 6px 6px 0; border-color:hsl(var(--chart-5) / .6); background:repeating-linear-gradient(45deg, hsl(var(--chart-5) / .22) 0 3px, transparent 3px 7px); }
+.cosmic-today { position:absolute; top:50%; width:2px; height:18px; transform:translate(-1px,-50%); background:hsl(var(--foreground)); pointer-events:none; }
+.cosmic-scale { position:relative; height:16px; margin-top:12px; font:10px var(--app-font-mono); color:hsl(var(--muted-foreground)); }
+.cosmic-scale span { position:absolute; top:0; transform:translateX(-50%); white-space:nowrap; }
+.cosmic-scale span.today { transform:translateX(-75%); color:hsl(var(--foreground)); }
+.cosmic-slider .scale-ends { margin-top:4px; }
+.cosmic-legend { display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:10px; font:10.5px var(--app-font-mono); color:hsl(var(--muted-foreground)); }
+.cosmic-legend span { display:inline-flex; align-items:center; gap:7px; }
+.cosmic-legend i { flex:none; width:22px; height:10px; border-radius:2px; border:1px dashed hsl(var(--accent) / .7); background:repeating-linear-gradient(135deg, hsl(var(--accent) / .28) 0 3px, transparent 3px 7px); }
+.cosmic-legend i.projection { border-color:hsl(var(--chart-5) / .7); background:repeating-linear-gradient(45deg, hsl(var(--chart-5) / .25) 0 3px, transparent 3px 7px); }
+.cosmic-temperature { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; margin-top:20px; font-size:12px; color:hsl(var(--muted-foreground)); }
+.cosmic-temperature output { font:400 24px var(--app-font-serif); color:hsl(var(--foreground)); }
+.cosmic-temperature small { flex-basis:100%; font-size:11.5px; line-height:1.5; }
+.milestone-card { align-items:flex-start; }
+.milestone-card .claim-head { align-items:center; margin-bottom:4px; }
+.milestone-card .claim-head b { margin:0; }
+.milestone-when { font:500 11px var(--app-font-mono)!important; color:hsl(var(--accent))!important; }
+.milestone-links { margin-top:8px!important; }
+.epoch-notice strong { margin-top:8px; }
+.plot-region { font:10px var(--app-font-mono); fill:hsl(var(--muted-foreground)); }
+.plot-dot { font:600 10.5px var(--app-font-mono); fill:hsl(var(--foreground)); paint-order:stroke; stroke:hsl(var(--card)); stroke-width:3px; }
+.dot-legend { list-style:none; margin:10px 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 16px; font-size:11.5px; color:hsl(var(--muted-foreground)); }
+.dot-legend li { display:flex; gap:8px; }
+.dot-legend b { font:600 10.5px var(--app-font-mono); color:hsl(var(--foreground)); min-width:16px; }
+.era-swatches { display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:8px; font-size:11px; color:hsl(var(--muted-foreground)); }
+.era-swatches span { display:inline-flex; align-items:center; gap:7px; }
+.era-swatches i { width:14px; height:10px; border-radius:2px; display:inline-block; }
+.composition .radiation { background:hsl(var(--accent)); }
+.composition .matter { background:hsl(var(--chart-5)); }
+.composition .dark-energy { background:hsl(var(--primary)); }
+@media(max-width:760px) {
+ .track-hero { padding:38px 0 24px; }
+ .track-hero h1 { font-size:46px; }
+ .track-hero p { font-size:14px; }
+ .track-grid { grid-template-columns:1fr; margin-bottom:48px; }
+ .track-card { padding:20px 18px 16px; }
+ .track-card h3 { font-size:28px; }
+ .dot-legend { grid-template-columns:1fr; }
+ .cosmic-temperature output { font-size:21px; }
+}
+.formula-line { font:400 17px var(--app-font-serif); color:hsl(var(--foreground))!important; margin:4px 0 18px; overflow-x:auto; }
+.cosmic-list .claim-head b { font:400 19px var(--app-font-serif); }

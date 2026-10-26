@@ -63,11 +63,13 @@ export function formatDuration(seconds: number, secondsPerYear: number) {
   if (seconds < 0.9995e-3) return `${formatSig(seconds * 1e6)} µs`;
   if (seconds < 0.9995) return `${formatSig(seconds * 1e3)} ms`;
   if (seconds < 60) return `${formatSig(seconds)} s`;
+  if (seconds < 3600) return `${formatSig(seconds / 60)} min`;
   if (seconds < 86400) return `${formatSig(seconds / 3600)} h`;
   if (years < 1) return `${formatSig(seconds / 86400)} dias`;
   if (years < 1e6) return `${formatSig(years)} anos`;
   if (years < 1e9) return `${formatSig(years / 1e6)} milhões de anos`;
   if (years < 1e12) return `${formatSig(years / 1e9)} bilhões de anos`;
+  if (years < 1e15) return `${formatSig(years / 1e12)} trilhões de anos`;
   return `${formatSci(years)} anos`;
 }
 

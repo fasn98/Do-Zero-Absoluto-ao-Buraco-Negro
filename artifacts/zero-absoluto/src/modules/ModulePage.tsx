@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'wouter';
 import { ArrowLeft, BookOpen, FlaskConical } from 'lucide-react';
-import { MODULE_TOTAL } from './temperatureBands';
+import { trackForModule } from './tracks';
 
 export type Reference = { text: string; url?: string };
 
@@ -16,8 +16,9 @@ type ModulePageProps = {
 };
 
 export default function ModulePage({ title, description, number, tag, children, limitations, references }: ModulePageProps) {
+  const track = trackForModule(number);
   return <main className="module-layout">
-    <div className="breadcrumb"><Link href="/" data-testid={`link-module-home-${number}`}>Início</Link><span>/</span><span>{title}</span></div>
+    <div className="breadcrumb"><Link href="/" data-testid={`link-module-home-${number}`}>Início</Link><span>/</span><Link href={track.path} data-testid={`link-module-track-${number}`}>{track.label}</Link><span>/</span><span>{title}</span></div>
     <section className="module-hero">
       <div className="eyebrow">MÓDULO {number} <span style={{ color: 'hsl(var(--border))' }}> / </span> {tag}</div>
       <h1 data-testid={`text-module-title-${number}`}>{title}</h1>
@@ -34,7 +35,7 @@ export default function ModulePage({ title, description, number, tag, children, 
         {ref.url ? <a href={ref.url} target="_blank" rel="noreferrer">{ref.text}</a> : ref.text}
       </li>)}</ol>
     </section>
-    <Link href="/" className="back-link" data-testid={`link-back-home-${number}`}><ArrowLeft size={14} /> Voltar à jornada</Link>
-    <footer className="footer" style={{ paddingLeft: 0, paddingRight: 0, marginTop: 58 }}><span>DO ZERO ABSOLUTO AO BURACO NEGRO</span><span>{number} / {MODULE_TOTAL}</span></footer>
+    <Link href={track.path} className="back-link" data-testid={`link-back-home-${number}`}><ArrowLeft size={14} /> Voltar à {track.label.toLowerCase()}</Link>
+    <footer className="footer" style={{ paddingLeft: 0, paddingRight: 0, marginTop: 58 }}><span>{track.label.toUpperCase()} · {track.title.toUpperCase()}</span><span>{track.counter(number)}</span></footer>
   </main>;
 }

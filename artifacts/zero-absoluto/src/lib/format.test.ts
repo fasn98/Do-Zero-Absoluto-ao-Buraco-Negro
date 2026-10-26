@@ -56,4 +56,8 @@ describe("formatação de números extremos", () => {
     expect(formatDuration(2.5e-5, 31557600)).toBe("25,0 µs");
     expect(formatDuration(8.1e-21, 31557600)).toBe("8,10 × 10⁻²¹ s");
   });
+  it("minutos e trilhões de anos", () => {
+    expect(formatDuration(178, 31557600)).toBe("2,97 min");
+    expect(formatDuration(1e14 * 31557600, 31557600)).toBe("100 trilhões de anos");
+  });
 });
