@@ -6,7 +6,7 @@
 // rodando (pnpm --filter @workspace/zero-absoluto run dev, porta 19201).
 //
 // Uso:
-//   node scripts/capturas.mjs                       conjunto padrão (Trilha 2, Fase 1)
+//   node scripts/capturas.mjs                       conjunto padrão (Trilha 2, Fases 1 e 2)
 //   node scripts/capturas.mjs /trilha-1 "/a-linha-do-tempo-cosmica?marco=hoje"
 //   node scripts/capturas.mjs --tema=escuro /pior-previsao
 //   node scripts/capturas.mjs --larguras=360 /trilha-2
@@ -18,6 +18,9 @@
 //                  energia-escura, hoje, futuro
 //   ?t=<segundos>  instante exato desde o Big Bang (tem prioridade sobre marco)
 //   ?h0=shoes      atalho "Universo local, SH0ES" (só no Módulo 2.1)
+//
+// Parâmetro de URL do Módulo 2.2:
+//   ?atalho=<id>   lcdm, big-rip, recontracao, desi
 //
 // Variáveis: BASE_URL (padrão http://localhost:19201), CHROMIUM
 // (padrão /repl/tools/bin/chromium), SAIDA (padrão capturas/, fora do Git).
@@ -42,6 +45,10 @@ const PADRAO = [
   '/a-linha-do-tempo-cosmica?marco=futuro',
   '/a-linha-do-tempo-cosmica?marco=hoje&h0=planck',
   '/a-linha-do-tempo-cosmica?marco=hoje&h0=shoes',
+  '/os-destinos-possiveis?atalho=lcdm',
+  '/os-destinos-possiveis?atalho=big-rip',
+  '/os-destinos-possiveis?atalho=recontracao',
+  '/os-destinos-possiveis?atalho=desi',
 ];
 
 const args = process.argv.slice(2);

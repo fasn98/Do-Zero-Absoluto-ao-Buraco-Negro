@@ -1,4 +1,5 @@
 import { useSyncExternalStore, type CSSProperties } from 'react';
+import { Link } from 'wouter';
 import { ageOfUniverseS } from '../physics/friedmann';
 import {
   COSMIC_TIME_MAX_S,
@@ -98,7 +99,7 @@ export function EpochNotice({ epoch }: { epoch: CosmicEpoch }) {
   }
   if (epoch === 'projecao') {
     return <div className="band-item band-empty epoch-notice" data-testid="text-epoch-notice">
-      <div><EvidenceTag level="hipotese" /><strong>Projeção do ΛCDM, não um fato</strong><p>Depois de hoje, a linha do tempo é o que o modelo prevê se a energia escura for uma constante cosmológica. Se ela variar, como os dados do DESI sugerem sem confirmação, o futuro muda.</p></div>
+      <div><EvidenceTag level="hipotese" /><strong>Projeção do ΛCDM, não um fato</strong><p>Depois de hoje, a linha do tempo é o que o modelo prevê se a energia escura for uma constante cosmológica. O futuro depende do cenário: se ela variar, como os dados do DESI sugerem sem confirmação, ou crescer, o desfecho muda. <Link href="/os-destinos-possiveis" className="inline-link" data-testid="link-epoch-module-22">Compare os cenários no Módulo 2.2</Link>.</p></div>
     </div>;
   }
   return null;

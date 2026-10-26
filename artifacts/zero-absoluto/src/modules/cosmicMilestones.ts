@@ -44,7 +44,7 @@ export const COSMIC_TIME_MAX_S = 1e14 * julianYear;
 /** Antes de ~1 s não há observação direta; o registro mais antigo é a nucleossíntese. */
 export const SPECULATIVE_BEFORE_S = 1;
 /** Fim da inflação (se ela ocorreu): antes disso não faz sentido falar em temperatura do banho térmico. */
-const INFLATION_END_S = 1e-32;
+export const INFLATION_END_S = 1e-32;
 
 const yr = (years: number) => years * julianYear;
 const duration = (seconds: number) => formatDuration(seconds, julianYear);
@@ -138,7 +138,8 @@ export function cosmicMilestones(c: Cosmology = PLANCK_2018): CosmicMilestone[] 
       id: 'futuro', name: 'Futuro dominado por Λ', short: 'Futuro', level: 'hipotese',
       whenShort: duration(yr(1e11)),
       when: `depois de hoje; e-dobra de ~${formatSig(efold)} bilhões de anos`, range: [1.5 * t0, Infinity], anchor: yr(1e11),
-      text: `Se a energia escura for constante, a expansão fica exponencial: as distâncias crescem um fator e (≈ 2,72) a cada ~${formatSig(efold)} bilhões de anos, e as galáxias fora do Grupo Local saem do nosso horizonte. Depende de a energia escura ser constante: os dados do DESI (Módulo 11) sugerem, sem confirmação, que ela pode variar. Será o tema do Módulo 2.2 (em breve).`,
+      text: `Se a energia escura for constante, a expansão fica exponencial: as distâncias crescem um fator e (≈ 2,72) a cada ~${formatSig(efold)} bilhões de anos, e as galáxias fora do Grupo Local saem do nosso horizonte. Depende de a energia escura ser constante: os dados do DESI (Módulo 11) sugerem, sem confirmação, que ela pode variar.`,
+      link: { href: '/os-destinos-possiveis', label: 'Módulo 2.2: os destinos possíveis' },
     },
   ];
 }
@@ -165,6 +166,18 @@ export function cosmicEpoch(timeS: number, c: Cosmology = PLANCK_2018): CosmicEp
 }
 
 export type TemperatureReading = { value: string; note?: string };
+
+/**
+ * Antes do fim da inflação, a solução do regime de radiação não descreve a
+ * expansão: se houve inflação, a cresceu de forma exponencial, e na era de
+ * Planck nem o tempo está bem definido. Nessa faixa, a, z, H e as frações de
+ * densidade não são mostrados.
+ */
+export function radiationModelApplies(timeS: number): boolean {
+  return timeS >= INFLATION_END_S;
+}
+
+export const BEFORE_INFLATION_END_NOTE = 'o modelo de radiação não se aplica antes do fim da inflação';
 
 /** Temperatura da radiação no instante t, quando ela está definida. */
 export function temperatureReading(timeS: number, c: Cosmology = PLANCK_2018): TemperatureReading {

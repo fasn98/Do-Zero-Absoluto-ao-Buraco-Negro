@@ -83,10 +83,10 @@ export function LogSlider({ value, min, max, onChange, label, display, testId, e
 }
 
 /** Controle deslizante linear (para grandezas que incluem o zero, como frações de tempo). */
-export function LinearSlider({ value, min, max, step, onChange, label, display, testId, ends }: { value: number; min: number; max: number; step: number; onChange: (value: number) => void; label: string; display: ReactNode; testId?: string; ends?: [string, string] }) {
+export function LinearSlider({ value, min, max, step, onChange, label, heading, display, testId, ends }: { value: number; min: number; max: number; step: number; onChange: (value: number) => void; label: string; heading?: ReactNode; display: ReactNode; testId?: string; ends?: [string, string] }) {
   const progress = ((value - min) / (max - min)) * 100;
   return <div className="log-slider">
-    <div className="log-slider-head"><span>{label}</span><output>{display}</output></div>
+    <div className="log-slider-head"><span>{heading ?? label}</span><output>{display}</output></div>
     <input type="range" min={min} max={max} step={step} value={value} className="temperature-slider" aria-label={label}
       style={{ '--slider-progress': `${progress}%` } as CSSProperties}
       onChange={(event) => onChange(Number(event.target.value))} data-testid={testId} />

@@ -11,7 +11,7 @@ export type TrackModule = {
 
 export const TRACK2_MODULES: TrackModule[] = [
   { number: '2.1', title: 'A linha do tempo cósmica', description: 'Do primeiro segundo a 100 trilhões de anos: a equação de Friedmann conta a história do universo.', path: '/a-linha-do-tempo-cosmica', tag: 'COSMOLOGIA' },
-  { number: '2.2', title: 'Os destinos possíveis', description: 'Expansão eterna, Big Rip ou Big Crunch: o desfecho depende da natureza da energia escura.', tag: 'ENERGIA ESCURA' },
+  { number: '2.2', title: 'Os destinos possíveis', description: 'Expansão eterna, Big Rip ou Big Crunch: o desfecho depende da natureza da energia escura.', path: '/os-destinos-possiveis', tag: 'ENERGIA ESCURA' },
   { number: '2.3', title: 'Confronto com dados reais', description: 'Supernovas, oscilações acústicas e o fundo cósmico: como os parâmetros do modelo são medidos.', tag: 'OBSERVAÇÕES' },
   { number: '2.4', title: 'Inflação e perturbações', description: 'A hipótese da inflação e as pequenas flutuações que viraram galáxias.', tag: 'UNIVERSO PRIMORDIAL' },
   { number: '2.5', title: 'A fronteira', description: 'O que ainda não sabemos sobre o primeiro instante, a matéria escura e a energia escura.', tag: 'PERGUNTAS ABERTAS' },

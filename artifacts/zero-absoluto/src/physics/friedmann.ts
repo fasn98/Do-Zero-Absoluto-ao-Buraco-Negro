@@ -69,7 +69,14 @@ export type Cosmology = {
   h0: number;
   omegaM: number;
   omegaR: number;
+  /** Ω_Λ hoje; com energia escura dinâmica (Módulo 2.2), Ω_DE hoje. */
   omegaL: number;
+  /**
+   * Equação de estado da energia escura na parametrização CPL,
+   * w(a) = w₀ + w_a (1 − a). Sem estes campos, w = −1 (constante cosmológica).
+   */
+  w0?: number;
+  wa?: number;
 };
 
 /** Universo plano: Ω_r = Ω_r h² / h² e Ω_Λ = 1 − Ω_m − Ω_r. */
@@ -82,9 +89,32 @@ export function makeCosmology(h0: number = PLANCK_2018_H0, omegaM: number = PLAN
 
 export const PLANCK_2018 = makeCosmology();
 
+/**
+ * Universo plano com energia escura de equação de estado w(a) = w₀ + w_a (1 − a)
+ * (Chevallier e Polarski, 2001; Linder, 2003). w₀ = −1 e w_a = 0 dão o ΛCDM.
+ */
+export function makeDarkEnergyCosmology(w0: number, wa = 0, h0: number = PLANCK_2018_H0, omegaM: number = PLANCK_2018_OMEGA_M): Cosmology {
+  return { ...makeCosmology(h0, omegaM), w0, wa };
+}
+
+/**
+ * ln(ρ_DE(a)/ρ_DE(1)) para a CPL: −3(1 + w₀ + w_a) ln a − 3 w_a (1 − a).
+ * Com w constante, ρ_DE ∝ a^(−3(1+w)); com Λ, zero.
+ */
+export function lnDarkEnergyDensity(lnA: number, c: Cosmology): number {
+  const w0 = c.w0 ?? -1;
+  const wa = c.wa ?? 0;
+  if (w0 === -1 && wa === 0) return 0;
+  return -3 * (1 + w0 + wa) * lnA - 3 * wa * (1 - Math.exp(lnA));
+}
+
+/** Equação de estado da energia escura w(a). */
+export function darkEnergyW(a: number, c: Cosmology): number {
+  return (c.w0 ?? -1) + (c.wa ?? 0) * (1 - a);
+}
 /** ln(H/H₀) em função de ln a, sem estouro em a → 0 ou a → ∞. */
 export function lnExpansionRate(lnA: number, c: Cosmology): number {
-  return 0.5 * logSumExp([Math.log(c.omegaR) - 4 * lnA, Math.log(c.omegaM) - 3 * lnA, Math.log(c.omegaL)]);
+  return 0.5 * logSumExp([Math.log(c.omegaR) - 4 * lnA, Math.log(c.omegaM) - 3 * lnA, Math.log(c.omegaL) + lnDarkEnergyDensity(lnA, c)]);
 }
 
 /** H(a) em km/s/Mpc. */
@@ -94,7 +124,7 @@ export function hubbleParameter(a: number, c: Cosmology): number {
 
 /** Frações de densidade (radiação, matéria, energia escura) em função de ln a, e seus log₁₀. */
 export function densityFractions(lnA: number, c: Cosmology) {
-  const logs = [Math.log(c.omegaR) - 4 * lnA, Math.log(c.omegaM) - 3 * lnA, Math.log(c.omegaL)];
+  const logs = [Math.log(c.omegaR) - 4 * lnA, Math.log(c.omegaM) - 3 * lnA, Math.log(c.omegaL) + lnDarkEnergyDensity(lnA, c)];
   const total = logSumExp(logs);
   const [radiation, matter, darkEnergy] = logs.map((l) => (l - total) / Math.LN10);
   return {
@@ -105,11 +135,12 @@ export function densityFractions(lnA: number, c: Cosmology) {
   };
 }
 
-/** Parâmetro de desaceleração q = (Ω_r a⁻⁴ + ½Ω_m a⁻³ − Ω_Λ) / E². */
+/** Parâmetro de desaceleração q = (Ω_r a⁻⁴ + ½Ω_m a⁻³ + ½(1 + 3w) Ω_DE(a)) / E²; com Λ, o último termo é −Ω_Λ. */
 export function decelerationParameter(a: number, c: Cosmology): number {
   const r = c.omegaR / a ** 4;
   const m = c.omegaM / a ** 3;
-  return (r + m / 2 - c.omegaL) / (r + m + c.omegaL);
+  const de = c.omegaL * Math.exp(lnDarkEnergyDensity(Math.log(a), c));
+  return (r + m / 2 + ((1 + 3 * darkEnergyW(a, c)) / 2) * de) / (r + m + de);
 }
 
 // --- Tempo cósmico ---------------------------------------------------------
@@ -117,8 +148,9 @@ export function decelerationParameter(a: number, c: Cosmology): number {
 // t(a) = ∫₀ᵃ da′/(a′H) = ∫ d(ln a′)/H. Abaixo de A_START a radiação domina
 // (Ω_m a/Ω_r < 10⁻⁸) e vale a solução analítica t = a²/(2H₀√Ω_r); acima,
 // integramos em ln a por Gauss-Legendre de 5 pontos numa malha fina e
-// guardamos a tabela. Acima de A_END (a = 1000) só Λ importa:
-// ln a cresce linearmente com t, à taxa H₀√Ω_Λ.
+// guardamos a tabela. Acima de A_END (a = 1000) só a energia escura importa:
+// com Λ, ln a cresce linearmente com t, à taxa H₀√Ω_Λ; com w constante,
+// H = H₀√Ω_DE a^β, β = −3(1+w)/2, e a integral também é analítica (ver `farFuture`).
 
 const LN_A_START = Math.log(1e-12);
 const LN_A_END = Math.log(1e3);
@@ -141,7 +173,7 @@ function segment(x0: number, x1: number, h0SI: number, c: Cosmology): number {
 }
 
 function table(c: Cosmology): Table {
-  const key = `${c.h0}|${c.omegaM}|${c.omegaR}`;
+  const key = `${c.h0}|${c.omegaM}|${c.omegaR}|${c.w0 ?? -1}|${c.wa ?? 0}`;
   const cached = tables.get(key);
   if (cached) return cached;
   const h0SI = hubbleRateSI(c.h0);
@@ -159,11 +191,40 @@ function table(c: Cosmology): Table {
   return built;
 }
 
+/**
+ * Depois de a = 1000, só a energia escura conta: H = H₀√Ω_DE e^(−βx), com
+ * x = ln a e β = 3(1+w)/2 (β = 0 para Λ). Então
+ * t(x) = t_END + (e^(βx) − e^(βX))/(β H₀√Ω_DE). Com w < −1 (β < 0), t tende a um
+ * valor finito quando a → ∞: o Big Rip. A CPL não tem esse trecho (só vale até a ~ 1).
+ */
+function farFuture(c: Cosmology, tab: Table) {
+  if ((c.wa ?? 0) !== 0) throw new RangeError("A parametrização CPL não vale no futuro distante (a > 1000).");
+  const beta = (3 * (1 + (c.w0 ?? -1))) / 2;
+  const rate = tab.h0SI * Math.sqrt(c.omegaL);
+  const tEnd = tab.t[STEPS];
+  return {
+    beta,
+    time: (lnA: number) => (beta === 0 ? tEnd + (lnA - LN_A_END) / rate : tEnd + Math.expm1(beta * (lnA - LN_A_END)) * Math.exp(beta * LN_A_END) / (beta * rate)),
+    lnA: (timeS: number) => {
+      if (beta === 0) return LN_A_END + (timeS - tEnd) * rate;
+      const arg = 1 + (beta * rate * (timeS - tEnd)) / Math.exp(beta * LN_A_END);
+      return arg > 0 ? LN_A_END + Math.log(arg) / beta : Infinity;
+    },
+    /** Instante do Big Rip (a → ∞), só para w < −1. */
+    rip: beta < 0 ? tEnd - Math.exp(beta * LN_A_END) / (beta * rate) : Infinity,
+  };
+}
+
+/** Instante do Big Rip, em segundos desde o Big Bang (infinito se w ≥ −1). Só para w constante. */
+export function bigRipTimeS(c: Cosmology): number {
+  return farFuture(c, table(c)).rip;
+}
+
 /** Tempo cósmico t(a), em segundos, a partir de ln a. */
 export function timeAtLnScaleFactorS(lnA: number, c: Cosmology = PLANCK_2018): number {
   const tab = table(c);
   if (lnA <= LN_A_START) return radiationTime(Math.exp(lnA), tab.h0SI, c);
-  if (lnA >= LN_A_END) return tab.t[STEPS] + (lnA - LN_A_END) / (tab.h0SI * Math.sqrt(c.omegaL));
+  if (lnA >= LN_A_END) return farFuture(c, tab).time(lnA);
   const dx = (LN_A_END - LN_A_START) / STEPS;
   const i = Math.floor((lnA - LN_A_START) / dx);
   return tab.t[i] + segment(tab.lnA[i], lnA, tab.h0SI, c);
@@ -190,7 +251,7 @@ export function lnScaleFactorAtTime(timeS: number, c: Cosmology = PLANCK_2018): 
   assertPositive(timeS, "O tempo");
   const tab = table(c);
   if (timeS <= tab.t[0]) return 0.5 * Math.log(2 * tab.h0SI * Math.sqrt(c.omegaR) * timeS);
-  if (timeS >= tab.t[STEPS]) return LN_A_END + (timeS - tab.t[STEPS]) * tab.h0SI * Math.sqrt(c.omegaL);
+  if (timeS >= tab.t[STEPS]) return farFuture(c, tab).lnA(timeS);
   let lo = 0;
   let hi = STEPS;
   while (hi - lo > 1) {

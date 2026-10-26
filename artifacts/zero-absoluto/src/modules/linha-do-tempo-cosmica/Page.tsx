@@ -4,7 +4,7 @@ import ModulePage from '../ModulePage';
 import { Claim, EvidenceTag, Segmented, SimCard, Stat, StatGrid, Sym } from '../shared';
 import { LinePlot, type Dot } from '../Plot';
 import { CosmicTimeSlider, EpochNotice, setCosmicTime, timeFromUrl, useCosmicTime } from '../cosmicTime';
-import { cosmicEpoch, cosmicMilestones, nearestMilestone, temperatureReading, type CosmicMilestone } from '../cosmicMilestones';
+import { BEFORE_INFLATION_END_NOTE, cosmicEpoch, cosmicMilestones, nearestMilestone, radiationModelApplies, temperatureReading, type CosmicMilestone } from '../cosmicMilestones';
 import {
   PLANCK_2018_AGE_GYR,
   PLANCK_2018_AGE_SIGMA_GYR,
@@ -74,25 +74,28 @@ function Readout({ time, c, t0 }: { time: number; c: Cosmology; t0: number }) {
   const log10H = Math.log10(c.h0) + lnExpansionRate(lnA, c) / Math.LN10;
   const temperature = temperatureReading(time, c);
   const share = (log10: number) => `${Math.max(0, 10 ** log10 * 100)}%`;
+  // Antes do fim da inflação, a solução de radiação é só extrapolação: nada de a, z, H nem frações.
+  const valid = radiationModelApplies(time);
+  const dominant = fractions.radiation > fractions.matter && fractions.radiation > fractions.darkEnergy ? 'Radiação' : fractions.matter > fractions.darkEnergy ? 'Matéria' : 'Energia escura';
   return <>
     <StatGrid>
       <Stat label="Tempo desde o Big Bang" value={duration(time)} note={future ? `daqui a ${duration(time - t0)}` : `há ${duration(t0 - time)}`} testId="text-21-time" />
-      <Stat label={<>Fator de escala <Sym>a</Sym></>} value={formatFromLog10(log10A)} note="tamanho relativo a hoje (a = 1)" testId="text-21-a" />
-      <Stat label={<>Redshift <Sym>z</Sym></>} value={future ? '—' : formatRedshift(Math.expm1(-lnA))} note={future ? 'no futuro, z não se aplica; veja o fator a' : 'z = 1/a − 1'} testId="text-21-z" />
+      <Stat label={<>Fator de escala <Sym>a</Sym></>} value={valid ? formatFromLog10(log10A) : '—'} note={valid ? 'tamanho relativo a hoje (a = 1)' : BEFORE_INFLATION_END_NOTE} testId="text-21-a" />
+      <Stat label={<>Redshift <Sym>z</Sym></>} value={future || !valid ? '—' : formatRedshift(Math.expm1(-lnA))} note={!valid ? BEFORE_INFLATION_END_NOTE : future ? 'no futuro, z não se aplica; veja o fator a' : 'z = 1/a − 1'} testId="text-21-z" />
       <Stat label={<>Temperatura <Sym>T = T₀(1 + z)</Sym></>} value={temperature.value} note={temperature.note ?? 'radiação de fundo, T₀ = 2,7255 K'} testId="text-21-T" />
-      <Stat label={<>Taxa de expansão <Sym>H</Sym></>} value={`${formatFromLog10(log10H)} km/s/Mpc`} note={`H₀ = ${formatNumber(c.h0, 2)} km/s/Mpc hoje`} testId="text-21-H" />
-      <Stat label="Domina a expansão" value={fractions.radiation > fractions.matter && fractions.radiation > fractions.darkEnergy ? 'Radiação' : fractions.matter > fractions.darkEnergy ? 'Matéria' : 'Energia escura'} note="maior fração de densidade" testId="text-21-dominant" />
+      <Stat label={<>Taxa de expansão <Sym>H</Sym></>} value={valid ? `${formatFromLog10(log10H)} km/s/Mpc` : '—'} note={valid ? `H₀ = ${formatNumber(c.h0, 2)} km/s/Mpc hoje` : BEFORE_INFLATION_END_NOTE} testId="text-21-H" />
+      <Stat label="Domina a expansão" value={valid ? dominant : '—'} note={valid ? 'maior fração de densidade' : 'desconhecido; se houve inflação, o campo que a causou'} testId="text-21-dominant" />
     </StatGrid>
     <div className="sub-title" style={{ marginBottom: 4 }}>Frações de densidade</div>
-    <div className="composition" aria-hidden="true">
+    {valid && <div className="composition" aria-hidden="true">
       <div className="radiation" style={{ width: share(fractions.radiation) }} />
       <div className="matter" style={{ width: share(fractions.matter) }} />
       <div className="dark-energy" style={{ width: share(fractions.darkEnergy) }} />
-    </div>
+    </div>}
     <StatGrid>
-      <Stat label={<>Radiação <Sym>Ω<sub>r</sub>(a)</Sym></>} value={formatFraction(fractions.radiation)} note="fótons e neutrinos" testId="text-21-frac-r" />
-      <Stat label={<>Matéria <Sym>Ω<sub>m</sub>(a)</Sym></>} value={formatFraction(fractions.matter)} note="escura e comum" testId="text-21-frac-m" />
-      <Stat label={<>Energia escura <Sym>Ω<sub>Λ</sub>(a)</Sym></>} value={formatFraction(fractions.darkEnergy)} note="constante cosmológica" testId="text-21-frac-l" />
+      <Stat label={<>Radiação <Sym>Ω<sub>r</sub>(a)</Sym></>} value={valid ? formatFraction(fractions.radiation) : '—'} note="fótons e neutrinos" testId="text-21-frac-r" />
+      <Stat label={<>Matéria <Sym>Ω<sub>m</sub>(a)</Sym></>} value={valid ? formatFraction(fractions.matter) : '—'} note="escura e comum" testId="text-21-frac-m" />
+      <Stat label={<>Energia escura <Sym>Ω<sub>Λ</sub>(a)</Sym></>} value={valid ? formatFraction(fractions.darkEnergy) : '—'} note="constante cosmológica" testId="text-21-frac-l" />
     </StatGrid>
   </>;
 }
@@ -242,7 +245,7 @@ export default function CosmicTimeline() {
     limitations={[
       <>Neutrinos tratados como três espécies sem massa (N<sub>eff</sub> = 3). A massa real, de pelo menos ~0,06 eV no total, desloca z<sub>eq</sub> e, levemente, a idade.</>,
       <>Universo exatamente plano. A curvatura medida é compatível com zero (Planck com BAO: Ω<sub>K</sub> = 0,0007 ± 0,0019), mas isso é uma medição, não uma hipótese do modelo.</>,
-      <>Energia escura constante (w = −1). O Módulo 2.2 vai abrir essa hipótese.</>,
+      <>Energia escura constante (w = −1). O <Link href="/os-destinos-possiveis" className="inline-link">Módulo 2.2</Link> abre essa hipótese.</>,
       <>Antes da nucleossíntese, a física de partículas em altas energias (transições de fase, matéria escura, bariogênese) não é modelada. A relação T = T₀(1 + z) supõe o conteúdo de radiação de hoje: antes de ~10 s, quando elétrons e pósitrons ainda existiam, temperatura e tempo reais diferem em dezenas de por cento, e antes de 1 s só a ordem de grandeza é indicada.</>,
       <>Recombinação e reionização são processos graduais; aqui aparecem num único redshift (z = 1.090 e z = 7,7).</>,
       <>O atalho do SH0ES mantém Ω<sub>m</sub> fixo; uma análise real ajustaria todos os parâmetros juntos.</>,

@@ -55,6 +55,7 @@ export const zeta3Over2 = 2.612_375_348_685_488; // ζ(3/2), adimensional (funç
 // --- Astronomia ---
 export const protonChargeRadius = 8.4075e-16; // m (raio rms de carga do próton, CODATA 2022)
 export const earthRadius = 6.371e6; // m (raio médio da Terra, IUGG)
+export const earthGM = 3.986_004_418e14; // m³·s⁻² (constante gravitacional geocêntrica, IERS Conventions 2010)
 export const observableUniverseRadius = 4.4e26; // m (raio comóvel, ~46,5 bilhões de anos-luz; cosmologia Planck 2018)
 export const solarMass = 1.988_47e30; // kg (massa solar nominal derivada de GM☉ IAU 2015)
 export const solarRadius = 6.957e8; // m (raio solar nominal IAU 2015)

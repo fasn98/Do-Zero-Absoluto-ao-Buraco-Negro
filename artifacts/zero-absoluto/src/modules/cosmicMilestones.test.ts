@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COSMIC_TIME_MAX_S, COSMIC_TIME_MIN_S, cosmicEpoch, cosmicMilestones, nearestMilestone, positionToTime, temperatureReading, timeToPosition } from "./cosmicMilestones";
+import { COSMIC_TIME_MAX_S, COSMIC_TIME_MIN_S, INFLATION_END_S, cosmicEpoch, radiationModelApplies, cosmicMilestones, nearestMilestone, positionToTime, temperatureReading, timeToPosition } from "./cosmicMilestones";
 import { TRACKS, trackForModule, trackForPath } from "./tracks";
 import { ageOfUniverseS, makeCosmology } from "../physics/friedmann";
 import { julianYear } from "../physics/constants";
@@ -31,6 +31,16 @@ describe("régua de tempo cósmico", () => {
     expect(cosmicEpoch(1.01 * ageOfUniverseS())).toBe("projecao");
   });
 
+  it("antes do fim da inflação o modelo de radiação não vale: a, z e H ficam sem valor", () => {
+    expect(INFLATION_END_S).toBe(1e-32);
+    // 2,60 × 10⁻⁴² s: a extrapolação daria a = 3,30 × 10⁻³¹ e H = 5,92 × 10⁶⁰ km/s/Mpc.
+    expect(radiationModelApplies(2.6e-42)).toBe(false);
+    expect(radiationModelApplies(COSMIC_TIME_MIN_S)).toBe(false);
+    expect(radiationModelApplies(0.99e-32)).toBe(false);
+    expect(radiationModelApplies(1e-32)).toBe(true);
+    expect(radiationModelApplies(1)).toBe(true);
+  });
+
   it("temperatura: indefinida antes da inflação, ordem de grandeza antes de 1 s, 3 algarismos depois", () => {
     expect(temperatureReading(1e-40).value).toBe("indefinida");
     expect(temperatureReading(1e-6).value).toMatch(/^~10/);
@@ -55,7 +65,9 @@ describe("trilhas", () => {
     expect(trackForModule("2.1").counter("2.1")).toBe("2.1 / 2.5");
     expect(trackForPath("/pior-previsao")?.id).toBe("1");
     expect(trackForPath("/a-linha-do-tempo-cosmica")?.id).toBe("2");
+    expect(trackForPath("/os-destinos-possiveis")?.id).toBe("2");
+    expect(trackForModule("2.2").counter("2.2")).toBe("2.2 / 2.5");
     expect(trackForPath("/")).toBeNull();
-    expect(TRACKS[1].modules.filter((m) => !m.path).map((m) => m.number)).toEqual(["2.2", "2.3", "2.4", "2.5"]);
+    expect(TRACKS[1].modules.filter((m) => !m.path).map((m) => m.number)).toEqual(["2.3", "2.4", "2.5"]);
   });
 });
