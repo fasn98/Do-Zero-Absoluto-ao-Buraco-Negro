@@ -9,4 +9,6 @@ Os arquivos em `artifacts/zero-absoluto/src/data/cosmo/` reproduzem dados public
 | `union3_compressed.txt` | 22 nós de módulo de distância (Union3 + UNITY1.5) e a inversa da covariância | D. Rubin et al., "Union Through UNITY", arXiv:2311.12098. Arquivo `mu_mat_union3_cosmo=2_mu.fits` de [rubind/union3_release](https://github.com/rubind/union3_release), commit `a3e75550b4` (22/08/2024), convertido para texto sem alterar números | **MIT** (arquivo LICENSE do repositório, Copyright (c) 2024 David Rubin) |
 | `validacao_python.json` | χ² de referência gerados por `scripts/validacao_cosmo.py` | Este projeto | MIT, como o código |
 
+Os valores do DESI DR2 e de Chen, Huang e Wang são resultados numéricos publicados, reproduzidos com citação para fins científicos e educacionais.
+
 Quem reutilizar estes arquivos deve citar os artigos de origem acima.

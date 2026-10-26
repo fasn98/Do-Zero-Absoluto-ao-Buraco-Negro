@@ -95,7 +95,11 @@ O código deste projeto foi escrito com o **Claude Code** (Anthropic), sob dire�
 - **conferência das fontes**, abrindo cada DOI e cada número citado no artigo original;
 - **revisão humana** do conteúdo, das capturas de tela e das decisões de apresentação.
 
-Os enunciados das tarefas estão em [docs/prompts/](docs/prompts/), e as convenções do projeto, em [CLAUDE.md](CLAUDE.md).
+Registros do processo:
+
+- [docs/prompts/](docs/prompts/) é o registro dos enunciados usados para orientar o Claude Code, do primeiro (o dos simuladores, `forno_solar.md`) aos de cada fase e módulo.
+- [cc.sh](cc.sh) é o script que mantém o Claude Code no Replit: guarda o programa, o login e o histórico dentro do workspace, que sobrevive às reinicializações do container (essas pastas ficam fora do Git e da versão publicada).
+- [CLAUDE.md](CLAUDE.md) reúne as convenções do projeto que o Claude Code segue, e [docs/achados.md](docs/achados.md), os problemas encontrados nas fontes ao reproduzir análises publicadas.
 
 ## Licenças
 
