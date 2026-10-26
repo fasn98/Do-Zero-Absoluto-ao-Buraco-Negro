@@ -61,7 +61,7 @@ const GL_X = [0, -0.5384693101056831, 0.5384693101056831, -0.906179845938664, 0.
 const GL_W = [0.5688888888888889, 0.47862867049936647, 0.47862867049936647, 0.23692688505618908, 0.23692688505618908];
 
 /** ∫ f entre x0 e x1, Gauss-Legendre de 5 pontos em segmentos de largura ≤ `step`. */
-function integrate(f: (x: number) => number, x0: number, x1: number, step: number): number {
+export function integrate(f: (x: number) => number, x0: number, x1: number, step: number): number {
   const n = Math.max(1, Math.ceil(Math.abs(x1 - x0) / step));
   const h = (x1 - x0) / n;
   let sum = 0;

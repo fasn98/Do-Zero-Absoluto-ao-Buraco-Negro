@@ -29,6 +29,9 @@
 // Parâmetro de URL do Módulo 2.3:
 //   ?dados=<id>    bao, bao-cmb, bao-cmb-sn
 //
+// Parâmetros de URL do Módulo 2.4:
+//   ?N=<0..70>  e-dobras da Seção 1; ?ns=<0,90..1,10> mapa; ?Nm=<50..60> modelos no plano nₛ × r
+//
 // Variáveis: BASE_URL (padrão http://localhost:19201), CHROMIUM
 // (padrão /repl/tools/bin/chromium), SAIDA (padrão capturas/, fora do Git).
 // Para cada captura também grava <nome>.txt com o texto dos campos data-testid
@@ -59,6 +62,8 @@ const PADRAO = [
   '/confronto-com-dados-reais?dados=bao',
   '/confronto-com-dados-reais?dados=bao-cmb',
   '/confronto-com-dados-reais?dados=bao-cmb-sn',
+  '/inflacao-e-perturbacoes?N=0&ns=0.9649&Nm=55',
+  '/inflacao-e-perturbacoes?N=60&ns=1.05&Nm=55',
 ];
 
 const args = process.argv.slice(2);

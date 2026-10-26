@@ -77,7 +77,8 @@ export function cosmicMilestones(c: Cosmology = PLANCK_2018): CosmicMilestone[] 
       id: 'inflacao', name: 'Inflação', short: 'Inflação', level: 'hipotese',
       whenShort: '~10⁻³⁶ a 10⁻³² s',
       when: '~10⁻³⁶ a 10⁻³² s', range: [1e-36, INFLATION_END_S], anchor: 1e-34,
-      text: 'Uma expansão exponencial muito rápida explicaria por que o universo é tão plano e homogêneo e de onde vieram as sementes das galáxias. As previsões concordam com o fundo cósmico, mas as ondas gravitacionais primordiais que ela produziria ainda não foram detectadas. Será o tema do Módulo 2.4 (em breve).',
+      text: 'Uma expansão exponencial muito rápida explicaria por que o universo é tão plano e homogêneo e de onde vieram as sementes das galáxias. As previsões concordam com o fundo cósmico, mas as ondas gravitacionais primordiais que ela produziria ainda não foram detectadas.',
+      link: { href: '/inflacao-e-perturbacoes', label: 'Módulo 2.4: inflação e perturbações' },
     },
     {
       id: 'nucleossintese', name: 'Nucleossíntese primordial', short: 'Nucleossíntese', level: 'fato',

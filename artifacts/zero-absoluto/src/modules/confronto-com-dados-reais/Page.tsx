@@ -231,6 +231,7 @@ function Confrontation() {
     </>}
     {grid && <Survivors marks={marks} />}
     {grid && <WPlot band={band} best={best!} />}
+    <p className="plot-note" data-testid="link-23-next">Daqui para trás no tempo: de onde vieram as flutuações que o fundo cósmico mostra, e o que a inflação tem a ver com isso, no <Link href="/inflacao-e-perturbacoes" className="inline-link">Módulo 2.4, inflação e perturbações</Link>.</p>
   </SimCard>;
 }
 
