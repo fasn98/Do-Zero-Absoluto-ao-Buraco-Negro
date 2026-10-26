@@ -1,7 +1,7 @@
 # Do Zero Absoluto ao Buraco Negro
 
 Aplicação educativa em português do Brasil sobre termodinâmica e física
-quântica, com dez módulos interativos. Toda simulação usa apenas física
+quântica, com onze módulos interativos. Toda simulação usa apenas física
 estabelecida; cada módulo termina com "O que este modelo deixa de fora" e
 referências, e cada afirmação é marcada como **fato estabelecido**,
 **consenso** ou **hipótese em pesquisa**.
@@ -42,6 +42,7 @@ PORT=19201 BASE_PATH=/ pnpm --filter @workspace/zero-absoluto run build
 - `src/physics/gravitationalWaves.ts`, `hubble.ts`: física do Módulo 8.
 - `src/physics/unification.ts`: física do Módulo 9.
 - `src/physics/decoherence.ts`, `diosiPenrose.ts`: física do Módulo 10.
+- `src/physics/vacuumEnergy.ts`: física do Módulo 11.
 - `src/physics/logmath.ts`: log-sum-exp, integração em malha logarítmica, ln Γ e ln C(n, k).
 
 Os testes comparam com valores de referência com tolerância de 2%.
@@ -137,4 +138,11 @@ Landauer). Acima de ~10¹² K, mostra só contexto com nível de evidência.
 - Regime: vale se Δx for menor que o comprimento de onda típico do ambiente (pico de Wien b/T para fótons; de Broglie térmico h/√(2πmkT) do ar a 300 K para o gás); acima disso a decoerência satura e nenhum número é mostrado
 - Recordes de superposição: elétron, nêutron, C₆₀ (720 u), ~25.000 u (Fein et al. 2019); do recorde ao alvo de 10⁻¹⁴ kg: ≈ 8,4 ordens de grandeza
 - Diósi-Penrose, esfera homogênea: E_G = G m² (6/(5R) − 1/d) para d ≥ 2R; (G m²/R)(2λ² − (3/2)λ³ + (1/5)λ⁵), λ = d/(2R), para d < 2R; τ ≈ ħ/E_G (10⁻¹⁴ kg de diamante a 250 µm → 11,6 ms)
+
+### Módulo 11: A pior previsão da física (`vacuumEnergy.ts`)
+
+- Observado (Planck 2018, H₀ = 67,4 km/s/Mpc, Ω_Λ = 0,685): ρ_c = 3H₀²/(8πG) ≈ 8,53 × 10⁻²⁷ kg/m³; ρ_Λ = Ω_Λ ρ_c ≈ 5,85 × 10⁻²⁷ kg/m³; u_Λ = ρ_Λ c² ≈ 5,25 × 10⁻¹⁰ J/m³
+- Previsto (um campo, corte abrupto): u_vac = ħ c k_máx⁴/(16π²), k_máx = E_corte/(ħc); corte de Planck → 2,93 × 10¹¹¹ J/m³, razão ≈ 10^120,7
+- Corte que reproduz u_Λ ≈ 7,9 meV (λ = 2π/k ≈ 0,156 mm); densidade de Planck c⁷/(ħG²) ≈ 4,63 × 10¹¹³ J/m³ (razão ≈ 10^122,9)
+- Casimir, placas ideais: P = π²ħc/(240 d⁴) (1 µm → 1,30 × 10⁻³ Pa)
 

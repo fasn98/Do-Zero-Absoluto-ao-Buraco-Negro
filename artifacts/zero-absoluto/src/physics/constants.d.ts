@@ -8,6 +8,8 @@ export declare const elementaryCharge: number;
 export declare const atomicMassConstant: number;
 export declare const avogadroConstant: number;
 export declare const wienDisplacementConstant: number;
+export declare const standardGravity: number;
+export declare const standardAtmosphere: number;
 export declare const planckTemperature: number;
 export declare const protonMass: number;
 export declare const neutronMass: number;
@@ -33,6 +35,7 @@ export declare const solarCoreTemperature: number;
 export declare const solarAge: number;
 export declare const cmbTemperature: number;
 export declare const universeAge: number;
+export declare const parsec: number;
 export declare const julianYear: number;
 export declare const physicalConstants: Readonly<{
   speedOfLight: number;
@@ -45,6 +48,8 @@ export declare const physicalConstants: Readonly<{
   atomicMassConstant: number;
   avogadroConstant: number;
   wienDisplacementConstant: number;
+  standardGravity: number;
+  standardAtmosphere: number;
   planckTemperature: number;
   protonMass: number;
   neutronMass: number;
@@ -70,5 +75,6 @@ export declare const physicalConstants: Readonly<{
   solarAge: number;
   cmbTemperature: number;
   universeAge: number;
+  parsec: number;
   julianYear: number;
 }>;

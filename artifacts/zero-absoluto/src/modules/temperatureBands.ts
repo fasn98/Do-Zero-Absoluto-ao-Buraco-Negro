@@ -19,6 +19,7 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'Ouvindo o universo se expandir', description: 'Ondas gravitacionais, a sirene padrão e a tensão de Hubble.', path: '/ouvindo-o-universo', number: '08', tag: 'ONDAS GRAVITACIONAIS' },
   { title: 'As forças convergem?', description: 'As intensidades das forças mudam com a energia. Elas se encontram num ponto?', path: '/as-forcas-convergem', number: '09', tag: 'UNIFICAÇÃO' },
   { title: 'Onde o quântico vira clássico', description: 'Decoerência, recordes de superposição e o problema da medição.', path: '/quantico-para-classico', number: '10', tag: 'FUNDAMENTOS QUÂNTICOS' },
+  { title: 'A pior previsão da física', description: 'A energia do vácuo prevista erra por mais de cem ordens de grandeza.', path: '/pior-previsao', number: '11', tag: 'ENERGIA DO VÁCUO' },
 ];
 
 /** Temperatura com kT igual a uma energia em GeV (1 GeV ≈ 1,16 × 10¹³ K). */
