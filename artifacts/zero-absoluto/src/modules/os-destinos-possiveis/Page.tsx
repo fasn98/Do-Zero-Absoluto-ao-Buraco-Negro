@@ -281,7 +281,7 @@ export default function PossibleFates() {
         <p>No ΛCDM a energia escura é uma constante cosmológica, e a expansão segue para sempre, exponencial. É o cenário que melhor descreve o conjunto dos dados, e a referência tracejada em todos os gráficos abaixo.</p>
       </Claim>
       <Claim level="consenso" title="O destino real ainda não está decidido">
-        <p>A pergunta está em aberto. Medimos a energia escura só no passado; o futuro é uma extrapolação, que depende de ela ser constante. O DESI vê sinais, ainda não conclusivos, de que ela pode variar.</p>
+        <p>A pergunta está em aberto. Medimos a energia escura só no passado; o futuro é uma extrapolação, que depende de ela ser constante. O DESI vê sinais, ainda não conclusivos, de que ela pode variar. O <Link href="/confronto-com-dados-reais" className="inline-link" data-testid="link-22-module-23">Módulo 2.3</Link> confronta cada cenário com os dados reais.</p>
       </Claim>
     </div>
     <Simulation state={state} setState={setState} />

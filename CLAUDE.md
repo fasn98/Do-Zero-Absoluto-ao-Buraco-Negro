@@ -34,7 +34,7 @@ Régua de **tempo cósmico** (tempo de Planck, ~5,39 × 10⁻⁴⁴ s, até 100 
 |---|---|---|
 | 2.1 | A linha do tempo cósmica | `/a-linha-do-tempo-cosmica` |
 | 2.2 | Os destinos possíveis | `/os-destinos-possiveis` |
-| 2.3 | Confronto com dados reais | em breve |
+| 2.3 | Confronto com dados reais | `/confronto-com-dados-reais` |
 | 2.4 | Inflação e perturbações | em breve |
 | 2.5 | A fronteira | em breve |
 
@@ -49,6 +49,7 @@ As trilhas e os módulos ficam declarados em `src/modules/tracks.ts` (Trilha 1 r
 - `modules/Plot.tsx`: gráfico de linhas em SVG próprio (séries, marcadores, regiões sombreadas, pontos rotulados). Sem biblioteca de gráficos.
 - `physics/friedmann.ts`: resolvedor de Friedmann (Módulo 2.1), com energia escura w(a) = w₀ + w_a(1 − a) opcional; `physics/cosmicFates.ts`: Big Rip, recontração e CPL (Módulo 2.2).
 - `physics/cosmoLikelihood.ts`, `physics/linalg.ts`: distâncias (D_M, D_H, D_V, r_s, r_d, R, l_A) e χ² do BAO, do CMB comprimido e das supernovas (Módulo 2.3).
+- `physics/cosmoFit.ts`: perfil (Levenberg-Marquardt), grade w₀ × w_a, conversão Δχ² → σ e faixa de w(z); roda num Web Worker (`modules/confronto-com-dados-reais/grid.worker.ts`). `lib/contours.ts`: interpolação e isolinhas.
 - `data/cosmo/`: dados reais do Módulo 2.3 (ver "Dados cosmológicos" abaixo).
 - `modules/cosmicMilestones.ts`, `modules/cosmicTime.tsx`: marcos da história cósmica com selos e a régua de tempo compartilhada (estado em `sessionStorage`).
 - `modules/<modulo>/Page.tsx`: interface de cada módulo.
@@ -81,6 +82,11 @@ Cada arquivo tem cabeçalho com fonte, DOI, versão, data de download e licença
 | `validacao_python.json` | χ² de referência em pontos fixos, gerados por `scripts/validacao_cosmo.py pontos` | — | — |
 
 As médias do BAO coincidem com a Tabela IV do artigo; os desvios e correlações do arquivo oficial diferem dos da tabela em até ~6% (a tabela traz médias e desvios das posteriores marginalizadas). O artigo indica o arquivo do Cobaya como a verossimilhança oficial.
+
+**Achados nas fontes (detalhes e cálculos em `docs/achados.md`):**
+- Chen, Huang e Wang (2019), eq. 9: o texto traz g₁ = 0,0738; o código do apêndice e a fórmula de Hu e Sugiyama (ver Komatsu et al., ApJS 180, 330, 2009, eq. 67) usam **0,0783**. Usamos 0,0783. A troca mudaria l_A em 0,24 (2,7σ do prior).
+- Chen, Huang e Wang (2019): as médias do prior de l_A foram calculadas com o z* das cadeias do Planck (1.089,95), mas a teoria usa a fórmula de Hu e Sugiyama (1.091,94 para os mesmos parâmetros). No melhor ajuste do Planck, isso põe l_A a 3,6σ do prior; no ajuste, a diferença vira +0,17 km/s/Mpc em H₀. Seguimos o artigo à risca.
+- Neutrinos de 0,06 eV como matéria não mudam o ajuste (reparametrização); não foram incluídos.
 
 **Validação independente em Python:** `scripts/validacao_cosmo.py` (numpy e scipy, que o Replit não tem; vêm do Nix):
 
@@ -119,6 +125,8 @@ node scripts/capturas.mjs --avaliar='document.title' /       # só avalia JS na 
 - Para cada página, o script avisa `ROLAGEM HORIZONTAL` se a página for mais larga que a janela.
 - Parâmetros de URL do Módulo 2.1 e da régua da Trilha 2: `?marco=<id>` (planck, inflacao, nucleossintese, igualdade, recombinacao, primeiras-estrelas, reionizacao, sol, aceleracao, energia-escura, hoje, futuro), `?t=<segundos>` (tem prioridade sobre o marco) e `?h0=shoes` (só no Módulo 2.1). Exemplo: `"/a-linha-do-tempo-cosmica?marco=hoje&h0=shoes"`.
 - Parâmetro de URL do Módulo 2.2: `?atalho=<id>` (lcdm, big-rip, recontracao, desi). Exemplo: `"/os-destinos-possiveis?atalho=big-rip"`.
+- Parâmetro de URL do Módulo 2.3: `?dados=<id>` (bao, bao-cmb, bao-cmb-sn). A captura espera o Web Worker terminar (nenhum elemento com `aria-busy="true"`, até 120 s).
+- `--cpu=4` limita a CPU (celular simulado). **A limitação do Chrome não alcança Web Workers**: para medir a grade do 2.3 em celular simulado, rode a mesma função na linha principal, por exemplo `node scripts/capturas.mjs --cpu=4 --larguras=360 --avaliar='(async () => { const m = await import("/src/physics/cosmoFit.ts"); const t = performance.now(); m.scanGrid("bao+cmb+sn"); return performance.now() - t; })()' /trilha-2`.
 - Imagens altas: corte em pedaços antes de abrir, por exemplo `magick arquivo.png -crop x3000 +repage pedaco_%02d.png`.
 - Não use `captureBeyondViewport`: ele distorce os gráficos de `Plot.tsx`, que medem a própria largura. O script aumenta a janela até a altura da página antes de capturar.
 

@@ -68,6 +68,7 @@ describe("trilhas", () => {
     expect(trackForPath("/os-destinos-possiveis")?.id).toBe("2");
     expect(trackForModule("2.2").counter("2.2")).toBe("2.2 / 2.5");
     expect(trackForPath("/")).toBeNull();
-    expect(TRACKS[1].modules.filter((m) => !m.path).map((m) => m.number)).toEqual(["2.3", "2.4", "2.5"]);
+    expect(trackForPath("/confronto-com-dados-reais")?.id).toBe("2");
+    expect(TRACKS[1].modules.filter((m) => !m.path).map((m) => m.number)).toEqual(["2.4", "2.5"]);
   });
 });

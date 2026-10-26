@@ -11,6 +11,10 @@
 //   node scripts/capturas.mjs --tema=escuro /pior-previsao
 //   node scripts/capturas.mjs --larguras=360 /trilha-2
 //   node scripts/capturas.mjs --avaliar='document.title' /trilha-2   (só avalia JS, sem imagem)
+//   node scripts/capturas.mjs --cpu=4 --larguras=360 /confronto-com-dados-reais   (CPU 4× mais lenta, celular simulado)
+//
+// A captura espera a página assentar e também que nenhum elemento tenha aria-busy="true"
+// (cálculos em Web Worker, como a grade do Módulo 2.3), por até 120 s.
 //
 // Parâmetros de URL do Módulo 2.1 e da régua da Trilha 2:
 //   ?marco=<id>    planck, inflacao, nucleossintese, igualdade, recombinacao,
@@ -21,6 +25,9 @@
 //
 // Parâmetro de URL do Módulo 2.2:
 //   ?atalho=<id>   lcdm, big-rip, recontracao, desi
+//
+// Parâmetro de URL do Módulo 2.3:
+//   ?dados=<id>    bao, bao-cmb, bao-cmb-sn
 //
 // Variáveis: BASE_URL (padrão http://localhost:19201), CHROMIUM
 // (padrão /repl/tools/bin/chromium), SAIDA (padrão capturas/, fora do Git).
@@ -49,12 +56,16 @@ const PADRAO = [
   '/os-destinos-possiveis?atalho=big-rip',
   '/os-destinos-possiveis?atalho=recontracao',
   '/os-destinos-possiveis?atalho=desi',
+  '/confronto-com-dados-reais?dados=bao',
+  '/confronto-com-dados-reais?dados=bao-cmb',
+  '/confronto-com-dados-reais?dados=bao-cmb-sn',
 ];
 
 const args = process.argv.slice(2);
 const opt = (name, fallback) => args.find((a) => a.startsWith(`--${name}=`))?.split('=')[1] ?? fallback;
 const rotas = args.filter((a) => !a.startsWith('--'));
 const tema = opt('tema', 'claro');
+const cpu = Number(opt('cpu', '1'));
 const avaliar = args.find((a) => a.startsWith('--avaliar='))?.slice('--avaliar='.length);
 const LARGURAS = { 360: { width: 360, height: 780, mobile: true, scale: 2 }, 1440: { width: 1440, height: 900, mobile: false, scale: 1 } };
 const larguras = opt('larguras', '360,1440').split(',').map((w) => LARGURAS[w] ?? { width: Number(w), height: 900, mobile: Number(w) < 768, scale: 1 });
@@ -102,16 +113,17 @@ async function capturar({ send }, rota, viewport) {
   await s('Runtime.enable');
   await s('Emulation.setDeviceMetricsOverride', { width: viewport.width, height: viewport.height, deviceScaleFactor: viewport.scale, mobile: viewport.mobile });
   await s('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: tema === 'escuro' ? 'dark' : 'light' }] });
+  if (cpu > 1) await s('Emulation.setCPUThrottlingRate', { rate: cpu });
   await s('Page.navigate', { url: BASE_URL + rota });
   // Espera a página assentar: carregamento, fontes e o primeiro cálculo do modelo.
-  for (let i = 0; i < 50; i += 1) {
-    const { result } = await s('Runtime.evaluate', { expression: 'document.readyState === "complete" && document.fonts.status === "loaded" && !!document.querySelector("main")', returnByValue: true });
+  for (let i = 0; i < 600; i += 1) {
+    const { result } = await s('Runtime.evaluate', { expression: 'document.readyState === "complete" && document.fonts.status === "loaded" && !!document.querySelector("main") && !document.querySelector("[aria-busy=true]")', returnByValue: true });
     if (result.value) break;
     await sleep(200);
   }
   await sleep(800);
   if (avaliar) {
-    const { result } = await s('Runtime.evaluate', { expression: avaliar, returnByValue: true });
+    const { result } = await s('Runtime.evaluate', { expression: avaliar, returnByValue: true, awaitPromise: true });
     await send('Target.closeTarget', { targetId });
     return { avaliado: result.value };
   }

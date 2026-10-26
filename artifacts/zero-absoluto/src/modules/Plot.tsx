@@ -6,6 +6,8 @@ export type Marker = { x: number; label: string; color?: string };
 export type Region = { from: number; to: number; color: string; label?: string };
 /** Ponto com rótulo curto (ex.: número de um marco). */
 export type Dot = { x: number; y: number; label: string; color?: string; below?: boolean };
+/** Faixa preenchida entre duas curvas (x, y de baixo, y de cima). */
+export type Area = { label: string; color: string; points: [number, number, number][] };
 
 type LinePlotProps = {
   series: Series[];
@@ -23,6 +25,7 @@ type LinePlotProps = {
   band?: [number, number];
   regions?: Region[];
   dots?: Dot[];
+  areas?: Area[];
   height?: number;
   title: string;
   children?: ReactNode;
@@ -32,7 +35,7 @@ const PAD_BASE = { left: 44, right: 14, top: 14, bottom: 42 };
 const LABEL_ROW = 16;
 
 /** Gráfico de linhas em SVG puro, com cores das variáveis do tema. */
-export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, regions = [], dots = [], height = 300, title, children }: LinePlotProps) {
+export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, yTicks = [0, 0.5, 1], formatX = String, formatY = String, xLabel, yLabel, markers = [], band, regions = [], dots = [], areas = [], height = 300, title, children }: LinePlotProps) {
   // A largura do viewBox acompanha a largura real, para que os textos fiquem no tamanho em px.
   const ref = useRef<HTMLElement>(null);
   const clipId = `plot-clip-${useId().replace(/:/g, '')}`;
@@ -88,6 +91,8 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
           <text x={anchor === 'end' ? x + 4 : anchor === 'start' ? x - 4 : x} y={labelY} textAnchor={anchor} className="plot-marker" style={{ fill: m.color ?? 'hsl(var(--accent))' }}>{m.label}</text>
         </g>;
       })}
+      <g clipPath={`url(#${clipId})`}>{areas.map((area) => <polygon key={area.label} style={{ fill: area.color }}
+        points={[...area.points.map(([x, lo]) => `${sx(x).toFixed(1)},${sy(clampY(lo)).toFixed(1)}`), ...[...area.points].reverse().map(([x, , hi]) => `${sx(x).toFixed(1)},${sy(clampY(hi)).toFixed(1)}`)].join(' ')} />)}</g>
       <g clipPath={`url(#${clipId})`}>{series.map((s, index) => <polyline key={index} fill="none" strokeWidth={s.width ?? 2} strokeLinejoin="round" strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }}
         points={s.points.map(([x, y]) => `${sx(x).toFixed(1)},${sy(clampY(y)).toFixed(1)}`).join(' ')} />)}</g>
       {dots.filter((d) => d.x >= xMin && d.x <= xMax && d.y >= yMin && d.y <= yMax).map((d) => <g key={d.label}>
@@ -96,7 +101,7 @@ export function LinePlot({ series, xMin = 0, xMax, yMin = 0, yMax = 1, xTicks, y
       </g>)}
       {children}
     </svg>
-    <figcaption className="plot-legend">{series.map((s) => <span key={s.label}>
+    <figcaption className="plot-legend">{areas.map((area) => <span key={area.label}><svg width="22" height="10" aria-hidden="true"><rect x="1" y="1" width="20" height="8" style={{ fill: area.color }} /></svg>{area.label}</span>)}{series.map((s) => <span key={s.label}>
       {/* Amostra com o mesmo traço do gráfico: cor, espessura e tracejado. */}
       <svg width="22" height="8" aria-hidden="true"><line x1="1" x2="21" y1="4" y2="4" strokeWidth={s.width ?? 2} strokeDasharray={s.dashed ? '6 5' : undefined} style={{ stroke: s.color }} /></svg>
       {s.label}

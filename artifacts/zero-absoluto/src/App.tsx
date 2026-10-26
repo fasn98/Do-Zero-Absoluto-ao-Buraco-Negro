@@ -17,6 +17,7 @@ import QuantumToClassical from './modules/quantico-para-classico/Page';
 import WorstPrediction from './modules/pior-previsao/Page';
 import CosmicTimeline from './modules/linha-do-tempo-cosmica/Page';
 import PossibleFates from './modules/os-destinos-possiveis/Page';
+import DataConfrontation from './modules/confronto-com-dados-reais/Page';
 
 /** Itens do menu: na página inicial, as duas trilhas; dentro de uma trilha, o nome dela e os seus módulos. */
 function navItems(track: Track | null) {
@@ -138,6 +139,7 @@ function App() {
       <Route path="/pior-previsao" component={WorstPrediction} />
       <Route path="/a-linha-do-tempo-cosmica" component={CosmicTimeline} />
       <Route path="/os-destinos-possiveis" component={PossibleFates} />
+      <Route path="/confronto-com-dados-reais" component={DataConfrontation} />
       <Route component={NotFound} />
     </Switch>
   </div>;
