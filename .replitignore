@@ -8,3 +8,6 @@
 .claude-persist/
 .claude-bin/
 capturas/
+
+# Credenciais do GitHub CLI e configurações locais: nunca na imagem publicada.
+.config/

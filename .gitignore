@@ -62,3 +62,6 @@ capturas/
 # Variáveis de ambiente e segredos: nunca no Git (vale fora do Replit, que já ignora .env globalmente)
 .env
 .env.*
+
+# Credenciais do GitHub CLI (gh auth login grava o token em .config/gh/hosts.yml)
+.config/
