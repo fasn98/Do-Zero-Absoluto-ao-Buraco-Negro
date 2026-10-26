@@ -30,6 +30,10 @@ describe("régua de temperatura", () => {
     // O Módulo 10 não tem faixa própria na régua
     for (const T of [1e-9, 1, 300, 1e7, 1e12, 1e20, 1.2e29, 1.4e32]) expect(numbers(T)).not.toContain("10");
     for (const T of [1e-9, 1, 300, 1e7, 1e12, 1e20, 1.2e29, 1.4e32]) expect(numbers(T)).not.toContain("11");
+    // Módulo 12: a temperatura do corpo humano (~310 K)
+    expect(numbers(310.15)).toContain("12");
+    expect(numbers(300)).toContain("12");
+    for (const T of [1e-9, 1, 4.2, 1e3, 1e7, 1e20, 1.4e32]) expect(numbers(T)).not.toContain("12");
     expect(numbers(1e20)).not.toContain("07");
     expect(contextForTemperature(2e12)[0].level).toBe("fato");
   });

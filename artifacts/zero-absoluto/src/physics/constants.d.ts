@@ -27,6 +27,7 @@ export declare const zeta3Over2: number;
 export declare const protonChargeRadius: number;
 export declare const earthRadius: number;
 export declare const earthGM: number;
+export declare const humanBodyTemperature: number;
 export declare const observableUniverseRadius: number;
 export declare const solarMass: number;
 export declare const solarRadius: number;

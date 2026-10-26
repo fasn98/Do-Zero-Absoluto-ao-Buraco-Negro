@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'wouter';
+import { ArrowRight } from 'lucide-react';
 import ModulePage from '../ModulePage';
 import { Claim, LinearSlider, LogSlider, Presets, Segmented, SimCard, Stat, StatGrid, Sym } from '../shared';
 import {
@@ -190,5 +191,9 @@ export default function QuantumToClassical() {
         <p>Copenhague, muitos mundos, colapso objetivo e mecânica bohmiana são hipóteses em pesquisa. Só os modelos de colapso objetivo fazem previsões diferentes da mecânica quântica padrão, e por isso podem ser testados diretamente.</p>
       </Claim>
     </div>
+    <Link href="/a-consciencia-e-quantica" className="continue-card" data-testid="link-continue-12">
+      <div><span className="eyebrow">CONTINUE · MÓDULO 12</span><strong>A consciência é quântica?</strong><p>A hipótese Orch-OR liga o colapso de Diósi-Penrose aos microtúbulos dos neurônios. O cérebro, a 310 K, deixaria as superposições sobreviverem tempo suficiente?</p></div>
+      <ArrowRight size={18} />
+    </Link>
   </ModulePage>;
 }

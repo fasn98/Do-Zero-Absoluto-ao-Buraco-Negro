@@ -5,7 +5,7 @@ import { contextForTemperature, modulesForTemperature } from '../modules/tempera
 import { EvidenceTag } from '../modules/shared';
 import { TRACKS } from '../modules/tracks';
 import { formatTemperature } from '../lib/format';
-import { cmbTemperature, planckTemperature, solarCoreTemperature, solarSurfaceTemperature } from '../physics/constants';
+import { cmbTemperature, humanBodyTemperature, planckTemperature, solarCoreTemperature, solarSurfaceTemperature } from '../physics/constants';
 import { logPositionToTemperature, temperatureToLogPosition } from '../physics/calculations';
 import { TrackHero, TrackModuleGrid } from './TrackModules';
 
@@ -16,13 +16,14 @@ const milestones = [
   { value: cmbTemperature, display: '2,725 K', name: 'Radiação cósmica de fundo' },
   { value: 4.2, display: '4,2 K', name: 'Hélio líquido' },
   { value: 300, display: '300 K', name: 'Temperatura ambiente' },
+  { value: humanBodyTemperature, display: '310 K', name: 'Corpo humano' },
   { value: solarSurfaceTemperature, display: '5.772 K', name: 'Superfície do Sol' },
   { value: solarCoreTemperature, display: '15,7 milhões K', name: 'Núcleo do Sol' },
   { value: 1.5e8, display: '~150 milhões K', name: 'Plasma do ITER' },
   { value: planckTemperature, display: '1,417 × 10³² K', name: 'Temperatura de Planck' },
 ];
 
-/** Página da Trilha 1: régua de temperatura e os 11 módulos. */
+/** Página da Trilha 1: régua de temperatura e os módulos da trilha. */
 export default function TrackOne() {
   const [slider, setSlider] = useState(() => temperatureToLogPosition(300) * 1000);
   const value = logPositionToTemperature(Math.min(1, Math.max(0, slider / 1000)));

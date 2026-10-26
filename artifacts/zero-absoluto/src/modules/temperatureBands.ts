@@ -20,6 +20,7 @@ export const MODULES: (ModuleInfo & { description: string; tag: string })[] = [
   { title: 'As forças convergem?', description: 'As intensidades das forças mudam com a energia. Elas se encontram num ponto?', path: '/as-forcas-convergem', number: '09', tag: 'UNIFICAÇÃO' },
   { title: 'Onde o quântico vira clássico', description: 'Decoerência, recordes de superposição e o problema da medição.', path: '/quantico-para-classico', number: '10', tag: 'FUNDAMENTOS QUÂNTICOS' },
   { title: 'A pior previsão da física', description: 'A energia do vácuo prevista erra por mais de cem ordens de grandeza.', path: '/pior-previsao', number: '11', tag: 'ENERGIA DO VÁCUO' },
+  { title: 'A consciência é quântica?', description: 'Orch-OR, decoerência no cérebro quente e úmido, e o que os experimentos dizem.', path: '/a-consciencia-e-quantica', number: '12', tag: 'BIOFÍSICA' },
 ];
 
 /** Temperatura com kT igual a uma energia em GeV (1 GeV ≈ 1,16 × 10¹³ K). */
@@ -50,6 +51,9 @@ export function modulesForTemperature(temperatureK: number): BandMatch[] {
     const EG = gamowEnergyJ(dd);
     const log10P = lnToLog10(lnTunnelingProbability(gamowPeakEnergyJ(EG, kTJ(T)), EG));
     matches.push({ module: byNumber('04'), reason: `Fusão D+D aqui? A chance de tunelamento no pico de Gamow é ${formatFromLog10(log10P)}.` });
+  }
+  if (T >= 295 && T <= 325) {
+    matches.push({ module: byNumber('12'), reason: 'O corpo humano, a ~310 K: quente e úmido demais para que superposições quânticas durem no cérebro? É o debate sobre a consciência quântica.' });
   }
   if (T >= 10 && T <= 2e7) {
     matches.push({ module: byNumber('06'), reason: 'Da nuvem molecular (~10 K) ao núcleo da protoestrela, que acende a fusão acima de ~10 milhões K.' });

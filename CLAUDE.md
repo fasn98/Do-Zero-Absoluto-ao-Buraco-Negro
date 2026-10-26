@@ -11,7 +11,7 @@ O app fica em `artifacts/zero-absoluto/`. O resto do workspace pnpm (`artifacts/
 A página inicial (`/`) apresenta as duas trilhas lado a lado (empilhadas no celular). Cada trilha tem sua própria página. As rotas dos módulos da Trilha 1 são as originais e **nunca podem mudar**.
 
 ### Trilha 1 · Do zero absoluto ao buraco negro (`/trilha-1`)
-Régua de **temperatura** (1 nK até a temperatura de Planck) e 11 módulos. Contador "01 / 11".
+Régua de **temperatura** (1 nK até a temperatura de Planck) e 12 módulos. Contador "01 / 12".
 
 | Nº | Módulo | Rota |
 |---|---|---|
@@ -26,6 +26,7 @@ Régua de **temperatura** (1 nK até a temperatura de Planck) e 11 módulos. Con
 | 09 | As forças convergem? | `/as-forcas-convergem` |
 | 10 | Onde o quântico vira clássico | `/quantico-para-classico` |
 | 11 | A pior previsão da física | `/pior-previsao` |
+| 12 | A consciência é quântica? | `/a-consciencia-e-quantica` |
 
 ### Trilha 2 · Origem e destino do universo (`/trilha-2`)
 Régua de **tempo cósmico** (tempo de Planck, ~5,39 × 10⁻⁴⁴ s, até 100 trilhões de anos), sincronizada com o Módulo 2.1. Contador "2.1 / 2.5". Módulos sem rota aparecem como "em breve", sem link.
@@ -125,6 +126,7 @@ node scripts/capturas.mjs --avaliar='document.title' /       # só avalia JS na 
 - Para cada página, o script avisa `ROLAGEM HORIZONTAL` se a página for mais larga que a janela.
 - Parâmetros de URL do Módulo 2.1 e da régua da Trilha 2: `?marco=<id>` (planck, inflacao, nucleossintese, igualdade, recombinacao, primeiras-estrelas, reionizacao, sol, aceleracao, energia-escura, hoje, futuro), `?t=<segundos>` (tem prioridade sobre o marco) e `?h0=shoes` (só no Módulo 2.1). Exemplo: `"/a-linha-do-tempo-cosmica?marco=hoje&h0=shoes"`.
 - Parâmetro de URL do Módulo 2.2: `?atalho=<id>` (lcdm, big-rip, recontracao, desi). Exemplo: `"/os-destinos-possiveis?atalho=big-rip"`.
+- Parâmetros de URL do Módulo 12: `?decoerencia=<id>` (tegmark-neuronio, tegmark-microtubulo, hagan, hagan-agua) e `?massa=<id>` (proteina, nucleons, nucleons-r0).
 - Parâmetro de URL do Módulo 2.3: `?dados=<id>` (bao, bao-cmb, bao-cmb-sn). A captura espera o Web Worker terminar (nenhum elemento com `aria-busy="true"`, até 120 s).
 - `--cpu=4` limita a CPU (celular simulado). **A limitação do Chrome não alcança Web Workers**: para medir a grade do 2.3 em celular simulado, rode a mesma função na linha principal, por exemplo `node scripts/capturas.mjs --cpu=4 --larguras=360 --avaliar='(async () => { const m = await import("/src/physics/cosmoFit.ts"); const t = performance.now(); m.scanGrid("bao+cmb+sn"); return performance.now() - t; })()' /trilha-2`.
 - Imagens altas: corte em pedaços antes de abrir, por exemplo `magick arquivo.png -crop x3000 +repage pedaco_%02d.png`.
@@ -145,4 +147,4 @@ O `.gitignore` e o `.replitignore` excluem `.claude-persist/` e `.claude-bin/` (
 
 ## Histórico de tarefas
 
-Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`; a da Fase 3 (Módulo 2.3), em `docs/prompts/trilha2-fase3.md`.
+Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`; a da Fase 2 (Módulo 2.2), em `docs/prompts/trilha2-fase2.md`; a da Fase 3 (Módulo 2.3), em `docs/prompts/trilha2-fase3.md`; a do Módulo 12, em `docs/prompts/modulo-12.md`.

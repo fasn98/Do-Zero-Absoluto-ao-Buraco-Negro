@@ -61,7 +61,9 @@ describe("régua de tempo cósmico", () => {
 
 describe("trilhas", () => {
   it("contadores por trilha e rotas antigas na Trilha 1", () => {
-    expect(trackForModule("07").counter("07")).toBe("07 / 11");
+    expect(trackForModule("07").counter("07")).toBe("07 / 12");
+    expect(trackForModule("12").counter("12")).toBe("12 / 12");
+    expect(trackForPath("/a-consciencia-e-quantica")?.id).toBe("1");
     expect(trackForModule("2.1").counter("2.1")).toBe("2.1 / 2.5");
     expect(trackForPath("/pior-previsao")?.id).toBe("1");
     expect(trackForPath("/a-linha-do-tempo-cosmica")?.id).toBe("2");

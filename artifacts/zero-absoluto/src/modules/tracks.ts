@@ -24,7 +24,7 @@ export type Track = {
   title: string;
   summary: string;
   modules: TrackModule[];
-  /** Contador por trilha: "01 / 11" ou "2.1 / 2.5". */
+  /** Contador por trilha: "01 / 12" ou "2.1 / 2.5". */
   counter: (number: string) => string;
 };
 
@@ -34,7 +34,7 @@ export const TRACKS: Track[] = [
     path: '/trilha-1',
     label: 'Trilha 1',
     title: 'Do zero absoluto ao buraco negro',
-    summary: '11 módulos, das temperaturas extremas à unificação.',
+    summary: `${MODULES.length} módulos, das temperaturas extremas à unificação e à consciência.`,
     modules: MODULES,
     counter: (number) => `${number} / ${MODULE_TOTAL}`,
   },
