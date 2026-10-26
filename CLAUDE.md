@@ -106,6 +106,8 @@ Rotina esperada: capturar cada página alterada em 360 px e desktop, abrir as im
 5. Publicar **só quando o usuário pedir** (o Replit cria o commit "Published your App").
 6. Depois de publicar, **conferir o hash do build**: o nome do bundle em `dist/public/index.html` (`assets/index-<hash>.js`) deve ser o mesmo servido pelo site publicado.
 
+O `.gitignore` e o `.replitignore` excluem `.claude-persist/` e `.claude-bin/` (login, histórico e memória do Claude Code) e `capturas/`: eles nunca podem ir para o Git nem para a imagem publicada. Confira os dois arquivos antes de publicar.
+
 ## Histórico de tarefas
 
 Os enunciados completos das tarefas ficam em `docs/prompts/`. A tarefa da Trilha 2, Fase 1 está em `docs/prompts/trilha2-fase1.md`.
